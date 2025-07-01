@@ -1,6 +1,8 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from odmantic import Model, ObjectId
 
+from .config import get_settings
 from .database import engine
 
 
@@ -11,6 +13,18 @@ class Tree(Model):
 
 
 app = FastAPI()
+
+settings = get_settings()
+
+allowed_origins = [settings.home_location]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allowed_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/")
