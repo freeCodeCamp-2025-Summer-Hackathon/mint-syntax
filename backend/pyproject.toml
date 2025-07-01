@@ -13,6 +13,17 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "mypy>=1.16.1",
     "pytest>=8.4.1",
     "ruff>=0.12.1",
 ]
+
+[tool.mypy]
+plugins = ["pydantic.mypy"]
+
+disallow_untyped_defs = true
+show_error_codes = true
+warn_return_any = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_unreachable = true
