@@ -10,8 +10,7 @@
     "format": "prettier --write .",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "vitest",
-    "prepare": "cd .. && husky ./frontend/.husky"
+    "test": "vitest"
   },
   "dependencies": {
     "react": "^19.1.0",
@@ -29,8 +28,6 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.2.0",
-    "husky": "^9.1.7",
-    "lint-staged": "^16.1.2",
     "prettier": "3.6.2",
     "vite": "^7.0.0",
     "vitest": "3.2.4",
