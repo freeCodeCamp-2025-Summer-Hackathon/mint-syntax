@@ -1,0 +1,33 @@
+repos:
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  # Ruff version.
+  rev: v0.12.1
+  hooks:
+    # Run the linter.
+    - id: ruff-check
+      files: ^backend/.*\.py$
+      args: [ --fix ]
+    # Run the formatter.
+    - id: ruff-format
+      files: ^backend/.*\.py$
+
+-   repo: https://github.com/pre-commit/mirrors-eslint
+    rev: v9.29.0
+    hooks:
+    -   id: eslint
+        files: ^frontend/.*\.[jt]sx?$
+        additional_dependencies:
+        -   eslint@9.29.0
+        -   eslint-config-prettier@10.1.5
+        -   eslint-plugin-react@6.10.3
+        -   eslint-plugin-react-hooks@5.2.0
+        -   eslint-plugin-react-refresh@0.4.20
+        args: ["--config=frontend/eslint.config.js", "."]
+
+-   repo: https://github.com/rbubley/mirrors-prettier
+    rev: v3.6.2
+    hooks:
+    -   id: prettier
+        files: ^frontend/.*\.(ts|tsx|js|jsx|css|html|json)$
+        additional_dependencies:
+        -   prettier@3.6.2
