@@ -10,7 +10,7 @@ fake = Faker()
 
 
 def generate_user() -> User:
-    return User(name=fake.name())  # type: ignore
+    return User.model_validate({"name": fake.name()})
 
 
 async def seed_users(num_users: int = 10) -> list[User]:
@@ -25,18 +25,19 @@ def generate_votes(voter_ids: list[ObjectId]) -> list[ObjectId]:
 
 def generate_idea(user_ids: list[ObjectId]) -> Idea:
     creator_id = fake.random_element(user_ids)
-    return Idea(
-        name=fake.sentence(nb_words=5, variable_nb_words=True),
-        description=fake.paragraph(nb_sentences=5, variable_nb_sentences=True),
-        creator_id=creator_id,
-        # TODO: prevent single user from both upvoting and downvoting
-        upvoted_by=[
-            voter_id for voter_id in generate_votes(user_ids) if voter_id != creator_id
-        ],
-        downvoted_by=[
-            voter_id for voter_id in generate_votes(user_ids) if voter_id != creator_id
-        ],
-    )  # type: ignore
+    new_idea = Idea.model_validate(
+        {
+            "name": fake.sentence(nb_words=5, variable_nb_words=True),
+            "description": fake.paragraph(nb_sentences=5, variable_nb_sentences=True),
+            "creator_id": creator_id,
+        }
+    )
+    for voter_id in generate_votes(user_ids):
+        if voter_id != creator_id:
+            fake.random_element([new_idea.downvoted_by, new_idea.upvoted_by]).append(
+                voter_id
+            )
+    return new_idea
 
 
 async def seed_ideas(user_ids: list[ObjectId], num_ideas: int = 20) -> list[Idea]:

@@ -5,6 +5,8 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "asyncio>=3.4.3",
+    "faker>=37.4.0",
     "fastapi[standard]>=0.115.14",
     "motor>=3.7.1",
     "odmantic>=1.0.2",
