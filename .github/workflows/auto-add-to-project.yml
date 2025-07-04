@@ -1,0 +1,19 @@
+name: Automatically add ALL issues and pull requests to the IdeaForge project board
+
+on:
+  issues:
+    types:
+      - opened
+  pull_request:
+    types:
+      - opened
+
+jobs:
+  add-to-project:
+    name: Add issue/PR to project
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/add-to-project@v1.0.2
+        with:
+          project-url: https://github.com/orgs/freeCodeCamp-2025-Summer-Hackathon/projects/22
+          github-token: ${{ secrets.ACTIONS_PROJECTS_WRITE_PAT }}
