@@ -13,10 +13,12 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@tailwindcss/vite": "^4.1.11",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.59.0",
-    "react-router": "^7.6.3"
+    "react-router": "^7.6.3",
+    "tailwindcss": "^4.1.11"
   },
   "devDependencies": {
     "@eslint/js": "^9.29.0",
