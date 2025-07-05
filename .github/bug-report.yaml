@@ -1,6 +1,6 @@
 name: Bug Report
 description: Create a report to notify us about any bugs.
-title: "[Bug]: "
+title: ""
 type: "Bug"
 labels: ["bug", "triage"]
 

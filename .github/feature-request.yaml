@@ -1,6 +1,6 @@
 name: Feature Request
 description: Suggest a project idea.
-title: "[Feature]: "
+title: ""
 type: "Feature"
 labels: ["enhancement"]
 
