@@ -34,3 +34,14 @@ body:
       label: Relevant log output
       description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
       render: shell
+  - type: markdown
+    attributes:
+      value: |
+        Can you provide us with details on how to reproduce the issue?
+  - type: textarea
+    id: reproducing-the-bug
+    attributes:
+        label: Steps to reproduce the issue
+        description: If you can, please describe step by step what you were doing when the bug happened 
+        placeholder: Additional Context
+        value: "How it happened:"
