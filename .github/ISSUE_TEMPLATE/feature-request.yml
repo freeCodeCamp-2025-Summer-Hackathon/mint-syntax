@@ -1,6 +1,6 @@
 name: Feature Request
 description: Suggest a project idea.
-title: ""
+title: "[Feature]: "
 type: "Feature"
 labels: ["enhancement"]
 
@@ -11,34 +11,34 @@ body:
         label: Feature Description
         description: Please describe the feature you would like in as much detail as possible
         placeholder: Feature description
-        value: "Feature description:"
+        value: "Feature description: "
     validations:
-      reqired: true
+      required: true
   - type: textarea
     id: motivation
     attributes:
         label: Motivation
         description: Why do you feel this feature is necessary?
         placeholder: Motivation
-        value: ""
+        value: "Motivation: "
   - type: textarea
     id: proposed-solution
     attributes:
         label: Proposed Solution
         description: Describe the solution you'd like
         placeholder: Solution
-        value: ""
+        value: "Solution: "
   - type: textarea
     id: alternatives
     attributes:
         label: Alternatives Considered
         description: Describe any alternative solutions or features you've considered
         placeholder: Alternatives Considered
-        value: ""
+        value: "Alternatives: "
   - type: textarea
     id: additional-context
     attributes:
         label: Additional Context
         description: Add any other context, screenshots, or examples about the feature request here
         placeholder: Additional Context
-        value: ""
+        value: "Context: "
