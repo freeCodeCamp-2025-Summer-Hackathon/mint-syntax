@@ -1,10 +1,14 @@
-from fastapi import FastAPI
+from typing import Annotated
+
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.api.main import api_router
+from src.auth import User, get_current_active_user
 from src.config import get_settings
 
 app = FastAPI()
+
 
 settings = get_settings()
 
@@ -17,6 +21,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.get("/me")
+async def get_me(current_user: Annotated[User, Depends(get_current_active_user)]):
+    return current_user
 
 
 @app.get("/")

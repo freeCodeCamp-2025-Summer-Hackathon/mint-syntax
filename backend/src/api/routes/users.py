@@ -1,37 +1,46 @@
 from fastapi import APIRouter, HTTPException
 from odmantic import ObjectId
 
-from src.database import engine
+from src.api.dependencies import AdminUser
+from src.auth import get_password_hash
+from src.dependencies import Db
 from src.models import User, UserEditPatch, UserPublic, UserRegister
 
 router = APIRouter(prefix="/users")
 
 
 @router.post("/", response_model=UserPublic)
-async def create_user(register_data: UserRegister):
-    user = User.model_validate(register_data.__dict__)
-    await engine.save(user)
+async def create_user(db: Db, register_data: UserRegister):
+    user = User(
+        **register_data.model_dump(),
+        hashed_password=get_password_hash(register_data.password),
+    )
+    await db.save(user)
     return user
 
 
-@router.get("/", response_model=list[UserPublic])
-async def list_users():
-    return await engine.find(User)
+@router.get(
+    "/",
+    response_model=list[UserPublic],
+    dependencies=[AdminUser],
+)
+async def list_users(db: Db, skip: int = 0, limit: int = 20):
+    return await db.find(User, limit=limit, skip=skip)
 
 
-@router.get("/{id}", response_model=User)
-async def get_user(id: ObjectId):
-    user = await engine.find_one(User, User.id == id)
+@router.get("/{id}", response_model=User, dependencies=[AdminUser])
+async def get_user(db: Db, id: ObjectId):
+    user = await db.find_one(User, User.id == id)
     if user is None:
         raise HTTPException(404)
     return user
 
 
-@router.patch("/{id}", response_model=UserPublic)
-async def update_user(id: ObjectId, update_data: UserEditPatch):
-    user = await engine.find_one(User, User.id == id)
+@router.patch("/{id}", response_model=UserPublic, dependencies=[AdminUser])
+async def update_user(db: Db, id: ObjectId, update_data: UserEditPatch):
+    user = await db.find_one(User, User.id == id)
     if user is None:
         raise HTTPException(404)
     user.model_update(update_data)
-    await engine.save(user)
+    await db.save(user)
     return user
