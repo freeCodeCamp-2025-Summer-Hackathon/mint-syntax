@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     home_location: str
     mongodb_uri: str
 
-    model_config = SettingsConfigDict(env_file="../.env")
+    model_config = SettingsConfigDict(env_file="../.env", extra="ignore")
 
 
 @lru_cache
