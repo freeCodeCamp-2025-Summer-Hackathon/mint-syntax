@@ -1,10 +1,11 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from odmantic import ObjectId
 
+from src.api.csrf_security.dependency import validate_csrf
 from src.database import engine
 from src.models import User, UserEditPatch, UserPublic, UserRegister
 
-router = APIRouter(prefix="/users")
+router = APIRouter(prefix="/users", dependencies=[Depends(validate_csrf)])
 
 
 @router.post("/", response_model=UserPublic)
