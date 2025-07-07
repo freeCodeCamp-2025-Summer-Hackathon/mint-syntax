@@ -1,12 +1,27 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from fastapi_csrf_protect.exceptions import CsrfProtectError
 
 from src.api.main import api_router
 from src.config import get_settings
 
 app = FastAPI()
 
+
+@app.exception_handler(CsrfProtectError)
+async def csrf_protect_exception_handler(request: Request, exc: CsrfProtectError):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={
+            "detail": str(exc),
+            "path": request.url.path,  # Example usage
+        },
+    )
+
+
 settings = get_settings()
+
 
 allowed_origins = [settings.home_location]
 
