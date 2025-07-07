@@ -1,44 +1,4 @@
-<p align="center">
-  <img src="https://i.ibb.co/Cs11WQFJ/mint-syntax-baner-transparent-1.png" alt="Mint-Syntax Logo" />
-</p>
-
-<p align="center">
-  <a href="https://www.mongodb.com/"><img src="https://img.shields.io/badge/MongoDB-4.0+-brightgreen" alt="MongoDB 4.0+" /></a>
-  <a href="https://docs.astral.sh/uv/"><img src="https://img.shields.io/badge/uv-enabled-purple" alt="uv enabled" /></a>
-  <a href="https://github.com/freeCodeCamp-2025-Summer-Hackathon/mint-syntax/pulls">
-    <img src="https://img.shields.io/github/issues-pr/freeCodeCamp-2025-Summer-Hackathon/mint-syntax" alt="Pull Requests" />
-  </a>
-  <a href="https://github.com/freeCodeCamp-2025-Summer-Hackathon/mint-syntax/issues">
-    <img src="https://img.shields.io/github/issues/freeCodeCamp-2025-Summer-Hackathon/mint-syntax" alt="Open Issues" />
-  </a>
-</p>
-
-# Mint-Syntax: 2025 Summer Hackathon
-
-## 📌 Project
-> **IdeaForge** — A collaborative brainstorming board where users can submit, vote, and iterate on ideas together.
-
----
-
-## 👥 Team
-
-<ul>
-  <li>Apofus</li>
-  <li><a href="https://github.com/bstojkovic">Božo (Coding Puppy)</a></li>
-  <li><a href="https://github.com/connororeil">Connor</a></li>
-  <li><a href="https://github.com/willhitman">Gift Ruwende | Zimbabwe</a></li>
-  <li><a href="https://github.com/MarkoCuk54">longlive247</a></li>
-  <li><a href="https://github.com/Lorevdh">Lore</a></li>
-  <li>Millicent</li>
-  <li><a href="https://github.com/Vallayah">Ola</a></li>
-  <li><a href="https://github.com/gikf">sanity (or not)</a></li>
-  <li><a href="https://github.com/Sebastian-Wlo">Sebastian_W</a></li>
-  <li>Tetris</li>
-  <li><a href="https://github.com/nurmukhammad03">VooDooRe</a></li>
-</ul>
-
----
-## ⚙️ Development
+## Development
 
 ### Prerequisites
 
