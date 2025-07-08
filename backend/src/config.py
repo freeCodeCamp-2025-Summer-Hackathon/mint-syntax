@@ -5,6 +5,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     api_location: str
+    secret_key: str
     home_location: str
     mongodb_uri: str
 
