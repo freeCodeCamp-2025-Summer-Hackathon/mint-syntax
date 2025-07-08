@@ -1,0 +1,32 @@
+name: Lint frontend
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
+jobs:
+  lint-frontend:
+    runs-on: ubuntu-latest
+    strategy:
+        matrix:
+          node-version: [22]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js #{{ matrix-node-version }}
+        uses: actions/setup-node@v4
+
+      - name: Install modules
+        run: npm install --prefix ./frontend
+
+      - name: Check formatting
+        run: npm run format:check --prefix ./frontend
+
+      - name: Lint
+        run: npm run lint --prefix ./frontend

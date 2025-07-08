@@ -8,6 +8,7 @@
     "develop": "vite",
     "build": "vite build",
     "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest"
