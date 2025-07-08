@@ -22,5 +22,8 @@ csrf_protect = CsrfProtect()
 
 
 async def validate_csrf(request: Request) -> bool:
+    if request.method in ["GET", "HEAD", "OPTIONS"]:
+        # CSRF validation is not required for safe methods
+        return True
     await csrf_protect.validate_csrf(request)
     return True
