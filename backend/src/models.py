@@ -3,8 +3,11 @@ from pydantic import BaseModel
 
 
 class User(Model):
+    username: str = Field(unique=True)
     name: str = Field(max_length=255)
+    hashed_password: str
     is_active: bool = True
+    is_admin: bool = False
     upvotes: list[ObjectId] = []
     downvotes: list[ObjectId] = []
 
@@ -14,8 +17,15 @@ class UserPublic(BaseModel):
     name: str = Field(max_length=255)
 
 
+class UsersPublic(BaseModel):
+    users: list[UserPublic]
+    count: int
+
+
 class UserRegister(BaseModel):
+    username: str = Field(unique=True)
     name: str = Field(max_length=255)
+    password: str
 
 
 class UserEditPatch(BaseModel):
@@ -39,14 +49,13 @@ class IdeaPublic(BaseModel):
 
 
 class IdeasPublic(BaseModel):
-    data: list[Idea]
+    data: list[IdeaPublic]
     count: int
 
 
 class IdeaCreate(BaseModel):
     name: str = Field(max_length=255)
     description: str | None
-    creator_id: ObjectId
 
 
 class IdeaEditPatch(BaseModel):
@@ -56,13 +65,21 @@ class IdeaEditPatch(BaseModel):
 
 class IdeaUpvote(BaseModel):
     idea_id: ObjectId
-    user_id: ObjectId
 
 
 class IdeaDownvote(BaseModel):
     idea_id: ObjectId
-    user_id: ObjectId
 
 
 class Message(BaseModel):
     message: str
+
+
+class Token(BaseModel):
+    access_token: str
+    refresh_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    id: ObjectId | None = None
