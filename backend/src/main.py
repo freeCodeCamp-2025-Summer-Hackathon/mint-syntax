@@ -10,14 +10,24 @@ app = FastAPI()
 
 
 @app.exception_handler(CsrfProtectError)
-async def csrf_protect_exception_handler(request: Request, exc: CsrfProtectError):
-    return JSONResponse(
-        status_code=exc.status_code,
+async def csrf_protect_exception_handler(_: Request, exc: CsrfProtectError):
+    response = JSONResponse(
+        status_code=403,  # Always return 403 for CSRF failures
         content={
+            "type": "Missing CSRF Token in header",
+            "title": "Forbidden",
             "detail": str(exc),
-            "path": request.url.path,  # Example usage
+            "instance": _.url.path,
+            "method": _.method,
+            "status": 403,
         },
     )
+
+    # Security headers
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+
+    return response
 
 
 settings = get_settings()
