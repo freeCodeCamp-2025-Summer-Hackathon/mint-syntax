@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from odmantic import ObjectId
 
-from src.api.csrf_security.dependency import validate_csrf
+from src.api.csrf_security.csrf import validate_csrf
 from src.database import engine
 from src.models import User, UserEditPatch, UserPublic, UserRegister
 
