@@ -4,7 +4,7 @@ from odmantic import ObjectId
 from src.api.dependencies import AdminUser
 from src.auth import get_password_hash
 from src.dependencies import Db
-from src.models import User, UserEditPatch, UserPublic, UserRegister
+from src.models import User, UserEditPatch, UserPublic, UserRegister, UsersPublic
 
 router = APIRouter(prefix="/users")
 
@@ -21,11 +21,15 @@ async def create_user(db: Db, register_data: UserRegister):
 
 @router.get(
     "/",
-    response_model=list[UserPublic],
+    response_model=UsersPublic,
     dependencies=[AdminUser],
 )
 async def list_users(db: Db, skip: int = 0, limit: int = 20):
-    return await db.find(User, limit=limit, skip=skip)
+    users = await db.find(User, limit=limit, skip=skip)
+    count = await db.count(User)
+    return UsersPublic(
+        users=[UserPublic(**user.model_dump()) for user in users], count=count
+    )
 
 
 @router.get("/{id}", response_model=User, dependencies=[AdminUser])

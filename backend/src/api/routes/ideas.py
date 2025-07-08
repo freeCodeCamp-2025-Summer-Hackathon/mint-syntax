@@ -34,7 +34,9 @@ async def create_idea(
 async def get_ideas(db: Db, skip: int = 0, limit: int = 20):
     ideas = await db.find(Idea, limit=limit, skip=skip)
     count = await db.count(Idea)
-    return IdeasPublic(data=ideas, count=count)
+    return IdeasPublic(
+        data=[IdeaPublic(**idea.model_dump()) for idea in ideas], count=count
+    )
 
 
 @router.get("/count")
@@ -52,10 +54,17 @@ async def get_idea_by_id(db: Db, id: ObjectId):
 
 
 @router.patch("/{id}", response_model=IdeaPublic)
-async def update_idea(db: Db, id: ObjectId, update_data: IdeaEditPatch):
+async def update_idea(
+    db: Db,
+    current_user: Annotated[User, LoggedInUser],
+    id: ObjectId,
+    update_data: IdeaEditPatch,
+):
     idea = await db.find_one(Idea, Idea.id == id)
     if idea is None:
         raise HTTPException(status_code=404, detail="Idea not found")
+    if not current_user.is_admin or current_user.id != idea.creator_id:
+        raise HTTPException(status_code=403, detail="Not enough permissions")
     idea.model_update(update_data)
     await db.save(idea)
     return idea
