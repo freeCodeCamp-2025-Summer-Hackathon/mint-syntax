@@ -1,3 +1,4 @@
+from contextlib import suppress
 from typing import Annotated
 
 from fastapi import APIRouter, HTTPException
@@ -77,12 +78,11 @@ async def upvote_idea(
     if idea is None:
         raise HTTPException(status_code=404, detail="Idea not found")
 
-    if upvote_data.user_id in idea.upvoted_by or idea.id in current_user.upvotes:
+    if current_user.id in idea.upvoted_by or idea.id in current_user.upvotes:
         return idea
 
-    if current_user.id in idea.downvoted_by:
+    with suppress(KeyError):
         idea.downvoted_by.remove(current_user.id)
-    if idea.id in current_user.downvotes:
         current_user.downvotes.remove(idea.id)
 
     idea.upvoted_by.append(current_user.id)
@@ -104,9 +104,8 @@ async def downvote_idea(
     if current_user.id in idea.downvoted_by or idea.id in current_user.downvotes:
         return idea
 
-    if current_user.id in idea.upvoted_by:
+    with suppress(KeyError):
         idea.upvoted_by.remove(current_user.id)
-    if idea.id in current_user.upvotes:
         current_user.upvotes.remove(idea.id)
 
     idea.downvoted_by.append(current_user.id)
