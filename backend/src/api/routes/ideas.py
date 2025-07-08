@@ -4,8 +4,8 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException
 from odmantic import ObjectId
 
-from src.api.csrf_security.csrf import validate_csrf
 from src.api.dependencies import AdminUser, LoggedInUser
+from src.csrf import validate_csrf
 from src.dependencies import Db
 from src.models import (
     Idea,
