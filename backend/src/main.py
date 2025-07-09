@@ -8,6 +8,7 @@ from fastapi_csrf_protect.exceptions import CsrfProtectError
 from src.api.main import api_router
 from src.auth import User, get_current_active_user
 from src.config import get_settings
+from src.csrf import verify_csrf
 
 app = FastAPI(dependencies=[Depends(verify_csrf)])
 
