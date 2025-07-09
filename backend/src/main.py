@@ -9,7 +9,7 @@ from src.api.main import api_router
 from src.auth import User, get_current_active_user
 from src.config import get_settings
 
-app = FastAPI()
+app = FastAPI(dependencies=[Depends(verify_csrf)])
 
 
 @app.exception_handler(CsrfProtectError)
