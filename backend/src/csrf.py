@@ -21,7 +21,7 @@ def get_csrf_config():
 csrf_protect = CsrfProtect()
 
 
-async def validate_csrf(request: Request) -> bool:
+async def verify_csrf(request: Request) -> bool:
     safe_methods = ["GET", "HEAD", "OPTIONS"]
     if request.method in safe_methods:
         return True
