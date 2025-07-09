@@ -1,11 +1,10 @@
 from contextlib import suppress
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, HTTPException
 from odmantic import ObjectId
 
 from src.api.dependencies import AdminUser, LoggedInUser
-from src.csrf import validate_csrf
 from src.dependencies import Db
 from src.models import (
     Idea,
@@ -19,7 +18,7 @@ from src.models import (
     User,
 )
 
-router = APIRouter(prefix="/ideas", dependencies=[Depends(validate_csrf)])
+router = APIRouter(prefix="/ideas")
 
 
 @router.post("/", response_model=IdeaPublic)
