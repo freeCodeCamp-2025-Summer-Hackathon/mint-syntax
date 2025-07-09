@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IdeaForge - Brainstorming Board</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body id="top" class="body-style">
+  <div class="container-wrapper">
+    <header class="header-style">
+      <div class="header-banner-content">
+        <div class="logo-area left-logo">
+          <img src="https://i.ibb.co/YBTqgZtd/Idea-Forge-logo-mirror-transparent-1.png" alt="Idea-Forge Logo New" class="logo-img">
+        </div>
+        <div class="header-center-content">
+          <nav class="navbar">
+            <div class="nav-list">
+              <a href="index.html" class="nav-link">Home</a>
+              <a href="#" class="nav-link">Post Idea</a>
+              <a href="#about-project-section" class="nav-link">Project</a>
+              <a href="#about-team-section" class="nav-link">Team</a>
+            </div>
+          </nav>
+        </div>
+        <div class="auth-buttons-area">
+          <button class="auth-button login-button">Login</button>
+          <button class="auth-button not-logged-in-button active">Not Logged In</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="hero-call-to-action">
+      <button class="animated-button hero-button golden">
+        Start Your IdeaForge
+      </button>
+    </div>
+
+    <section class="idea-form-section">
+      <div class="voting-section" tabindex="0">
+        <h3>Vote on Current Ideas</h3>
+        <ul class="idea-list">
+          <li class="idea-item">
+            <span class="idea-text">Add a dark mode to the interface</span>
+            <div class="vote-controls">
+              <button class="image-only-upvote-button">
+                <img src="https://i.ibb.co/DfxLPp7g/Upvote-transparent-2.png" alt="Upvote" class="upvote-icon">
+              </button>
+              <span class="vote-count">120</span>
+            </div>
+          </li>
+          <li class="idea-item">
+            <span class="idea-text">Implement real-time collaboration</span>
+            <div class="vote-controls">
+              <button class="image-only-upvote-button">
+                <img src="https://i.ibb.co/DfxLPp7g/Upvote-transparent-2.png" alt="Upvote" class="upvote-icon">
+              </button>
+              <span class="vote-count">95</span>
+            </div>
+          </li>
+          <li class="idea-item">
+            <span class="idea-text">Integrate with Slack for notifications</span>
+            <div class="vote-controls">
+              <button class="image-only-upvote-button">
+                <img src="https://i.ibb.co/DfxLPp7g/Upvote-transparent-2.png" alt="Upvote" class="upvote-icon">
+              </button>
+              <span class="vote-count">78</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <h2 class="idea-form-sub-heading">Submit Your New Idea</h2>
+      <form class="idea-form">
+        <div class="form-group">
+          <label for="idea-title" class="form-label">Idea Title:</label>
+          <input type="text" id="idea-title" name="idea-title" class="form-input" placeholder="e.g., Dark Mode for IdeaForge" required>
+        </div>
+        <div class="form-group">
+          <label for="idea-description" class="form-label">Idea Description:</label>
+          <textarea id="idea-description" name="idea-description" class="form-textarea" placeholder="Provide a detailed description of your idea, its benefits, and how it could be implemented." rows="6" required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="idea-category" class="form-label">Category:</label>
+          <select id="idea-category" name="idea-category" class="form-select">
+            <option value="">Select a category</option>
+            <option value="feature-request">Feature Request</option>
+            <option value="bug-report">Bug Report</option>
+            <option value="design-idea">Design Idea</option>
+            <option value="general-feedback">General Feedback</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <button type="submit" class="animated-button submit-idea-button">
+          Submit
+        </button>
+      </form>
+    </section>
+
+    <section id="about-project-section" class="about-section">
+      <h2 class="about-heading-combined">Project by the mint-syntax team:</h2>
+      <div class="about-content">
+        <p class="about-project-description">
+          A collaborative brainstorming board where users can post new ideas or feature requests, upvote, comment on,
+          and suggest improvements for ideas, and see trending or implemented ideas.
+        </p>
+        <div class="features-grid">
+          <div class="feature-card">
+            <svg class="feature-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+              </path>
+            </svg>
+            <h3 class="feature-title">Post New Ideas</h3>
+            <p class="feature-description">Easily submit your innovative ideas or feature requests to the board.</p>
+          </div>
+          <div class="feature-card">
+            <svg class="feature-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <h3 class="feature-title">Vote, Comment & Improve</h3>
+            <p class="feature-description">Engage with ideas by upvoting, leaving comments, and suggesting
+              improvements.</p>
+          </div>
+          <div class="feature-card">
+            <svg class="feature-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+            </svg>
+            <h3 class="feature-title">Track Trending Ideas</h3>
+            <p class="feature-description">Discover the most popular and implemented ideas within the community.</p>
+          </div>
+        </div>
+        <hr class="about-divider">
+        <h3 id="about-team-section" class="team-heading">Team</h3>
+        <div class="team-grid">
+          <span class="team-member">Apofus</span>
+          <span class="team-member"><a href="https://github.com/bstojkovic" class="team-link" target="_blank">Bożo
+              (Coding Puppy)</a></span>
+          <span class="team-member"><a href="https://github.com/connororeil" class="team-link" target="_blank">Connor</a></span>
+          <span class="team-member"><a href="https://github.com/willhitman" class="team-link" target="_blank">Gift
+              Ruwende</a></span>
+          <span class="team-member"><a href="https://github.com/MarkoCuk54" class="team-link" target="_blank">longlive247</a></span>
+          <span class="team-member"><a href="https://github.com/Lorevdh" class="team-link" target="_blank">Lore</a></span>
+          <span class="team-member">Millicent</span>
+          <span class="team-member"><a href="https://github.com/Vallayah" class="team-link" target="_blank">Ola</a></span>
+          <span class="team-member"><a href="https://github.com/gikf" class="team-link" target="_blank">Krzysztof</a></span>
+          <span class="team-member"><a href="https://github.com/Sebastian-Wlo" class="team-link" target="_blank">Sebastian_W</a></span>
+          <span class="team-member"><a href="https://github.com/tetrisy" class="team-link" target="_blank">Tetris</a></span>
+          <span class="team-member"><a href="https://github.com/nurmukhammad03" class="team-link" target="_blank">VooDooRe</a></span>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer-style">
+      <div class="footer-content">
+        <p>&copy; <a href="https://www.freecodecamp.org/" target="_blank" class="footer-link">Free Code Camp</a> 2025
+          Summer Hackathon</p>
+        <div class="social-icons">
+          <a href="https://github.com/freeCodeCamp-2025-Summer-Hackathon/mint-syntax" target="_blank" aria-label="GitHub" class="social-link">
+            <svg fill="currentColor" viewBox="0 0 24 24" aria-hidden="true" class="h-6 w-6">
+              <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.419 2.865 8.166 6.839 9.489.5.092.682-.217.682-.483 0-.237-.007-.867-.011-1.702-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.007.07 1.532 1.03 1.532 1.03.893 1.53 2.344 1.087 2.91.83.091-.645.35-1.087.636-1.337-2.22-.253-4.555-1.11-4.555-4.943 0-1.09.39-1.984 1.03-2.682-.104-.253-.448-1.27.098-2.659 0 0 .84-.27 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.704.113 2.504.337 1.909-1.295 2.747-1.025 2.747-1.025.546 1.389.202 2.406.098 2.659.64.698 1.029 1.592 1.029 2.682 0 3.84-2.339 4.685-4.566 4.935.359.309.678.92.678 1.855 0 1.337-.012 2.419-.012 2.747 0 .268.18.579.688.481C21.137 20.166 24 16.419 24 12c0-5.523-4.477-10-10-10z" clip-rule="evenodd" />
+            </svg>
+          </a>
+        </div>
+        <a href="#top" class="back-to-top">Back to Top</a>
+      </div>
+    </footer>
+  </div>
+</body>
+
+</html>
