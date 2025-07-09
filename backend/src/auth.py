@@ -12,8 +12,8 @@ from src.dependencies import Db
 from src.models import TokenData, User
 
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
-REFRESH_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7
+ACCESS_TOKEN_EXPIRE_MINUTES = timedelta(minutes=30)
+REFRESH_TOKEN_EXPIRE_MINUTES = timedelta(minutes=60 * 24 * 7)
 
 password_context = CryptContext(schemes=["bcrypt"], deprecated=["auto"])
 
@@ -41,7 +41,7 @@ config = get_settings()
 
 
 def create_access_token(
-    data: dict, expires_delta: timedelta = timedelta(ACCESS_TOKEN_EXPIRE_MINUTES)
+    data: dict, expires_delta: timedelta = ACCESS_TOKEN_EXPIRE_MINUTES
 ):
     to_encode = data.copy()
     expire = datetime.now(UTC) + expires_delta
@@ -52,7 +52,7 @@ def create_access_token(
 
 
 def create_refresh_token(
-    data: dict, expires_delta: timedelta = timedelta(REFRESH_TOKEN_EXPIRE_MINUTES)
+    data: dict, expires_delta: timedelta = REFRESH_TOKEN_EXPIRE_MINUTES
 ):
     return create_access_token(data, expires_delta)
 
