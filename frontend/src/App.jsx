@@ -11,25 +11,28 @@ import './styles.css';
 
 function App() {
   return (
-    <div id="top" className="body-style">
+    <div id='top' className='body-style'>
       <Helmet>
         <title>Idea Forge</title>
         <meta
-          name="description"
-          content="A collaborative brainstorming board where users can post new ideas or feature requests, upvote, comment on, and suggest improvements for ideas, and see trending or implemented ideas."
+          name='description'
+          content='A collaborative brainstorming board where users can post new ideas or feature requests, upvote, comment on, and suggest improvements for ideas, and see trending or implemented ideas.'
         />
       </Helmet>
-      <div className="container-wrapper">
+      <div className='container-wrapper'>
         <Header />
         <Routes>
-          <Route path="/" element={
-            <>
-              <IdeaFormSection />
-              <IdeaSubmissionForm />
-              <LandingPageContent />
-            </>
-          } />
-          <Route path="/help" element={<HelpPage />} />
+          <Route
+            path='/'
+            element={
+              <>
+                <IdeaFormSection />
+                <IdeaSubmissionForm />
+                <LandingPageContent />
+              </>
+            }
+          />
+          <Route path='/help' element={<HelpPage />} />
         </Routes>
         <Footer />
       </div>
