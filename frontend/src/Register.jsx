@@ -6,11 +6,11 @@ import './styles.css';
 function Register() {
   return (
     <div className='body-style'>
-       <div className='container-wrapper'>
+      <div className='container-wrapper'>
         <Header />
         <RegisterForm />
         <Footer />
-       </div>
+      </div>
     </div>
   );
 }
