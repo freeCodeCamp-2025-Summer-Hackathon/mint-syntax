@@ -65,8 +65,15 @@ If needed, update `MONGODB_URI` in `.env` file.
 
 ```bash
 /$ cd frontend
-/frontend$ npm install
+/frontend$ npm install --legacy-peer-deps
 ```
+
+**Note:** If you encounter `ERESOLVE` errors during `npm install`, ensure you are using the `--legacy-peer-deps` flag. You might also need to clear your `node_modules` and `package-lock.json` first before retrying the installation:
+
+```bash
+/frontend$ rm -rf node_modules
+/frontend$ rm package-lock.json
+/frontend$ npm install --legacy-peer-deps
 
 #### Backend
 
