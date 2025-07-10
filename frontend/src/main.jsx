@@ -7,7 +7,7 @@ import { HelmetProvider } from 'react-helmet-async';
 
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: '*',
     element: <App />,
   },
 ]);
