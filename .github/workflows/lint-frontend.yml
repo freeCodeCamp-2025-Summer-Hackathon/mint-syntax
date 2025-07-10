@@ -13,17 +13,17 @@ jobs:
   lint-frontend:
     runs-on: ubuntu-latest
     strategy:
-        matrix:
-          node-version: [22]
+      matrix:
+        node-version: [22]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Use Node.js #{{ matrix-node-version }}
+      - name: Use Node.js
         uses: actions/setup-node@v4
 
       - name: Install modules
-        run: npm install --prefix ./frontend
+        run: npm install --prefix ./frontend --legacy-peer-deps
 
       - name: Check formatting
         run: npm run format:check --prefix ./frontend
