@@ -26,7 +26,7 @@ function App() {
             path='/'
             element={
               <>
-                <IdeaFormSection />
+                <IdeaFormSection count='3' />
                 <IdeaSubmissionForm />
                 <LandingPageContent />
               </>
