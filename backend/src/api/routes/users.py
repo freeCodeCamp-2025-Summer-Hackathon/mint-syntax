@@ -1,4 +1,6 @@
-from fastapi import APIRouter, HTTPException
+from typing import Annotated
+
+from fastapi import APIRouter, Form, HTTPException
 from odmantic import ObjectId
 
 from src.api.dependencies import AdminUser
@@ -10,7 +12,7 @@ router = APIRouter(prefix="/users")
 
 
 @router.post("/", response_model=UserPublic)
-async def create_user(db: Db, register_data: UserRegister):
+async def create_user(db: Db, register_data: Annotated[UserRegister, Form()]):
     user = User(
         **register_data.model_dump(),
         hashed_password=get_password_hash(register_data.password),
