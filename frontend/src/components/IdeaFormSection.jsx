@@ -1,34 +1,15 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useApi } from '../hooks/useApi';
 import { Link } from 'react-router';
 
 const IdeaFormSection = ({ count }) => {
-  let [isLoading, setLoading] = useState(true);
-  let [error, setError] = useState(null);
-  let [data, setData] = useState([]);
-
-  const fetchIdeas = useCallback(async () => {
-    setError(null);
-    setLoading(true);
-    try {
-      const response = await fetch(
-        import.meta.env.VITE_API_LOCATION + `/ideas/?limit=${count}`
-      );
-
-      if (!response.ok) {
-        throw new Error(response.statusText);
-      }
-
-      setLoading(false);
-      setData((await response?.json())?.data);
-    } catch (e) {
-      console.error(e);
-      setError(e);
-    }
-  }, [count]);
+  const { isLoading, error, data, fetchFromApi } = useApi({
+    loadingInitially: true,
+  });
 
   useEffect(() => {
-    fetchIdeas();
-  }, [fetchIdeas]);
+    fetchFromApi(`/ideas/?limit=${count}`);
+  }, [count, fetchFromApi]);
 
   return (
     <section className='idea-form-section'>
@@ -40,9 +21,9 @@ const IdeaFormSection = ({ count }) => {
           'Loading...'
         ) : (
           <ul className='idea-list'>
-            {data.length === 0
+            {data?.data?.length === 0
               ? "There's no ideas, add yours!"
-              : data.map(({ id, name, upvoted_by }) => {
+              : data?.data.map(({ id, name, upvoted_by }) => {
                   return (
                     <Link to={`/ideas/${id}`} key={id}>
                       <li className='idea-item'>
@@ -72,4 +53,4 @@ const IdeaFormSection = ({ count }) => {
   );
 };
 
-export default IdeaFormSection; //
+export default IdeaFormSection;
