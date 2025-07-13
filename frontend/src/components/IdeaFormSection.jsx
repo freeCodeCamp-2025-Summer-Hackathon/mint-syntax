@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useApi } from '../hooks/useApi';
 import { Link } from 'react-router';
+import UpvoteImg from "../assets/Upvote.svg"
 
 const IdeaFormSection = ({ count }) => {
   const { isLoading, error, data, fetchFromApi } = useApi({
@@ -32,7 +33,7 @@ const IdeaFormSection = ({ count }) => {
                           <form onSubmit={() => {}}>
                             <button className='image-only-upvote-button'>
                               <img
-                                src='https://i.ibb.co/DfxLPp7g/Upvote-transparent-2.png'
+                                src={UpvoteImg}
                                 alt='Upvote'
                                 className='upvote-icon'
                               />
