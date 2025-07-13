@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { useUser } from '../hooks/useUser';
 import LoginForm from './LoginForm';
-import IdeaForgeLogo from '../assets/Idea-Forge-logo.svg';
+import IdeaForgeLogo from "../assets/Idea-Forge-logo.svg"
 
 const Header = () => {
   const dialogRef = useRef();
