@@ -74,7 +74,7 @@ If needed, update `MONGODB_URI` in `.env` file.
 /frontend$ rm -rf node_modules
 /frontend$ rm package-lock.json
 /frontend$ npm install --legacy-peer-deps
-
+```
 #### Backend
 
 ```bash
