@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import { useUser } from '../hooks/useUser';
 import LoginForm from './LoginForm';
+import IdeaForgeLogo from '../assets/Idea-Forge-logo.svg';
 
 const Header = () => {
   const dialogRef = useRef();
@@ -11,7 +12,7 @@ const Header = () => {
       <div className='header-banner-content'>
         <div className='logo-area left-logo'>
           <img
-            src='https://i.ibb.co/YBTqgZtd/Idea-Forge-logo-mirror-transparent-1.png'
+            src={IdeaForgeLogo}
             alt='Idea-Forge Logo New'
             className='logo-img'
           />
