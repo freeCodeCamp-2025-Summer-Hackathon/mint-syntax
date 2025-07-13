@@ -1,7 +1,8 @@
-import React from 'react';
-import './../styles.css';
+import { useUser } from '../hooks/useUser';
 
 const Header = () => {
+  const { isLogged, login, logout } = useUser();
+
   return (
     <header className='header-style'>
       <div className='header-banner-content'>
@@ -31,10 +32,28 @@ const Header = () => {
           </nav>
         </div>
         <div className='auth-buttons-area'>
-          <button className='auth-button login-button'>Login</button>
-          <button className='auth-button not-logged-in-button active'>
-            Not Logged In
-          </button>
+          {isLogged ? (
+            <>
+              <button className='auth-button logout-button' onClick={logout}>
+                Logout
+              </button>
+              <button className='auth-button logged-in-button active'>
+                Logged In
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                className='auth-button login-button'
+                onClick={() => login({ name: 'placeholder' })}
+              >
+                Login
+              </button>
+              <button className='auth-button not-logged-in-button active'>
+                Not Logged In
+              </button>
+            </>
+          )}
         </div>
       </div>
     </header>
