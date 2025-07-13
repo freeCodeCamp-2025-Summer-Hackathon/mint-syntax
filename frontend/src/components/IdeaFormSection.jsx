@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useApi } from '../hooks/useApi';
 import { Link } from 'react-router';
-import UpvoteImg from "../assets/Upvote.svg"
+import UpvoteImg from '../assets/Upvote.svg';
 
 const IdeaFormSection = ({ count }) => {
   const { isLoading, error, data, fetchFromApi } = useApi({
