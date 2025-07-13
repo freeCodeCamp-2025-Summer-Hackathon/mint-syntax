@@ -1,18 +1,24 @@
 import { StrictMode } from 'react';
-import { createBrowserRouter, RouterProvider } from 'react-router';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { createRoot } from 'react-dom/client';
-import './index.css';
+import { HelmetProvider } from 'react-helmet-async';
+
 import App from './App.jsx';
+import { UserProvider } from './user/UserProvider.jsx';
 
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: '*',
     element: <App />,
   },
 ]);
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <UserProvider>
+      <HelmetProvider>
+        <RouterProvider router={router} />
+      </HelmetProvider>
+    </UserProvider>
   </StrictMode>
 );
