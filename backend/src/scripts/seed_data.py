@@ -61,6 +61,7 @@ async def seed_ideas(user_ids: list[ObjectId], num_ideas: int = 20) -> list[Idea
     new_ideas = [generate_idea(user_ids, user_lookup) for _ in range(num_ideas)]
 
     await engine.save_all(new_ideas)
+    await engine.save_all(users)
     return new_ideas
 
 
