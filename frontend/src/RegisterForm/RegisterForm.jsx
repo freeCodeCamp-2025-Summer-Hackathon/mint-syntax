@@ -1,15 +1,40 @@
 import { useId } from 'react';
+//import { useForm } from 'react-hook-form';
 
 function RegisterForm() {
   const name = useId();
   const password = useId();
   const repeatPassword = useId();
+
+  // const { register, handleSubmit } = useForm();
+  /*
+  const onSubmit = e => {
+    console.log(e);
+    if (e.password !== e.password2) console.log("passwords don't match")
+  };
+*/
+  const handleForm = formData => {
+    const data = Object.fromEntries(formData);
+    console.log(data);
+
+    if (data.password !== data.passwordRepeat) {
+      alert("'Repeat Password' must match the 'Password!'");
+    } else {
+      console.log('!');
+    }
+  };
+
   return (
     <section className='voting-section flex flex-col justify-center items-center'>
       <h3>Register as a new user:</h3>
 
       <div className='card bg-base-100 w-lg p-4 auto'>
-        <form className='flex flex-col justify-center items-center'>
+        <form
+          action={handleForm}
+          id='register-form'
+          className='flex flex-col justify-center items-center'
+          //onSubmit={handleSubmit(onSubmit)}
+        >
           <label htmlFor={name} className='form-label'>
             Username:
           </label>
@@ -30,13 +55,50 @@ function RegisterForm() {
                 <circle cx='12' cy='7' r='4'></circle>
               </g>
             </svg>
+
             <input
               id={name}
+              //{...register('name', { required: true })}
+              name='username'
               type='text'
-              required
               placeholder='Username'
-              pattern='[A-Za-z][A-Za-z0-9\-]*'
+              /*pattern='[A-Za-z][A-Za-z0-9\-]*'*/
               title='Only letters, numbers or dash'
+              defaultValue={'bob'}
+            />
+          </label>
+
+          <label htmlFor={name} className='form-label'>
+            Name:
+          </label>
+          <label class='input input-sm'>
+            {/*
+            <svg
+              class='h-[1em] opacity-50'
+              xmlns='http://www.w3.org/2000/svg'
+              viewBox='0 0 24 24'
+            >
+              <g
+                stroke-linejoin='round'
+                stroke-linecap='round'
+                stroke-width='2.5'
+                fill='none'
+                stroke='currentColor'
+              >
+                <path d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2'></path>
+                <circle cx='12' cy='7' r='4'></circle>
+              </g>
+            </svg>
+            */}
+            <input
+              id={name}
+              //{...register('name', { required: true })}
+              name='name'
+              type='text'
+              placeholder='Username'
+              /*pattern='[A-Za-z][A-Za-z0-9\-]*'*/
+              title='Only letters, numbers or dash'
+              defaultValue={'bob'}
             />
           </label>
 
@@ -61,13 +123,17 @@ function RegisterForm() {
                 <circle cx='16.5' cy='7.5' r='.5' fill='currentColor'></circle>
               </g>
             </svg>
+
             <input
               id={password}
+              name='password'
+              //{...register('password', { required: true })}
               type='password'
-              required
+              //required
               placeholder='Password'
-              pattern='(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}'
+              /*pattern='(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}'*/
               title='Must be more than 8 characters, including number, lowercase letter, uppercase letter'
+              defaultValue={'123'}
             />
           </label>
 
@@ -93,11 +159,13 @@ function RegisterForm() {
               </g>
             </svg>
             <input
+              name='passwordRepeat'
               id={repeatPassword}
+              //{...register('password2', { required: true })}
               type='password'
-              required
+              //required
               placeholder='Password'
-              pattern='(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}'
+              /*pattern='(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}'*/
               title='Must match the password entered in the previous input field'
             />
           </label>
