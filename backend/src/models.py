@@ -41,6 +41,7 @@ class Idea(Model):
 
 
 class IdeaPublic(BaseModel):
+    id: ObjectId
     name: str
     description: str
     upvoted_by: list[ObjectId] = []

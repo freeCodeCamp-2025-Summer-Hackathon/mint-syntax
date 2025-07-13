@@ -1,7 +1,11 @@
-import React from 'react';
-import './../styles.css';
+import { useRef } from 'react';
+import { useUser } from '../hooks/useUser';
+import LoginForm from './LoginForm';
 
 const Header = () => {
+  const dialogRef = useRef();
+  const { isLogged, logout } = useUser();
+
   return (
     <header className='header-style'>
       <div className='header-banner-content'>
@@ -31,10 +35,43 @@ const Header = () => {
           </nav>
         </div>
         <div className='auth-buttons-area'>
-          <button className='auth-button login-button'>Login</button>
-          <button className='auth-button not-logged-in-button active'>
-            Not Logged In
-          </button>
+          {isLogged ? (
+            <>
+              <button className='auth-button logout-button' onClick={logout}>
+                Logout
+              </button>
+              <button className='auth-button logged-in-button active'>
+                Logged In
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                className='auth-button login-button'
+                onClick={() => {
+                  dialogRef.current.showModal();
+                }}
+              >
+                Login
+              </button>
+              <dialog ref={dialogRef} className='modal'>
+                <div className='modal-box'>
+                  <LoginForm />
+                  <form method='dialog'>
+                    <button className='btn btn-sm btn-circle btn-ghost absolute right-2 top-2'>
+                      ✕
+                    </button>
+                  </form>
+                </div>
+                <form method='dialog' className='modal-backdrop'>
+                  <button>close</button>
+                </form>
+              </dialog>
+              <button className='auth-button not-logged-in-button active'>
+                Not Logged In
+              </button>
+            </>
+          )}
         </div>
       </div>
     </header>

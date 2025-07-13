@@ -1,3 +1,6 @@
+@import 'tailwindcss';
+@plugin "daisyui";
+
 :root {
   --palette-main-brand-green: #2c7873;
   --palette-logo-bg-green: #70d6a3;

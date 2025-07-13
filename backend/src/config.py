@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     secret_key: str
     home_location: str
     mongodb_uri: str
+    csrf_secret_key: str
 
     model_config = SettingsConfigDict(env_file="../.env", extra="ignore")
 
