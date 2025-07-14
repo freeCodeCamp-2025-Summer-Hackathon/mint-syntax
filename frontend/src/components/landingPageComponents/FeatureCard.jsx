@@ -1,6 +1,3 @@
-import React from 'react';
-import '../../styles.css';
-
 const FeatureCard = ({ icon, title, description }) => {
   return (
     <div className='feature-card'>
