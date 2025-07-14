@@ -14,7 +14,7 @@ const getCrsfToken = async () => {
     if (!response.ok) {
       throw new Error(response.statusText);
     }
-    const fresh_token = await response.json()?.csrf_token;
+    const fresh_token = (await response.json())?.csrf_token;
     sessionStorage.setItem('csrf_token', fresh_token);
     return fresh_token;
   } catch (e) {
@@ -23,10 +23,10 @@ const getCrsfToken = async () => {
 };
 
 export const useApi = ({ method = 'GET', loadingInitially = false }) => {
-  let [isLoading, setLoading] = useState(loadingInitially);
-  let [error, setError] = useState(null);
-  let [data, setData] = useState(null);
-  let [response, setResponse] = useState(null);
+  const [isLoading, setLoading] = useState(loadingInitially);
+  const [error, setError] = useState(null);
+  const [data, setData] = useState(null);
+  const [response, setResponse] = useState(null);
 
   const attachDefaultHeaders = useCallback(async options => {
     if (!['GET', 'HEAD', 'OPTIONS'].includes(options?.method)) {
@@ -58,21 +58,27 @@ export const useApi = ({ method = 'GET', loadingInitially = false }) => {
       setResponse(null);
       setData(null);
       try {
-        const res = await fetch(
+        const response = await fetch(
           import.meta.env.VITE_API_LOCATION + path,
-          attachDefaultHeaders({
+          await attachDefaultHeaders({
             method,
             ...extraFetchOptions,
           })
         );
 
-        setResponse(res);
-        if (!res.ok) {
-          throw new Error(res.statusText);
+        setResponse(response);
+        if (!response.ok) {
+          try {
+            setData(await response.json());
+          } catch (e) {
+            console.error(e);
+          }
+
+          throw new Error(response.statusText);
         }
-        setData(await res?.json());
+        setData(await response.json());
       } catch (e) {
-        console.error('error');
+        console.error('error', e);
         setError(e);
       }
       setLoading(false);
