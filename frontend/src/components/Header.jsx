@@ -26,10 +26,10 @@ const Header = () => {
               <a href='#' className='nav-link'>
                 Post Idea
               </a>
-              <a href='#about-project-section' className='nav-link'>
+              <a href='/#about-project-section' className='nav-link'>
                 Project
               </a>
-              <a href='#about-team-section' className='nav-link'>
+              <a href='/#about-team-section' className='nav-link'>
                 Team
               </a>
             </div>
