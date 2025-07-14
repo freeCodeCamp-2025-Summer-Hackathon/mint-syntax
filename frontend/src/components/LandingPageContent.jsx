@@ -1,7 +1,7 @@
 import React from 'react';
 import './../styles.css';
-import FeatureCard from './landingPageComponents/FeatureCard';
-import TeamGrid from './landingPageComponents/TeamGrid';
+import FeatureCard from './FeatureCard';
+import TeamMemberCard from './TeamMemberCard';
 
 const LandingPageContent = () => {
   const features = [
@@ -24,6 +24,23 @@ const LandingPageContent = () => {
         'Discover the most popular and implemented ideas within the community.',
     },
   ];
+
+  const teamMembers = [
+    { name: 'Apofus', guthub_uri: null },
+    {
+      name: '  Bożo (Coding Puppy)',
+      guthub_uri: 'https://github.com/bstojkovic',
+    },
+    { name: 'Connor', guthub_uri: 'https://github.com/connororeil' },
+    { name: 'Gift Ruwende', guthub_uri: 'https://github.com/willhitman' },
+    { name: 'longlive247', guthub_uri: 'https://github.com/MarkoCuk54' },
+    { name: 'Lore', guthub_uri: 'https://github.com/Lorevdh' },
+    { name: 'Ola', guthub_uri: 'https://github.com/Vallayah' },
+    { name: 'Krzysztof', guthub_uri: 'https://github.com/gikf' },
+    { name: 'Sebastian_W', guthub_uri: 'https://github.com/Sebastian-Wlo' },
+    { name: 'Tetris', guthub_uri: 'https://github.com/tetrisy' },
+    { name: 'VooDooRe', guthub_uri: 'https://github.com/nurmukhammad03' },
+  ];
   return (
     <>
       <section id='about-project-section' className='about-section'>
@@ -37,9 +54,9 @@ const LandingPageContent = () => {
             for ideas, and see trending or implemented ideas.
           </p>
           <div className='features-grid'>
-            {features.map((feature, index) => (
+            {features.map((feature, title) => (
               <FeatureCard
-                key={index}
+                key={title}
                 icon={feature.icon}
                 title={feature.title}
                 description={feature.description}
@@ -47,7 +64,18 @@ const LandingPageContent = () => {
             ))}
           </div>
           <hr className='about-divider' />
-          <TeamGrid />
+          <h3 id='about-team-section' className='team-heading'>
+            Team
+          </h3>
+          <div className='team-grid'>
+            {teamMembers.map((member, guthub_uri) => (
+              <TeamMemberCard
+                key={guthub_uri}
+                guthub_uri={member.guthub_uri}
+                name={member.name}
+              />
+            ))}
+          </div>
         </div>
       </section>
     </>
