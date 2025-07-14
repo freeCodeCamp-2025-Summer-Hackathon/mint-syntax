@@ -1,5 +1,3 @@
-import React from 'react';
-import './../styles.css';
 import FeatureCard from './FeatureCard';
 import TeamMemberCard from './TeamMemberCard';
 
