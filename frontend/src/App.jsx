@@ -8,7 +8,7 @@ import IdeaSubmissionForm from './components/IdeaSubmissionForm';
 import LandingPageContent from './components/LandingPageContent';
 import HelpPage from './components/HelpPage';
 import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage.jsx';
+import RegisterPage from './pages/RegisterPage';
 import './styles.css';
 
 function App() {

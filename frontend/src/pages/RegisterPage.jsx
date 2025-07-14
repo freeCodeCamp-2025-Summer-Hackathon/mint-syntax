@@ -1,11 +1,16 @@
-import RegisterForm from '../RegisterForm/RegisterForm.jsx';
+import { RegisterForm } from '../components/RegisterForm';
 
-function Register() {
+function RegisterPage() {
   return (
     <div className='container-wrapper'>
-      <RegisterForm />
+      <section className='voting-section flex flex-col justify-center items-center'>
+        <h3>Register as a new user:</h3>
+        <div className='card bg-base-100 w-lg p-4 auto'>
+          <RegisterForm />
+        </div>
+      </section>
     </div>
   );
 }
 
-export default Register;
+export default RegisterPage;
