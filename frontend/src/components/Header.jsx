@@ -1,14 +1,18 @@
+import { useRef } from 'react';
 import { useUser } from '../hooks/useUser';
+import LoginForm from './LoginForm';
+import IdeaForgeLogo from '../assets/Idea-Forge-logo.svg';
 
 const Header = () => {
-  const { isLogged, login, logout } = useUser();
+  const dialogRef = useRef();
+  const { isLogged, logout } = useUser();
 
   return (
     <header className='header-style'>
       <div className='header-banner-content'>
         <div className='logo-area left-logo'>
           <img
-            src='https://i.ibb.co/YBTqgZtd/Idea-Forge-logo-mirror-transparent-1.png'
+            src={IdeaForgeLogo}
             alt='Idea-Forge Logo New'
             className='logo-img'
           />
@@ -45,10 +49,25 @@ const Header = () => {
             <>
               <button
                 className='auth-button login-button'
-                onClick={() => login({ name: 'placeholder' })}
+                onClick={() => {
+                  dialogRef.current.showModal();
+                }}
               >
                 Login
               </button>
+              <dialog ref={dialogRef} className='modal'>
+                <div className='modal-box'>
+                  <LoginForm />
+                  <form method='dialog'>
+                    <button className='btn btn-sm btn-circle btn-ghost absolute right-2 top-2'>
+                      ✕
+                    </button>
+                  </form>
+                </div>
+                <form method='dialog' className='modal-backdrop'>
+                  <button>close</button>
+                </form>
+              </dialog>
               <button className='auth-button not-logged-in-button active'>
                 Not Logged In
               </button>

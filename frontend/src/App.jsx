@@ -1,12 +1,14 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import Header from './components/Header.jsx';
-import Footer from './components/Footer.jsx';
-import IdeaFormSection from './components/IdeaFormSection.jsx';
-import IdeaSubmissionForm from './components/IdeaSubmissionForm.jsx';
-import LandingPageContent from './components/LandingPageContent.jsx';
-import HelpPage from './components/HelpPage.jsx';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import IdeaFormSection from './components/IdeaFormSection';
+import IdeaSubmissionForm from './components/IdeaSubmissionForm';
+import LandingPageContent from './components/LandingPageContent';
+import HelpPage from './components/HelpPage';
+import LoginPage from './pages/LoginPage';
+import { IdeaAddPage, IdeaEditPage, IdeaPage, IdeasPage } from './pages/Ideas';
 import './styles.css';
 
 function App() {
@@ -23,7 +25,7 @@ function App() {
         <Header />
         <Routes>
           <Route
-            path='/'
+            path=''
             element={
               <>
                 <IdeaFormSection count='3' />
@@ -32,7 +34,14 @@ function App() {
               </>
             }
           />
-          <Route path='/help' element={<HelpPage />} />
+          <Route path='help' element={<HelpPage />} />
+          <Route path='login' element={<LoginPage />} />
+          <Route path='ideas'>
+            <Route index element={<IdeasPage />} />
+            <Route path=':ideaId' element={<IdeaPage />} />
+            <Route path=':ideaId/edit' element={<IdeaEditPage />} />
+            <Route path='add' element={<IdeaAddPage />} />
+          </Route>
         </Routes>
         <Footer />
       </div>
