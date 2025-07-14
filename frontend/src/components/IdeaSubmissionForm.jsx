@@ -1,6 +1,3 @@
-import React from 'react';
-import './../styles.css';
-
 const IdeaSubmissionForm = () => {
   const handleSubmit = event => {
     event.preventDefault();
