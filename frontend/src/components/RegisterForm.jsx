@@ -5,7 +5,7 @@ import { useApi } from '../hooks/useApi';
 export function RegisterForm() {
   const formRef = useRef();
   const {
-    //formState: { },
+    formState: { errors },
     handleSubmit,
     register,
   } = useForm();
@@ -47,33 +47,42 @@ export function RegisterForm() {
           </svg>
 
           <input
-            {...register('userName')}
+            {...register('userName', { required: true })}
             type='Text'
             placeholder='Username'
             className='input-validator'
-            required
             //pattern='[A-Za-z][A-Za-z0-9\-]*'
             //title='Only letters, numbers or dash'
             defaultValue={'bob'}
+            ariaInvalid={errors.userName ? 'true' : 'false'}
           />
         </label>
       </label>
+      {errors.userName?.type === 'required' && (
+        <p role='alert' className='text-error'>
+          The field "Username" is required.
+        </p>
+      )}
 
       <label className='floating-label'>
         Name:
         <label className='input input-sm'>
           <input
-            {...register('name')}
+            {...register('name', { required: true })}
             type='Text'
             placeholder='Name'
             className='input-validator'
-            required
             //pattern='[A-Za-z][A-Za-z0-9\-]*'
             //title='Only letters, numbers or dash'
             defaultValue={'bob'}
           />
         </label>
       </label>
+      {errors.name?.type === 'required' && (
+        <p role='alert' className='text-error'>
+          The field "Name" is required.
+        </p>
+      )}
 
       <label className='floating-label'>
         Password:
@@ -96,18 +105,26 @@ export function RegisterForm() {
           </svg>
 
           <input
-            {...register('password')}
+            {...register('password', { required: true, minLength: 8 })}
             type='Password'
             placeholder='Password'
             className='input-validator'
-            minLength='8'
-            required
             /*pattern='(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}'*/
             //title='Must be more than 8 characters, including number, lowercase letter, uppercase letter'
             defaultValue={'123'}
           />
         </label>
       </label>
+      {errors.password?.type === 'required' ? (
+        <p role='alert' className='text-error'>
+          The field "Password" is required.
+        </p>
+      ) : errors.password?.type === 'minLength' ? (
+        <p role='alert' className='text-error'>
+          Password needs to be at least 8 characters long.
+        </p>
+      ) : null}
+
       {/*
           <label className='form-label'>
             Repeat Password:
