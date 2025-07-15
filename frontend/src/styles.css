@@ -905,6 +905,24 @@ body {
   display: none;
 }
 
+/* Spinner */
+.spinner-wrapper-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  width: 100%;
+  background-color: #f0f0f0;
+}
+
+.responsive-spinner {
+  width: 50vw;
+  height: 50vw;
+  max-width: 300px;
+  max-height: 300px;
+  display: block;
+}
+
 @media (min-width: 768px) {
   .header-banner-content {
     align-items: center;

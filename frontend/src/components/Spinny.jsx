@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 const Spinny = props => {
   return (
     <svg
@@ -6,6 +7,14 @@ const Spinny = props => {
       viewBox='0 0 100 100'
       xmlns='http://www.w3.org/2000/svg'
       {...props}
+=======
+const Spinny = ({ className = '' }) => {
+  return (
+    <svg
+      viewBox='0 0 100 100'
+      xmlns='http://www.w3.org/2000/svg'
+      className={className}
+>>>>>>> Stashed changes
     >
       <defs>
         <linearGradient
@@ -15,8 +24,13 @@ const Spinny = props => {
           x2='100%'
           y2='100%'
         >
+<<<<<<< Updated upstream
           <stop offset='0%' stopColor='#6afb92' />
           <stop offset='100%' stopColor='#2c7873' />
+=======
+          <stop offset='0%' stopColor='var(--button-mint-light)' />
+          <stop offset='100%' stopColor='var(--palette-main-brand-green)' />
+>>>>>>> Stashed changes
         </linearGradient>
         <filter id='glassBlur' x='-20%' y='-20%' width='140%' height='140%'>
           <feGaussianBlur in='SourceGraphic' stdDeviation='1.5' />
