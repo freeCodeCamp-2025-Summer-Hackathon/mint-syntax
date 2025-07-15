@@ -8,12 +8,12 @@ export function RegisterForm() {
     formState: { errors },
     handleSubmit,
     register,
+    getValues,
   } = useForm();
 
   const { fetchFromApi } = useApi({ method: 'POST' });
 
   const onSubmit = async () => {
-    console.log(formRef);
     try {
       await fetchFromApi('/users', {
         method: 'POST',
@@ -25,8 +25,8 @@ export function RegisterForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <label className='floating-label'>
+    <form ref={formRef} onSubmit={handleSubmit(onSubmit)}>
+      <label className='floating-label flex justify-between py-2'>
         Username:
         <label className='input input-sm'>
           <svg
@@ -51,10 +51,8 @@ export function RegisterForm() {
             type='Text'
             placeholder='Username'
             className='input-validator'
-            //pattern='[A-Za-z][A-Za-z0-9\-]*'
-            //title='Only letters, numbers or dash'
             defaultValue={'bob'}
-            ariaInvalid={errors.userName ? 'true' : 'false'}
+            aria-invalid={errors.userName ? 'true' : 'false'}
           />
         </label>
       </label>
@@ -64,7 +62,7 @@ export function RegisterForm() {
         </p>
       )}
 
-      <label className='floating-label'>
+      <label className='floating-label flex justify-between py-2'>
         Name:
         <label className='input input-sm'>
           <input
@@ -72,9 +70,8 @@ export function RegisterForm() {
             type='Text'
             placeholder='Name'
             className='input-validator'
-            //pattern='[A-Za-z][A-Za-z0-9\-]*'
-            //title='Only letters, numbers or dash'
             defaultValue={'bob'}
+            aria-invalid={errors.name ? 'true' : 'false'}
           />
         </label>
       </label>
@@ -84,7 +81,7 @@ export function RegisterForm() {
         </p>
       )}
 
-      <label className='floating-label'>
+      <label className='floating-label flex justify-between py-2'>
         Password:
         <label className='input input-sm'>
           <svg
@@ -109,9 +106,8 @@ export function RegisterForm() {
             type='Password'
             placeholder='Password'
             className='input-validator'
-            /*pattern='(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}'*/
-            //title='Must be more than 8 characters, including number, lowercase letter, uppercase letter'
             defaultValue={'123'}
+            aria-invalid={errors.password ? 'true' : 'false'}
           />
         </label>
       </label>
@@ -125,41 +121,44 @@ export function RegisterForm() {
         </p>
       ) : null}
 
-      {/*
-          <label className='form-label'>
-            Repeat Password:
-          </label>
-
-          <label class='input input-sm'>
-            <svg
-              class='h-[1em] opacity-50'
-              xmlns='http://www.w3.org/2000/svg'
-              viewBox='0 0 24 24'
+      <label className='floating-label flex justify-between py-2'>
+        Repeat Password:
+        <label class='input input-sm'>
+          <svg
+            class='h-[1em] opacity-50'
+            xmlns='http://www.w3.org/2000/svg'
+            viewBox='0 0 24 24'
+          >
+            <g
+              stroke-linejoin='round'
+              stroke-linecap='round'
+              stroke-width='2.5'
+              fill='none'
+              stroke='currentColor'
             >
-              <g
-                stroke-linejoin='round'
-                stroke-linecap='round'
-                stroke-width='2.5'
-                fill='none'
-                stroke='currentColor'
-              >
-                <path d='M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z'></path>
-                <circle cx='16.5' cy='7.5' r='.5' fill='currentColor'></circle>
-              </g>
-            </svg>
-            <input
-              name='passwordRepeat'
-              //{...register('password2', { required: true })}
-              type='password'
-              //required
-              placeholder='Password'
-              //pattern='(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}'
-              title='Must match the password entered in the previous input field'
-            />
-          </label>
-          */}
+              <path d='M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z'></path>
+              <circle cx='16.5' cy='7.5' r='.5' fill='currentColor'></circle>
+            </g>
+          </svg>
+          <input
+            {...register('repeatPassword', {
+              required: true,
+              validate: value => getValues('password') === value,
+            })}
+            type='password'
+            placeholder='Password'
+            title='Must match the password entered in the previous input field'
+            aria-invalid={errors.repeatPassword ? 'true' : 'false'}
+          />
+        </label>
+      </label>
+      {errors.repeatPassword?.type === 'validate' && (
+        <p role='alert' className='text-error'>
+          Both passwords need to match.
+        </p>
+      )}
 
-      <div>
+      <div className='flex justify-center'>
         <button className='my-1 animated-button'>Register</button>
       </div>
     </form>
