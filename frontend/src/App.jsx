@@ -28,7 +28,7 @@ function App() {
             path=''
             element={
               <>
-                <IdeaFormSection count='3' />
+                <IdeaFormSection count='3' sort='trending' />
                 <IdeaSubmissionForm />
                 <LandingPageContent />
               </>

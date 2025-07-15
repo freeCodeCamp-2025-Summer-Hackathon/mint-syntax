@@ -3,14 +3,16 @@ import { useApi } from '../hooks/useApi';
 import { Link } from 'react-router';
 import UpvoteImg from '../assets/Upvote.svg';
 
-const IdeaFormSection = ({ count }) => {
+const IdeaFormSection = ({ count, sort = null }) => {
   const { isLoading, error, data, fetchFromApi } = useApi({
     loadingInitially: true,
   });
 
+  const sorting = sort ? `&sort=${sort}` : '';
+
   useEffect(() => {
-    fetchFromApi(`/ideas/?limit=${count}`);
-  }, [count, fetchFromApi]);
+    fetchFromApi(`/ideas/?limit=${count}${sorting}`);
+  }, [count, fetchFromApi, sorting]);
 
   return (
     <section className='idea-form-section'>
