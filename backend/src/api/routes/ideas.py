@@ -1,5 +1,6 @@
+from collections.abc import Mapping, Sequence
 from contextlib import suppress
-from typing import Annotated
+from typing import Annotated, Any
 
 from fastapi import APIRouter, HTTPException
 from odmantic import ObjectId
@@ -31,8 +32,31 @@ async def create_idea(
 
 
 @router.get("/", response_model=IdeasPublic)
-async def get_ideas(db: Db, skip: int = 0, limit: int = 20):
-    ideas = await db.find(Idea, limit=limit, skip=skip)
+async def get_ideas(db: Db, skip: int = 0, limit: int = 20, sort: str | None = None):
+    if sort == "trending":
+        collection = db.engine.get_collection(Idea)
+        aggregates: Sequence[Mapping[str, Any]] = [
+            {
+                "$project": {
+                    "_id": 1,
+                    "name": 1,
+                    "description": 1,
+                    "upvoted_by": 1,
+                    "downvoted_by": 1,
+                    "creator_id": 1,
+                    "upvotes": {"$size": "$upvoted_by"},
+                }
+            },
+            {"$sort": {"upvotes": -1}},
+            {"$skip": skip},
+            {"$limit": limit},
+        ]
+        results = await collection.aggregate(aggregates).to_list(length=None)
+        ideas = [Idea.model_validate_doc(result) for result in results]
+    # elif sort == 'newest':
+    #     pass
+    else:
+        ideas = await db.find(Idea, limit=limit, skip=skip, sort=Idea.name)
     count = await db.count(Idea)
     return IdeasPublic(
         data=[IdeaPublic(**idea.model_dump()) for idea in ideas], count=count

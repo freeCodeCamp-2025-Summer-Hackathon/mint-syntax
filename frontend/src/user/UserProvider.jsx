@@ -10,11 +10,16 @@ export const UserProvider = ({ children }) => {
   const login = useCallback(userData => {
     setUser(userData);
     sessionStorage.setItem('user', JSON.stringify(userData));
+    sessionStorage.setItem(
+      'access_token',
+      JSON.stringify(userData?.access_token)
+    );
     setIsLogged(true);
   }, []);
   const logout = useCallback(() => {
     setUser(null);
     sessionStorage.removeItem('user');
+    sessionStorage.removeItem('access_token');
     setIsLogged(false);
   }, []);
 

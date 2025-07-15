@@ -9,6 +9,7 @@ import LandingPageContent from './components/LandingPageContent';
 import HelpPage from './components/HelpPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import { IdeaAddPage, IdeaEditPage, IdeaPage, IdeasPage } from './pages/Ideas';
 import './styles.css';
 
 function App() {
@@ -25,18 +26,24 @@ function App() {
         <Header />
         <Routes>
           <Route
-            path='/'
+            path=''
             element={
               <>
-                <IdeaFormSection count='3' />
+                <IdeaFormSection count='3' sort='trending' />
                 <IdeaSubmissionForm />
                 <LandingPageContent />
               </>
             }
           />
-          <Route path='/help' element={<HelpPage />} />
-          <Route path='/login' element={<LoginPage />} />
-          <Route path='/register' element={<RegisterPage />} />
+          <Route path='help' element={<HelpPage />} />
+          <Route path='login' element={<LoginPage />} />
+          <Route path='register' element={<RegisterPage />} />
+          <Route path='ideas'>
+            <Route index element={<IdeasPage />} />
+            <Route path=':ideaId' element={<IdeaPage />} />
+            <Route path=':ideaId/edit' element={<IdeaEditPage />} />
+            <Route path='add' element={<IdeaAddPage />} />
+          </Route>
         </Routes>
         <Footer />
       </div>

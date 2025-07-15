@@ -1,21 +1,52 @@
+import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router';
+import { useApi } from '../hooks/useApi';
 import { useUser } from '../hooks/useUser';
 
-export const LoginForm = () => {
+export const LoginForm = ({ redirect_to = null }) => {
+  const formRef = useRef();
   const {
-    formState: { isSubmitting, isValid },
+    formState: { errors, isSubmitting, isValid },
     handleSubmit,
     register,
+    setError,
   } = useForm();
-  const { login } = useUser();
+  const { isLogged, login } = useUser();
+  const navigate = useNavigate();
 
-  const onSubmit = async data => {
-    console.log('data', data);
-    login({ name: 'placeholder' });
+  const { error, response, data, fetchFromApi } = useApi({ method: 'POST' });
+
+  useEffect(() => {
+    if (isLogged && redirect_to) {
+      navigate(redirect_to);
+    }
+  }, [isLogged, navigate, redirect_to]);
+
+  useEffect(() => {
+    if (data && !error) {
+      login(data);
+    }
+    if (error && response && data) {
+      if (response?.status === 401) {
+        setError('root.responseError', { type: 401, message: data?.detail });
+      }
+    }
+  }, [data, error, login, response, setError]);
+
+  const onSubmit = async () => {
+    try {
+      await fetchFromApi('/auth', {
+        method: 'POST',
+        body: new FormData(formRef.current),
+      });
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form ref={formRef} onSubmit={handleSubmit(onSubmit)}>
       <label className='floating-label'>
         <span>Username</span>
         <input
@@ -43,6 +74,11 @@ export const LoginForm = () => {
       >
         {isSubmitting && <span className='loading loading-spinner'></span>}Login
       </button>
+      {errors?.root?.responseError ? (
+        <span>{errors.root.responseError.message}</span>
+      ) : (
+        error && <span>Error, try again later.</span>
+      )}
     </form>
   );
 };
