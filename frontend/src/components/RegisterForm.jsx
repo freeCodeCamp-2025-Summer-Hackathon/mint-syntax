@@ -1,36 +1,43 @@
 import { useRef } from 'react';
 import { useForm } from 'react-hook-form';
+import { useApi } from '../hooks/useApi';
 
 export function RegisterForm() {
   const formRef = useRef();
   const {
-    formState: { errors, isSubmitting, isValid },
+    //formState: { },
     handleSubmit,
     register,
   } = useForm();
 
-  const onSubmit = e => {
-    console.log(e);
-    if (e.password !== e.password2) console.log("passwords don't match");
+  const { fetchFromApi } = useApi({ method: 'POST' });
+
+  const onSubmit = async () => {
+    console.log(formRef);
+    try {
+      await fetchFromApi('/users', {
+        method: 'POST',
+        body: new FormData(formRef.current),
+      });
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className='flex flex-col items-center'
-    >
+    <form onSubmit={handleSubmit(onSubmit)}>
       <label className='floating-label'>
         Username:
-        <label class='input input-sm'>
+        <label className='input input-sm'>
           <svg
-            class='h-[1em] opacity-50'
+            className='h-[1em] opacity-50'
             xmlns='http://www.w3.org/2000/svg'
             viewBox='0 0 24 24'
           >
             <g
-              stroke-linejoin='round'
-              stroke-linecap='round'
-              stroke-width='2.5'
+              strokeLinejoin='round'
+              strokeLinecap='round'
+              strokeWidth='2.5'
               fill='none'
               stroke='currentColor'
             >
@@ -54,7 +61,7 @@ export function RegisterForm() {
 
       <label className='floating-label'>
         Name:
-        <label class='input input-sm'>
+        <label className='input input-sm'>
           <input
             {...register('name')}
             type='Text'
@@ -70,16 +77,16 @@ export function RegisterForm() {
 
       <label className='floating-label'>
         Password:
-        <label class='input input-sm'>
+        <label className='input input-sm'>
           <svg
-            class='h-[1em] opacity-50'
+            className='h-[1em] opacity-50'
             xmlns='http://www.w3.org/2000/svg'
             viewBox='0 0 24 24'
           >
             <g
-              stroke-linejoin='round'
-              stroke-linecap='round'
-              stroke-width='2.5'
+              strokeLinejoin='round'
+              strokeLinecap='round'
+              strokeWidth='2.5'
               fill='none'
               stroke='currentColor'
             >
@@ -92,7 +99,9 @@ export function RegisterForm() {
             {...register('password')}
             type='Password'
             placeholder='Password'
-            //required
+            className='input-validator'
+            minLength='8'
+            required
             /*pattern='(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}'*/
             //title='Must be more than 8 characters, including number, lowercase letter, uppercase letter'
             defaultValue={'123'}
