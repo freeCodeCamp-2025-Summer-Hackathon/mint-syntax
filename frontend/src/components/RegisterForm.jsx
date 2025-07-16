@@ -123,11 +123,13 @@ export function RegisterForm() {
         <p role='alert' className='text-error'>
           The field "Password" is required.
         </p>
-      ) : errors.password?.type === 'minLength' ? (
-        <p role='alert' className='text-error'>
-          Password needs to be at least 8 characters long.
-        </p>
-      ) : null}
+      ) : (
+        errors.password?.type === 'minLength' && (
+          <p role='alert' className='text-error'>
+            Password needs to be at least 8 characters long.
+          </p>
+        )
+      )}
 
       <label className='floating-label flex justify-between py-2'>
         Repeat Password:
