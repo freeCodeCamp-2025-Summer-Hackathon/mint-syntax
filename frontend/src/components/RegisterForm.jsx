@@ -77,11 +77,11 @@ export function RegisterForm() {
             type='Text'
             placeholder='Username'
             className='input-validator'
-            aria-invalid={errors.userName ? 'true' : 'false'}
+            aria-invalid={!!errors.username}
           />
         </label>
       </label>
-      {errors.userName?.type === 'required' && (
+      {errors.username?.type === 'required' && (
         <p role='alert' className='text-error'>
           The field "Username" is required.
         </p>
@@ -115,7 +115,7 @@ export function RegisterForm() {
             type='Password'
             placeholder='Password'
             className='input-validator'
-            aria-invalid={errors.password ? 'true' : 'false'}
+            aria-invalid={!!errors.password}
           />
         </label>
       </label>
@@ -143,7 +143,7 @@ export function RegisterForm() {
             type='password'
             placeholder='Password'
             title='Must match the password entered in the previous input field'
-            aria-invalid={errors.repeatPassword ? 'true' : 'false'}
+            aria-invalid={!!errors.repeatPassword}
           />
         </label>
       </label>
