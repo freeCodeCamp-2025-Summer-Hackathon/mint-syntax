@@ -73,7 +73,7 @@ export function RegisterForm() {
         <label className='input input-sm'>
           <UserIcon />
           <input
-            {...register('userName', { required: true })}
+            {...register('username', { required: true })}
             type='Text'
             placeholder='Username'
             className='input-validator'
