@@ -2,6 +2,48 @@ import { useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { useApi } from '../hooks/useApi';
 
+const UserIcon = () => {
+  return (
+    <svg
+      className='h-[1em] opacity-50'
+      xmlns='http://www.w3.org/2000/svg'
+      viewBox='0 0 24 24'
+    >
+      <g
+        strokeLinejoin='round'
+        strokeLinecap='round'
+        strokeWidth='2.5'
+        fill='none'
+        stroke='currentColor'
+      >
+        <path d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2'></path>
+        <circle cx='12' cy='7' r='4'></circle>
+      </g>
+    </svg>
+  );
+};
+
+const PasswordIcon = () => {
+  return (
+    <svg
+      className='h-[1em] opacity-50'
+      xmlns='http://www.w3.org/2000/svg'
+      viewBox='0 0 24 24'
+    >
+      <g
+        strokeLinejoin='round'
+        strokeLinecap='round'
+        strokeWidth='2.5'
+        fill='none'
+        stroke='currentColor'
+      >
+        <path d='M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z'></path>
+        <circle cx='16.5' cy='7.5' r='.5' fill='currentColor'></circle>
+      </g>
+    </svg>
+  );
+};
+
 export function RegisterForm() {
   const formRef = useRef();
   const {
@@ -29,23 +71,7 @@ export function RegisterForm() {
       <label className='floating-label flex justify-between py-2'>
         Username:
         <label className='input input-sm'>
-          <svg
-            className='h-[1em] opacity-50'
-            xmlns='http://www.w3.org/2000/svg'
-            viewBox='0 0 24 24'
-          >
-            <g
-              strokeLinejoin='round'
-              strokeLinecap='round'
-              strokeWidth='2.5'
-              fill='none'
-              stroke='currentColor'
-            >
-              <path d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2'></path>
-              <circle cx='12' cy='7' r='4'></circle>
-            </g>
-          </svg>
-
+          <UserIcon />
           <input
             {...register('userName', { required: true })}
             type='Text'
@@ -65,6 +91,7 @@ export function RegisterForm() {
       <label className='floating-label flex justify-between py-2'>
         Name:
         <label className='input input-sm'>
+          <UserIcon />
           <input
             {...register('name', { required: true })}
             type='Text'
@@ -84,23 +111,7 @@ export function RegisterForm() {
       <label className='floating-label flex justify-between py-2'>
         Password:
         <label className='input input-sm'>
-          <svg
-            className='h-[1em] opacity-50'
-            xmlns='http://www.w3.org/2000/svg'
-            viewBox='0 0 24 24'
-          >
-            <g
-              strokeLinejoin='round'
-              strokeLinecap='round'
-              strokeWidth='2.5'
-              fill='none'
-              stroke='currentColor'
-            >
-              <path d='M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z'></path>
-              <circle cx='16.5' cy='7.5' r='.5' fill='currentColor'></circle>
-            </g>
-          </svg>
-
+          <PasswordIcon />
           <input
             {...register('password', { required: true, minLength: 8 })}
             type='Password'
@@ -123,23 +134,8 @@ export function RegisterForm() {
 
       <label className='floating-label flex justify-between py-2'>
         Repeat Password:
-        <label class='input input-sm'>
-          <svg
-            class='h-[1em] opacity-50'
-            xmlns='http://www.w3.org/2000/svg'
-            viewBox='0 0 24 24'
-          >
-            <g
-              stroke-linejoin='round'
-              stroke-linecap='round'
-              stroke-width='2.5'
-              fill='none'
-              stroke='currentColor'
-            >
-              <path d='M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z'></path>
-              <circle cx='16.5' cy='7.5' r='.5' fill='currentColor'></circle>
-            </g>
-          </svg>
+        <label className='input input-sm'>
+          <PasswordIcon />
           <input
             {...register('repeatPassword', {
               required: true,
