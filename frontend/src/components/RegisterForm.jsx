@@ -77,7 +77,6 @@ export function RegisterForm() {
             type='Text'
             placeholder='Username'
             className='input-validator'
-            defaultValue={'bob'}
             aria-invalid={errors.userName ? 'true' : 'false'}
           />
         </label>
@@ -97,7 +96,6 @@ export function RegisterForm() {
             type='Text'
             placeholder='Name'
             className='input-validator'
-            defaultValue={'bob'}
             aria-invalid={errors.name ? 'true' : 'false'}
           />
         </label>
@@ -117,7 +115,6 @@ export function RegisterForm() {
             type='Password'
             placeholder='Password'
             className='input-validator'
-            defaultValue={'123'}
             aria-invalid={errors.password ? 'true' : 'false'}
           />
         </label>
@@ -148,11 +145,15 @@ export function RegisterForm() {
           />
         </label>
       </label>
-      {errors.repeatPassword?.type === 'validate' && (
+      {errors.repeatPassword?.type === 'required' ? (
+        <p role='alert' className='text-error'>
+          The field "Repeat Password" is required.
+        </p>
+      ) : errors.repeatPassword?.type === 'validate' ? (
         <p role='alert' className='text-error'>
           Both passwords need to match.
         </p>
-      )}
+      ) : null}
 
       <div className='flex justify-center'>
         <button className='my-1 animated-button'>Register</button>
