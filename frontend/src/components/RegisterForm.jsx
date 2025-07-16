@@ -96,7 +96,7 @@ export function RegisterForm() {
             type='Text'
             placeholder='Name'
             className='input-validator'
-            aria-invalid={errors.name ? 'true' : 'false'}
+            aria-invalid={!!errors.name}
           />
         </label>
       </label>
