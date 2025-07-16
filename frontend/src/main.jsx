@@ -1,7 +1,7 @@
 import { StrictMode } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { createRoot } from 'react-dom/client';
-import { HelmetProvider } from 'react-helmet-async';
+import { HelmetProvider} from '@dr.pogodin/react-helmet';
 
 import App from './App.jsx';
 import { UserProvider } from './user/UserProvider.jsx';
