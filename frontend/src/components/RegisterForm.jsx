@@ -151,11 +151,13 @@ export function RegisterForm() {
         <p role='alert' className='text-error'>
           The field "Repeat Password" is required.
         </p>
-      ) : errors.repeatPassword?.type === 'validate' ? (
-        <p role='alert' className='text-error'>
-          Both passwords need to match.
-        </p>
-      ) : null}
+      ) : (
+        errors.repeatPassword?.type === 'validate' && (
+          <p role='alert' className='text-error'>
+            Both passwords need to match.
+          </p>
+        )
+      )}
 
       <div className='flex justify-center'>
         <button className='my-1 animated-button'>Register</button>
