@@ -8,13 +8,15 @@ import IdeaSubmissionForm from './components/IdeaSubmissionForm';
 import LandingPageContent from './components/LandingPageContent';
 import HelpPage from './components/HelpPage';
 import LoginPage from './pages/LoginPage';
+import ForgotPassword from './pages/ForgotPassword';
 import RegisterPage from './pages/RegisterPage';
+
 import { IdeaAddPage, IdeaEditPage, IdeaPage, IdeasPage } from './pages/Ideas';
 import './styles.css';
 
 import Spinny from './components/Spinny';
-import ErrorBoundary from './components/ErrorBoundary';
-import NotFound from './pages/NotFound';
+import ErrorBoundary from './components/ErrorBoundary.jsx';
+import NotFound from './pages/NotFound.jsx';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -57,6 +59,7 @@ function App() {
               />
               <Route path='help' element={<HelpPage />} />
               <Route path='login' element={<LoginPage />} />
+              <Route path='forgot-password' element={<ForgotPassword />} />
               <Route path='register' element={<RegisterPage />} />
               <Route path='ideas'>
                 <Route index element={<IdeasPage />} />
