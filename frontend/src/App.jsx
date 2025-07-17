@@ -37,8 +37,7 @@ function App() {
           />
           <Route path='help' element={<HelpPage />} />
           <Route path='login' element={<LoginPage />} />
-          <Route path='forgot-password' element={<ForgotPassword />} />{' '}
-          {/* ✅ route toegevoegd */}
+          <Route path='forgot-password' element={<ForgotPassword />} />
           <Route path='ideas'>
             <Route index element={<IdeasPage />} />
             <Route path=':ideaId' element={<IdeaPage />} />
