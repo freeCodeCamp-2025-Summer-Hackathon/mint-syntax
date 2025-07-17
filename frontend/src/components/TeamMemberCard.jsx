@@ -1,4 +1,4 @@
-const TeamMemberCard = ({ guthub_uri, name }) => {
+const TeamMemberCard = ({ github_uri, name }) => {
   // Team members data
 
   return (
