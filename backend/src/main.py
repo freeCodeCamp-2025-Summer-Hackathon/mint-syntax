@@ -1,15 +1,11 @@
-from typing import Annotated
-
 from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi_csrf_protect.exceptions import CsrfProtectError
 
 from src.api.main import api_router
-from src.auth import User, get_current_active_user
 from src.config import get_settings
 from src.csrf import verify_csrf
-from src.models import UserEditPatch
 
 app = FastAPI(dependencies=[Depends(verify_csrf)])
 
@@ -47,21 +43,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-@app.get("/me")
-async def get_me(current_user: Annotated[User, Depends(get_current_active_user)]):
-    return current_user
-
-
-@app.patch("/me")
-async def patch_me(
-    current_user: Annotated[User, Depends(get_current_active_user)],
-    update_data: UserEditPatch,
-):
-    current_user.model_update(update_data)
-    # await db.save(current_user)
-    return current_user
 
 
 @app.get("/")
