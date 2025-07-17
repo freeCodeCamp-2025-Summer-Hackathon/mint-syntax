@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import Header from './components/Header';
@@ -12,7 +12,19 @@ import RegisterPage from './pages/RegisterPage';
 import { IdeaAddPage, IdeaEditPage, IdeaPage, IdeasPage } from './pages/Ideas';
 import './styles.css';
 
+import Spinny from './components/Spinny';
+
 function App() {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <div id='top' className='body-style'>
       <Helmet>
@@ -26,13 +38,19 @@ function App() {
         <Header />
         <Routes>
           <Route
-            path=''
+            path='/'
             element={
-              <>
-                <IdeaFormSection count='3' sort='trending' />
-                <IdeaSubmissionForm />
-                <LandingPageContent />
-              </>
+              isLoading ? (
+                <div className='spinner-wrapper-container'>
+                  <Spinny />
+                </div>
+              ) : (
+                <>
+                  <IdeaFormSection count='3' sort='trending' />
+                  <IdeaSubmissionForm />
+                  <LandingPageContent />
+                </>
+              )
             }
           />
           <Route path='help' element={<HelpPage />} />
