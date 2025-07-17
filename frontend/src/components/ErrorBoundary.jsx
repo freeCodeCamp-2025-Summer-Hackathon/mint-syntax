@@ -6,7 +6,8 @@ class ErrorBoundary extends React.Component {
     this.state = { hasError: false, error: null, errorInfo: null };
   }
 
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError(_error) {
+    void _error;
     return { hasError: true };
   }
 
@@ -16,35 +17,27 @@ class ErrorBoundary extends React.Component {
       error: error,
       errorInfo: errorInfo,
     });
+
+    if (import.meta.env.DEV) {
+      console.log('Development mode error details:');
+      console.log('Error:', error);
+      console.log('Error Info:', errorInfo);
+    }
   }
 
   render() {
     if (this.state.hasError) {
       return (
-        <div
-          style={{
-            padding: '20px',
-            textAlign: 'center',
-            border: '1px solid red',
-            borderRadius: '8px',
-            margin: '20px',
-          }}
-        >
-          <h2>Oops! Something went wrong.</h2>
+        <div className='error-boundary-fallback'>
+          <h1>Something went wrong.</h1>
           <p>
             We're sorry for the inconvenience. Please try refreshing the page.
           </p>
-          {process.env.NODE_ENV === 'development' && this.state.error && (
-            <details
-              style={{
-                whiteSpace: 'pre-wrap',
-                textAlign: 'left',
-                marginTop: '15px',
-              }}
-            >
-              {this.state.error && this.state.error.toString()}
+          {import.meta.env.DEV && this.state.error && (
+            <details style={{ whiteSpace: 'pre-wrap' }}>
+              {this.state.error.toString()}
               <br />
-              {this.state.errorInfo && this.state.errorInfo.componentStack}
+              {this.state.errorInfo.componentStack}
             </details>
           )}
         </div>
