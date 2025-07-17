@@ -1,6 +1,6 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
+import { Helmet } from '@dr.pogodin/react-helmet';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import IdeaFormSection from './components/IdeaFormSection';
@@ -8,6 +8,9 @@ import IdeaSubmissionForm from './components/IdeaSubmissionForm';
 import LandingPageContent from './components/LandingPageContent';
 import HelpPage from './components/HelpPage';
 import LoginPage from './pages/LoginPage';
+import ForgotPassword from './pages/ForgotPassword';
+import RegisterPage from './pages/RegisterPage';
+
 import { IdeaAddPage, IdeaEditPage, IdeaPage, IdeasPage } from './pages/Ideas';
 import './styles.css';
 
@@ -36,11 +39,14 @@ function App() {
           />
           <Route path='help' element={<HelpPage />} />
           <Route path='login' element={<LoginPage />} />
+          <Route path='forgot-password' element={<ForgotPassword />} />
+          <Route path='register' element={<RegisterPage />} />
           <Route path='ideas'>
             <Route index element={<IdeasPage />} />
             <Route path=':ideaId' element={<IdeaPage />} />
             <Route path=':ideaId/edit' element={<IdeaEditPage />} />
             <Route path='add' element={<IdeaAddPage />} />
+            <Route path='page/:page' element={<IdeasPage />} />
           </Route>
         </Routes>
         <Footer />
