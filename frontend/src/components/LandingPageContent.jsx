@@ -24,20 +24,20 @@ const LandingPageContent = () => {
   ];
 
   const teamMembers = [
-    { name: 'Apofus', guthub_uri: null },
+    { name: 'Apofus' },
     {
       name: '  Bożo (Coding Puppy)',
-      guthub_uri: 'https://github.com/bstojkovic',
+      github_uri: 'https://github.com/bstojkovic',
     },
-    { name: 'Connor', guthub_uri: 'https://github.com/connororeil' },
-    { name: 'Gift Ruwende', guthub_uri: 'https://github.com/willhitman' },
-    { name: 'longlive247', guthub_uri: 'https://github.com/MarkoCuk54' },
-    { name: 'Lore', guthub_uri: 'https://github.com/Lorevdh' },
-    { name: 'Ola', guthub_uri: 'https://github.com/Vallayah' },
-    { name: 'Krzysztof', guthub_uri: 'https://github.com/gikf' },
-    { name: 'Sebastian_W', guthub_uri: 'https://github.com/Sebastian-Wlo' },
-    { name: 'Tetris', guthub_uri: 'https://github.com/tetrisy' },
-    { name: 'VooDooRe', guthub_uri: 'https://github.com/nurmukhammad03' },
+    { name: 'Connor', github_uri: 'https://github.com/connororeil' },
+    { name: 'Gift Ruwende', github_uri: 'https://github.com/willhitman' },
+    { name: 'longlive247', github_uri: 'https://github.com/MarkoCuk54' },
+    { name: 'Lore', github_uri: 'https://github.com/Lorevdh' },
+    { name: 'Ola', github_uri: 'https://github.com/Vallayah' },
+    { name: 'Krzysztof', github_uri: 'https://github.com/gikf' },
+    { name: 'Sebastian_W', github_uri: 'https://github.com/Sebastian-Wlo' },
+    { name: 'Tetris', github_uri: 'https://github.com/tetrisy' },
+    { name: 'VooDooRe', github_uri: 'https://github.com/nurmukhammad03' },
   ];
   return (
     <>
@@ -52,9 +52,9 @@ const LandingPageContent = () => {
             for ideas, and see trending or implemented ideas.
           </p>
           <div className='features-grid'>
-            {features.map((feature, title) => (
+            {features.map((feature, index) => (
               <FeatureCard
-                key={title}
+                key={feature.title}
                 icon={feature.icon}
                 title={feature.title}
                 description={feature.description}
@@ -66,10 +66,10 @@ const LandingPageContent = () => {
             Team
           </h3>
           <div className='team-grid'>
-            {teamMembers.map((member, guthub_uri) => (
+            {teamMembers.map(member => (
               <TeamMemberCard
-                key={guthub_uri}
-                guthub_uri={member.guthub_uri}
+                key={member.name}
+                github_uri={member.github_uri}
                 name={member.name}
               />
             ))}
