@@ -1,18 +1,69 @@
-import { useEffect } from 'react';
-import { useApi } from '../hooks/useApi';
-import { Link } from 'react-router';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Link, NavLink } from 'react-router';
+
 import UpvoteImg from '../assets/Upvote.svg';
 
-const IdeaFormSection = ({ count, sort = null }) => {
+import { useApi } from '../hooks/useApi';
+import { Pagination } from './Pagination';
+
+const IdeaFormSection = ({
+  count,
+  sort = null,
+  page = 0,
+  paginate = false,
+}) => {
+  const [showPages, setShowPages] = useState(false);
+  const [totalPages, setTotalPages] = useState(0);
+  const [entries, setEntries] = useState([]);
   const { isLoading, error, data, fetchFromApi } = useApi({
     loadingInitially: true,
   });
 
-  const sorting = sort ? `&sort=${sort}` : '';
+  const getApiUrl = useCallback(
+    (page = 0) => {
+      const sorting = sort ? `&sort=${sort}` : '';
+      const skip = page > 0 ? `&skip=${page * count}` : '';
+      return `/ideas/?limit=${count}${sorting}${skip}`;
+    },
+    [count, sort]
+  );
+
+  const getPageUrl = page => `/ideas/page/${page + 1}`;
 
   useEffect(() => {
-    fetchFromApi(`/ideas/?limit=${count}${sorting}`);
-  }, [count, fetchFromApi, sorting]);
+    fetchFromApi(getApiUrl(page));
+  }, [fetchFromApi, getApiUrl, page]);
+
+  useEffect(() => {
+    if (data?.data?.length > 0) {
+      setEntries(data?.data);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    if (data?.count > 0) {
+      const pages = Math.ceil(data.count / count);
+      setTotalPages(pages);
+      if (pages > 1) {
+        setShowPages(true);
+      }
+    }
+  }, [data, count]);
+
+  const pagination = useMemo(
+    () => (
+      <Pagination
+        {...{
+          numberOfPages: totalPages,
+          fetchFromApi,
+          getApiUrl,
+          getPageUrl,
+          initialPage: page,
+        }}
+      />
+    ),
+    [totalPages, fetchFromApi, getApiUrl, page]
+  );
 
   return (
     <section className='idea-form-section'>
@@ -20,13 +71,13 @@ const IdeaFormSection = ({ count, sort = null }) => {
         <h3>Vote on Current Ideas</h3>
         {error ? (
           `${error}`
-        ) : isLoading ? (
+        ) : isLoading && !entries ? (
           'Loading...'
         ) : (
           <ul className='idea-list'>
-            {data?.data?.length === 0
+            {entries === 0
               ? "There's no ideas, add yours!"
-              : data?.data.map(({ id, name, upvoted_by }) => {
+              : entries.map(({ id, name, upvoted_by }) => {
                   return (
                     <Link to={`/ideas/${id}`} key={id}>
                       <li className='idea-item'>
@@ -51,6 +102,7 @@ const IdeaFormSection = ({ count, sort = null }) => {
                 })}
           </ul>
         )}
+        {paginate && showPages && entries.length > 0 && <>{pagination}</>}
       </div>
     </section>
   );
