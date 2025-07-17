@@ -2,11 +2,15 @@ import { Link } from 'react-router-dom';
 
 export default function LogoutPage() {
   return (
-    <div className="max-w-md mx-auto mt-16 p-6 bg-white rounded-lg shadow text-center">
-      <h2 className="text-xl font-semibold mb-4">👋 You've been logged out</h2>
-      <p className="text-gray-600 mb-6">Thanks for visiting Idea Forge!</p>
-      <Link to="/login" className="btn btn-outline">
-        Back to Login
+    <div className='max-w-md mx-auto mt-16 p-6 bg-[#f4fdf9] rounded-lg shadow-lg border border-[#cdeee3]'>
+      <h1 className='text-2xl font-bold mb-4 text-center text-[#317c67]'>
+        👋 You're logged out
+      </h1>
+      <p className='mb-6 text-gray-600 text-center'>
+        Thanks for using Idea Forge. You can log in again below.
+      </p>
+      <Link to='/login' className='btn w-full bg-[#5dc394] hover:bg-[#49ab7f] text-white'>
+        ⬅ Back to login
       </Link>
     </div>
   );
