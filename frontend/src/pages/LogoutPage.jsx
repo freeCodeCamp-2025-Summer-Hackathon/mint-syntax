@@ -9,7 +9,10 @@ export default function LogoutPage() {
       <p className='mb-6 text-gray-600 text-center'>
         Thanks for using Idea Forge. You can log in again below.
       </p>
-      <Link to='/login' className='btn w-full bg-[#5dc394] hover:bg-[#49ab7f] text-white'>
+      <Link
+        to='/login'
+        className='btn w-full bg-[#5dc394] hover:bg-[#49ab7f] text-white'
+      >
         ⬅ Back to login
       </Link>
     </div>
