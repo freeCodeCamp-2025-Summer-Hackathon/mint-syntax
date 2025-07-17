@@ -65,15 +65,15 @@ If needed, update `MONGODB_URI` in `.env` file.
 
 ```bash
 /$ cd frontend
-/frontend$ npm install --legacy-peer-deps
+/frontend$ npm install
 ```
 
-**Note:** If you encounter `ERESOLVE` errors during `npm install`, ensure you are using the `--legacy-peer-deps` flag. You might also need to clear your `node_modules` and `package-lock.json` first before retrying the installation:
+**Note:** The dependency on the helmet-async has been removed recently - if you're getting errors, or the page doesn't load after pulling the latest verstion of the repository, you need to run `npm install` again. If the problem presist, try rebuilding the dependency list using the following commands:
 
 ```bash
 /frontend$ rm -rf node_modules
 /frontend$ rm package-lock.json
-/frontend$ npm install --legacy-peer-deps
+/frontend$ npm install
 ```
 #### Backend
 
