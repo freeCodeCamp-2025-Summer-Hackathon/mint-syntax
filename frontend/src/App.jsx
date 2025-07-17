@@ -66,6 +66,7 @@ function App() {
                 <Route path=':ideaId' element={<IdeaPage />} />
                 <Route path=':ideaId/edit' element={<IdeaEditPage />} />
                 <Route path='add' element={<IdeaAddPage />} />
+                <Route path='page/:page' element={<IdeasPage />} />
               </Route>
               <Route path='*' element={<NotFound />} />
             </Routes>
