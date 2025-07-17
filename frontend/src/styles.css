@@ -927,6 +927,25 @@ body {
   min-height: 32px;
 }
 
+.not-found-button {
+  display: inline-block;
+  padding: var(--animated-button-padding-y) var(--animated-button-padding-x);
+  background-color: var(--palette-main-brand-green);
+  color: var(--palette-accent-white);
+  text-decoration: none;
+  border-radius: var(--border-radius-pill);
+  font-size: var(--animated-button-font-size);
+  transition:
+    background-color 0.3s ease-in-out,
+    transform 0.3s ease-in-out;
+}
+
+.not-found-button:hover {
+  background-color: var(--palette-dark-contrast-green);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
 @media (min-width: 768px) {
   .header-banner-content {
     align-items: center;

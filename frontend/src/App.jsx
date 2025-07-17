@@ -13,6 +13,8 @@ import { IdeaAddPage, IdeaEditPage, IdeaPage, IdeasPage } from './pages/Ideas';
 import './styles.css';
 
 import Spinny from './components/Spinny';
+import ErrorBoundary from './components/ErrorBoundary';
+import NotFound from './pages/NotFound';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -20,7 +22,7 @@ function App() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 3000);
+    }, 1000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -36,33 +38,36 @@ function App() {
       </Helmet>
       <div className='container-wrapper'>
         <Header />
-        <Routes>
-          <Route
-            path='/'
-            element={
-              isLoading ? (
-                <div className='spinner-wrapper-container'>
-                  <Spinny />
-                </div>
-              ) : (
-                <>
-                  <IdeaFormSection count='3' sort='trending' />
-                  <IdeaSubmissionForm />
-                  <LandingPageContent />
-                </>
-              )
-            }
-          />
-          <Route path='help' element={<HelpPage />} />
-          <Route path='login' element={<LoginPage />} />
-          <Route path='register' element={<RegisterPage />} />
-          <Route path='ideas'>
-            <Route index element={<IdeasPage />} />
-            <Route path=':ideaId' element={<IdeaPage />} />
-            <Route path=':ideaId/edit' element={<IdeaEditPage />} />
-            <Route path='add' element={<IdeaAddPage />} />
-          </Route>
-        </Routes>
+        {isLoading ? (
+          <div className='spinner-wrapper-container'>
+            <Spinny />
+          </div>
+        ) : (
+          <ErrorBoundary>
+            <Routes>
+              <Route
+                path='/'
+                element={
+                  <>
+                    <IdeaFormSection count='3' sort='trending' />
+                    <IdeaSubmissionForm />
+                    <LandingPageContent />
+                  </>
+                }
+              />
+              <Route path='help' element={<HelpPage />} />
+              <Route path='login' element={<LoginPage />} />
+              <Route path='register' element={<RegisterPage />} />
+              <Route path='ideas'>
+                <Route index element={<IdeasPage />} />
+                <Route path=':ideaId' element={<IdeaPage />} />
+                <Route path=':ideaId/edit' element={<IdeaEditPage />} />
+                <Route path='add' element={<IdeaAddPage />} />
+              </Route>
+              <Route path='*' element={<NotFound />} />
+            </Routes>
+          </ErrorBoundary>
+        )}
         <Footer />
       </div>
     </div>
