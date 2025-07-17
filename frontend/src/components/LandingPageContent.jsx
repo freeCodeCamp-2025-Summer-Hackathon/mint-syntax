@@ -52,7 +52,7 @@ const LandingPageContent = () => {
             for ideas, and see trending or implemented ideas.
           </p>
           <div className='features-grid'>
-            {features.map((feature, index) => (
+            {features.map(feature => (
               <FeatureCard
                 key={feature.title}
                 icon={feature.icon}
