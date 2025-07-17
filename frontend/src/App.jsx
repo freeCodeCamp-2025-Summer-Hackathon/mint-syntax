@@ -9,6 +9,8 @@ import LandingPageContent from './components/LandingPageContent';
 import HelpPage from './components/HelpPage';
 import LoginPage from './pages/LoginPage';
 import ForgotPassword from './pages/ForgotPassword';
+import RegisterPage from './pages/RegisterPage';
+
 import { IdeaAddPage, IdeaEditPage, IdeaPage, IdeasPage } from './pages/Ideas';
 import './styles.css';
 
@@ -38,6 +40,7 @@ function App() {
           <Route path='help' element={<HelpPage />} />
           <Route path='login' element={<LoginPage />} />
           <Route path='forgot-password' element={<ForgotPassword />} />
+          <Route path='register' element={<RegisterPage />} />
           <Route path='ideas'>
             <Route index element={<IdeasPage />} />
             <Route path=':ideaId' element={<IdeaPage />} />
