@@ -1,6 +1,8 @@
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router';
 import { useApi } from '../hooks/useApi';
+import { useUser } from '../hooks/useUser';
 
 const UserIcon = () => {
   return (
@@ -44,7 +46,7 @@ const PasswordIcon = () => {
   );
 };
 
-export function RegisterForm() {
+export function RegisterForm({ redirect_to = '/' }) {
   const formRef = useRef();
   const {
     formState: { errors },
@@ -52,8 +54,27 @@ export function RegisterForm() {
     register,
     getValues,
   } = useForm();
+  const { isLogged, login } = useUser();
+  const navigate = useNavigate();
 
-  const { fetchFromApi } = useApi({ method: 'POST' });
+  const { error, response, data, fetchFromApi } = useApi({ method: 'POST' });
+
+  // if the registration was successful, proceed by logging in the registered user
+  useEffect(() => {
+    if (data && !error) {
+      login(data);
+    }
+    if (error && response) {
+      alert(`Error! Something went wrong: ${error}`);
+    }
+  }, [response, data, error, login]);
+
+  // If the login process was successful, redirect user to the main page.
+  useEffect(() => {
+    if (isLogged && redirect_to) {
+      navigate(redirect_to);
+    }
+  }, [isLogged, navigate, redirect_to]);
 
   const onSubmit = async () => {
     try {
@@ -62,7 +83,7 @@ export function RegisterForm() {
         body: new FormData(formRef.current),
       });
     } catch (e) {
-      console.log(e);
+      console.log('error!', e);
     }
   };
 
