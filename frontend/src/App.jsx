@@ -14,9 +14,6 @@ import RegisterPage from './pages/RegisterPage';
 import { IdeaAddPage, IdeaEditPage, IdeaPage, IdeasPage } from './pages/Ideas';
 import './styles.css';
 
-import ErrorBoundary from './components/ErrorBoundary.jsx';
-import NotFound from './pages/NotFound.jsx';
-
 function App() {
   return (
     <div id='top' className='body-style'>
@@ -29,32 +26,29 @@ function App() {
       </Helmet>
       <div className='container-wrapper'>
         <Header />
-        <ErrorBoundary>
-          <Routes>
-            <Route
-              path=''
-              element={
-                <>
-                  <IdeaFormSection count='3' sort='trending' />
-                  <IdeaSubmissionForm />
-                  <LandingPageContent />
-                </>
-              }
-            />
-            <Route path='help' element={<HelpPage />} />
-            <Route path='login' element={<LoginPage />} />
-            <Route path='forgot-password' element={<ForgotPassword />} />
-            <Route path='register' element={<RegisterPage />} />
-            <Route path='ideas'>
-              <Route index element={<IdeasPage />} />
-              <Route path=':ideaId' element={<IdeaPage />} />
-              <Route path=':ideaId/edit' element={<IdeaEditPage />} />
-              <Route path='add' element={<IdeaAddPage />} />
-              <Route path='page/:page' element={<IdeasPage />} />
-            </Route>
-            <Route path='*' element={<NotFound />} />
-          </Routes>
-        </ErrorBoundary>
+        <Routes>
+          <Route
+            path=''
+            element={
+              <>
+                <IdeaFormSection count='3' sort='trending' />
+                <IdeaSubmissionForm />
+                <LandingPageContent />
+              </>
+            }
+          />
+          <Route path='help' element={<HelpPage />} />
+          <Route path='login' element={<LoginPage />} />
+          <Route path='forgot-password' element={<ForgotPassword />} />
+          <Route path='register' element={<RegisterPage />} />
+          <Route path='ideas'>
+            <Route index element={<IdeasPage />} />
+            <Route path=':ideaId' element={<IdeaPage />} />
+            <Route path=':ideaId/edit' element={<IdeaEditPage />} />
+            <Route path='add' element={<IdeaAddPage />} />
+            <Route path='page/:page' element={<IdeasPage />} />
+          </Route>
+        </Routes>
         <Footer />
       </div>
     </div>
