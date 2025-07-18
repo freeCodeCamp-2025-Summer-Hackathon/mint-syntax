@@ -791,7 +791,8 @@ body {
   height: auto;
 }
 
-.voting-section {
+.voting-section,
+.register-section {
   margin-top: var(--voting-section-margin-top);
   padding: var(--voting-section-padding);
   background-color: var(--palette-gradient-light-end);
@@ -811,7 +812,8 @@ body {
   box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.4);
 }
 
-.voting-section h3 {
+.voting-section h3,
+.register-section h3 {
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-semibold);
   color: var(--palette-main-brand-green);
