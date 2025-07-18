@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { Helmet } from '@dr.pogodin/react-helmet';
 import Header from './components/Header';
@@ -17,7 +17,15 @@ import './styles.css';
 import ErrorBoundary from './components/ErrorBoundary.jsx';
 import NotFound from './pages/NotFound.jsx';
 
+import { devLog } from './utils/devLogger';
+import { DevOnly } from './components/DevOnly';
+
 function App() {
+  useEffect(() => {
+    devLog('App component has mounted.');
+    devLog('Current environment mode:', import.meta.env.MODE);
+  }, []);
+
   return (
     <div id='top' className='body-style'>
       <Helmet>
@@ -32,7 +40,7 @@ function App() {
           <Header />
           <Routes>
             <Route
-              path='/'
+              path=''
               element={
                 <>
                   <IdeaFormSection count='3' sort='trending' />
@@ -55,6 +63,25 @@ function App() {
             <Route path='*' element={<NotFound />} />
           </Routes>
           <Footer />
+
+          <DevOnly>
+            <div
+              style={{
+                position: 'fixed',
+                bottom: '10px',
+                left: '10px',
+                background: 'rgba(0, 128, 255, 0.2)',
+                padding: '6px 10px',
+                borderRadius: '5px',
+                fontSize: '0.75em',
+                fontWeight: 'bold',
+                color: 'navy',
+                zIndex: 1000,
+              }}
+            >
+              DEV
+            </div>
+          </DevOnly>
         </ErrorBoundary>
       </div>
     </div>
