@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link, NavLink } from 'react-router';
-
+import { Link, NavLink } from 'react-router-dom';
 import UpvoteImg from '../assets/Upvote.svg';
-
 import { useApi } from '../hooks/useApi';
 import { Pagination } from './Pagination';
+import Spinny from './Spinny';
 
 const IdeaFormSection = ({
   count,
@@ -72,10 +71,12 @@ const IdeaFormSection = ({
         {error ? (
           `${error}`
         ) : isLoading && !entries ? (
-          'Loading...'
+          <div className='spinner-wrapper-container'>
+            <Spinny />
+          </div>
         ) : (
           <ul className='idea-list'>
-            {entries === 0
+            {!entries || entries.length === 0
               ? "There's no ideas, add yours!"
               : entries.map(({ id, name, upvoted_by }) => {
                   return (
