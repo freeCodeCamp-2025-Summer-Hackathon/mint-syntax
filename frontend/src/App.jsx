@@ -31,7 +31,11 @@ function App() {
             path=''
             element={
               <>
-                <IdeaFormSection count='3' sort='trending' />
+                <IdeaFormSection
+                  count='3'
+                  sort='trending'
+                  headerText='Vote on Current Ideas'
+                />
                 <IdeaSubmissionForm />
                 <LandingPageContent />
               </>
@@ -42,11 +46,14 @@ function App() {
           <Route path='forgot-password' element={<ForgotPassword />} />
           <Route path='register' element={<RegisterPage />} />
           <Route path='ideas'>
-            <Route index element={<IdeasPage />} />
+            <Route index element={<IdeasPage headerText='All Ideas' />} />
             <Route path=':ideaId' element={<IdeaPage />} />
             <Route path=':ideaId/edit' element={<IdeaEditPage />} />
             <Route path='add' element={<IdeaAddPage />} />
-            <Route path='page/:page' element={<IdeasPage />} />
+            <Route
+              path='page/:page'
+              element={<IdeasPage headerText='All Ideas' />}
+            />
           </Route>
         </Routes>
         <Footer />

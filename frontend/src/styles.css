@@ -388,8 +388,8 @@ body {
   align-items: center;
   text-align: center;
   transition:
-    transform var(--transition-speed-fast) var(--transition-ease-in-out),
-    box-shadow var(--transition-speed-fast) var(--transition-ease-in-out);
+    transform 0.2s ease-in-out,
+    box-shadow 0.2s ease-in-out;
 }
 
 .feature-card:hover {
@@ -426,8 +426,7 @@ body {
   box-shadow: var(--shadow-lg);
   text-align: center;
   border: 2px solid transparent;
-  transition: border-color var(--transition-speed-normal)
-    var(--transition-ease-in-out);
+  transition: border-color 0.3s ease-in-out;
 }
 
 .about-section:focus-within {
@@ -495,7 +494,7 @@ body {
   white-space: nowrap;
   box-shadow: var(--shadow-sm);
   text-align: center;
-  transition: all var(--transition-speed-fast) var(--transition-ease-in-out);
+  transition: all 0.2s ease-in-out;
   border: 2px solid transparent;
 }
 
@@ -515,8 +514,8 @@ body {
   text-decoration: none;
   font-weight: var(--font-weight-semibold);
   transition:
-    color var(--transition-speed-fast) var(--transition-ease-in-out),
-    text-decoration var(--transition-speed-fast) var(--transition-ease-in-out);
+    color 0.2s ease-in-out,
+    text-decoration 0.2s ease-in-out;
 }
 
 .team-link:hover {
@@ -551,7 +550,7 @@ body {
 
 .social-link {
   color: var(--palette-main-brand-green);
-  transition: all var(--transition-speed-fast) var(--transition-ease-in-out);
+  transition: all 0.2s ease-in-out;
   padding: 0.5rem;
   border: 2px solid transparent;
   border-radius: var(--border-radius-md);
@@ -569,7 +568,7 @@ body {
   width: 100%;
   height: 100%;
   background-color: var(--palette-code-accent);
-  transition: left var(--transition-speed-normal) var(--transition-ease-in-out);
+  transition: left 0.3s ease-in-out;
   z-index: -1;
 }
 
@@ -588,7 +587,7 @@ body {
   color: var(--palette-main-brand-green);
   text-decoration: none;
   font-weight: var(--font-weight-semibold);
-  transition: all var(--transition-speed-fast) var(--transition-ease-in-out);
+  transition: all 0.2s ease-in-out;
   padding: var(--back-to-top-padding-y) var(--back-to-top-padding-x);
   border: 2px solid transparent;
   border-radius: var(--border-radius-md);
@@ -606,7 +605,7 @@ body {
   width: 100%;
   height: 100%;
   background-color: var(--palette-logo-bg-green);
-  transition: left var(--transition-speed-normal) var(--transition-ease-in-out);
+  transition: left 0.3s ease-in-out;
   z-index: -1;
 }
 
@@ -641,7 +640,7 @@ body {
   position: relative;
   overflow: hidden;
   z-index: 1;
-  transition: all var(--transition-speed-normal) var(--transition-ease-in-out);
+  transition: all 0.3s ease-in-out;
   box-shadow: var(--shadow-sm);
   width: fit-content;
   align-self: center;
@@ -766,8 +765,8 @@ body {
   color: var(--palette-primary-text);
   background-color: var(--palette-accent-white);
   transition:
-    border-color var(--transition-speed-fast) ease-in-out,
-    box-shadow var(--transition-speed-fast) ease-in-out;
+    border-color 0.2s ease-in-out,
+    box-shadow 0.2s ease-in-out;
   box-sizing: border-box;
   margin-inline: auto;
 }
@@ -791,7 +790,7 @@ body {
   height: auto;
 }
 
-.voting-section {
+.section-card {
   margin-top: var(--voting-section-margin-top);
   padding: var(--voting-section-padding);
   background-color: var(--palette-gradient-light-end);
@@ -799,19 +798,19 @@ body {
   box-shadow: var(--shadow-sm);
   border: 2px solid transparent;
   transition:
-    border-color var(--transition-speed-normal) ease-in-out,
-    box-shadow var(--transition-speed-normal) ease-in-out;
+    border-color 0.3s ease-in-out,
+    box-shadow 0.3s ease-in-out;
   width: 100%;
   max-width: 50rem;
   margin-inline: auto;
 }
 
-.voting-section:focus-within {
+.section-card:focus-within {
   border-color: var(--palette-code-accent);
   box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.4);
 }
 
-.voting-section h3 {
+.section-heading {
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-semibold);
   color: var(--palette-main-brand-green);
@@ -866,7 +865,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all var(--transition-speed-fast) ease-in-out;
+  transition: all 0.2s ease-in-out;
   border-radius: var(--border-radius-md);
   box-shadow: var(--shadow-sm);
 }

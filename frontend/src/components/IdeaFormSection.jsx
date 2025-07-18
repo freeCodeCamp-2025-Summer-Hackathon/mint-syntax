@@ -6,6 +6,7 @@ import { Pagination } from './Pagination';
 import Spinny from './Spinny';
 
 const IdeaFormSection = ({
+  headerText = 'Vote on Current Ideas',
   count,
   sort = null,
   page = 0,
@@ -66,8 +67,8 @@ const IdeaFormSection = ({
 
   return (
     <section className='idea-form-section'>
-      <div className='voting-section' tabIndex='0'>
-        <h3>Vote on Current Ideas</h3>
+      <div className='section-card' tabIndex='0'>
+        <h3 className='section-heading'>{headerText}</h3>
         {error ? (
           `${error}`
         ) : isLoading && !entries ? (
@@ -104,6 +105,11 @@ const IdeaFormSection = ({
           </ul>
         )}
         {paginate && showPages && entries.length > 0 && <>{pagination}</>}
+      </div>
+      <div style={{ textAlign: 'center', marginTop: 'var(--spacing-md)' }}>
+        <Link to='/ideas' className='animated-button golden'>
+          Explore All Ideas →
+        </Link>
       </div>
     </section>
   );
