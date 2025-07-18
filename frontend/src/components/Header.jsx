@@ -6,6 +6,7 @@ import IdeaForgeLogo from '../assets/Idea-Forge-logo.svg';
 const Header = () => {
   const dialogRef = useRef();
   const { isLogged, logout } = useUser();
+  console.log("asdfg", dialogRef)
 
   return (
     <header className='header-style'>
@@ -89,7 +90,9 @@ const Header = () => {
                 <div className='modal-box'>
                   <LoginForm />
                   <form method='dialog'>
-                    <button className='btn btn-sm btn-circle btn-ghost absolute right-2 top-2'>
+                    <button
+                      className='btn btn-sm btn-circle btn-ghost absolute right-2 top-2'
+                    >
                       ✕
                     </button>
                   </form>
@@ -98,6 +101,12 @@ const Header = () => {
                   <button>close</button>
                 </form>
               </dialog>
+              <a
+                className='auth-button not-logged-in-button active'
+                href='/register'
+              >
+                Register
+              </a>
               <a
                 className='auth-button not-logged-in-button active'
                 href='/register'
