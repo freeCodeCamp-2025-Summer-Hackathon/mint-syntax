@@ -3,6 +3,26 @@ import { useUser } from '../hooks/useUser';
 import LoginForm from './LoginForm';
 import IdeaForgeLogo from '../assets/Idea-Forge-logo.svg';
 
+const Chevron = () => {
+  return (
+    <svg
+      xmlns='http://www.w3.org/2000/svg'
+      width='24'
+      height='24'
+      viewBox='0 0 24 24'
+      fill='none'
+      stroke='currentColor'
+      strokeWidth='2'
+      strokeLinecap='round'
+      strokeLinejoin='round'
+      className='inline pl-1'
+    >
+      <path stroke='none' d='M0 0h24v24H0z' fill='none' />
+      <path d='M6 9l6 6l6 -6' />
+    </svg>
+  );
+};
+
 const Header = () => {
   const dialogRef = useRef();
   const { isLogged, logout } = useUser();
@@ -39,34 +59,20 @@ const Header = () => {
         <div className='auth-buttons-area'>
           {isLogged ? (
             <>
-              <button className='auth-button logout-button' onClick={logout}>
-                Logout
-              </button>
               <div className='dropdown'>
                 <button
                   tabIndex={0}
                   className='auth-button logged-in-button active'
                 >
-                  Logged In as:
-                  <svg
-                    xmlns='http://www.w3.org/2000/svg'
-                    width='24'
-                    height='24'
-                    viewBox='0 0 24 24'
-                    fill='none'
-                    stroke='currentColor'
-                    stroke-width='2'
-                    stroke-linecap='round'
-                    stroke-linejoin='round'
-                    class='icon icon-tabler icons-tabler-outline icon-tabler-chevron-down'
-                  >
-                    <path stroke='none' d='M0 0h24v24H0z' fill='none' />
-                    <path d='M6 9l6 6l6 -6' />
-                  </svg>
+                  User:
+                  <Chevron />
                 </button>
-                <ul tabIndex={0} className='menu dropdown-content'>
+                <ul
+                  tabIndex={0}
+                  className='menu dropdown-content dropdown-main-brand-green'
+                >
                   <li>
-                    <a href='#'>My profile</a>
+                    <a href='/me'>My profile</a>
                   </li>
                   <li>
                     <a onClick={logout} href='/logout'>
@@ -99,12 +105,6 @@ const Header = () => {
                   <button>close</button>
                 </form>
               </dialog>
-              <a
-                className='auth-button not-logged-in-button active'
-                href='/register'
-              >
-                Register
-              </a>
               <a
                 className='auth-button not-logged-in-button active'
                 href='/register'
