@@ -106,11 +106,6 @@ const IdeaFormSection = ({
         )}
         {paginate && showPages && entries.length > 0 && <>{pagination}</>}
       </div>
-      <div style={{ textAlign: 'center', marginTop: 'var(--spacing-md)' }}>
-        <Link to='/ideas' className='animated-button golden'>
-          Explore All Ideas →
-        </Link>
-      </div>
     </section>
   );
 };

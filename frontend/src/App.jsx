@@ -3,9 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import { Helmet } from '@dr.pogodin/react-helmet';
 import Header from './components/Header';
 import Footer from './components/Footer';
-import IdeaFormSection from './components/IdeaFormSection';
-import IdeaSubmissionForm from './components/IdeaSubmissionForm';
-import LandingPageContent from './components/LandingPageContent';
+import LandingPage from './pages/LandingPage';
 import HelpPage from './components/HelpPage';
 import LoginPage from './pages/LoginPage';
 import ForgotPassword from './pages/ForgotPassword';
@@ -27,20 +25,7 @@ function App() {
       <div className='container-wrapper'>
         <Header />
         <Routes>
-          <Route
-            path=''
-            element={
-              <>
-                <IdeaFormSection
-                  count='3'
-                  sort='trending'
-                  headerText='Vote on Current Ideas'
-                />
-                <IdeaSubmissionForm />
-                <LandingPageContent />
-              </>
-            }
-          />
+          <Route path='' element={<LandingPage />} />
           <Route path='help' element={<HelpPage />} />
           <Route path='login' element={<LoginPage />} />
           <Route path='forgot-password' element={<ForgotPassword />} />
