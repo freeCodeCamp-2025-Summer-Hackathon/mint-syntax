@@ -17,7 +17,7 @@ import './styles.css';
 import ErrorBoundary from './components/ErrorBoundary.jsx';
 import NotFound from './pages/NotFound.jsx';
 
-import { devLog } from './utils/devLogger';
+import { devLog } from './utils/devLogger.jsx';
 import { DevOnly } from './components/DevOnly';
 
 function App() {
@@ -65,22 +65,7 @@ function App() {
           <Footer />
 
           <DevOnly>
-            <div
-              style={{
-                position: 'fixed',
-                bottom: '10px',
-                left: '10px',
-                background: 'rgba(0, 128, 255, 0.2)',
-                padding: '6px 10px',
-                borderRadius: '5px',
-                fontSize: '0.75em',
-                fontWeight: 'bold',
-                color: 'navy',
-                zIndex: 1000,
-              }}
-            >
-              DEV
-            </div>
+            <div className='dev-indicator'>DEV</div>
           </DevOnly>
         </ErrorBoundary>
       </div>

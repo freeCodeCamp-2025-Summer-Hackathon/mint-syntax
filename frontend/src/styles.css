@@ -946,6 +946,20 @@ body {
   box-shadow: var(--shadow-md);
 }
 
+.dev-indicator {
+  position: fixed;
+  bottom: var(--spacing-sm);
+  left: var(--spacing-sm);
+  background: rgba(112, 214, 163, 0.2);
+  color: var(--palette-dark-contrast-green);
+  border: var(--border-width-thin) solid var(--palette-main-brand-green);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  z-index: 1000;
+}
+
 @media (min-width: 768px) {
   .header-banner-content {
     align-items: center;
