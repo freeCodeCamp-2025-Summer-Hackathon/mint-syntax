@@ -2,6 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Form, HTTPException
 from odmantic import ObjectId
+from odmantic.exceptions import DuplicateKeyError
 
 from src.api.dependencies import AdminUser
 from src.auth import get_password_hash
@@ -13,11 +14,23 @@ router = APIRouter(prefix="/users")
 
 @router.post("/", response_model=UserPublic)
 async def create_user(db: Db, register_data: Annotated[UserRegister, Form()]):
-    user = User(
-        **register_data.model_dump(),
-        hashed_password=get_password_hash(register_data.password),
-    )
-    await db.save(user)
+    try:
+        user = User(
+            **register_data.model_dump(),
+            hashed_password=get_password_hash(register_data.password),
+        )
+        await db.save(user)
+    except DuplicateKeyError:
+        raise HTTPException(
+            status_code=409,
+            detail="User with this username already exists. "
+            "Please choose a different username",
+        ) from DuplicateKeyError
+    except Exception as e:
+        raise HTTPException(
+            status_code=400,
+            detail="An unexpected error occurred while creating the user.",
+        ) from e
     return user
 
 
