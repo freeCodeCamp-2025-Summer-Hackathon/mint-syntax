@@ -66,12 +66,15 @@ const Header = () => {
                 >
                   User:
                   <Chevron />
+                  User:
+                  <Chevron />
                 </button>
                 <ul
                   tabIndex={0}
                   className='menu dropdown-content dropdown-main-brand-green'
                 >
                   <li>
+                    <a href='/me'>My profile</a>
                     <a href='/me'>My profile</a>
                   </li>
                   <li>
