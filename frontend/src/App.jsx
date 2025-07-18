@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
+import { Helmet } from '@dr.pogodin/react-helmet';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import IdeaFormSection from './components/IdeaFormSection';
@@ -8,23 +8,16 @@ import IdeaSubmissionForm from './components/IdeaSubmissionForm';
 import LandingPageContent from './components/LandingPageContent';
 import HelpPage from './components/HelpPage';
 import LoginPage from './pages/LoginPage';
+import ForgotPassword from './pages/ForgotPassword';
 import RegisterPage from './pages/RegisterPage';
+
 import { IdeaAddPage, IdeaEditPage, IdeaPage, IdeasPage } from './pages/Ideas';
 import './styles.css';
 
-import Spinny from './components/Spinny';
+import ErrorBoundary from './components/ErrorBoundary.jsx';
+import NotFound from './pages/NotFound.jsx';
 
 function App() {
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 3000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
   return (
     <div id='top' className='body-style'>
       <Helmet>
@@ -36,33 +29,32 @@ function App() {
       </Helmet>
       <div className='container-wrapper'>
         <Header />
-        <Routes>
-          <Route
-            path='/'
-            element={
-              isLoading ? (
-                <div className='spinner-wrapper-container'>
-                  <Spinny />
-                </div>
-              ) : (
+        <ErrorBoundary>
+          <Routes>
+            <Route
+              path=''
+              element={
                 <>
                   <IdeaFormSection count='3' sort='trending' />
                   <IdeaSubmissionForm />
                   <LandingPageContent />
                 </>
-              )
-            }
-          />
-          <Route path='help' element={<HelpPage />} />
-          <Route path='login' element={<LoginPage />} />
-          <Route path='register' element={<RegisterPage />} />
-          <Route path='ideas'>
-            <Route index element={<IdeasPage />} />
-            <Route path=':ideaId' element={<IdeaPage />} />
-            <Route path=':ideaId/edit' element={<IdeaEditPage />} />
-            <Route path='add' element={<IdeaAddPage />} />
-          </Route>
-        </Routes>
+              }
+            />
+            <Route path='help' element={<HelpPage />} />
+            <Route path='login' element={<LoginPage />} />
+            <Route path='forgot-password' element={<ForgotPassword />} />
+            <Route path='register' element={<RegisterPage />} />
+            <Route path='ideas'>
+              <Route index element={<IdeasPage />} />
+              <Route path=':ideaId' element={<IdeaPage />} />
+              <Route path=':ideaId/edit' element={<IdeaEditPage />} />
+              <Route path='add' element={<IdeaAddPage />} />
+              <Route path='page/:page' element={<IdeasPage />} />
+            </Route>
+            <Route path='*' element={<NotFound />} />
+          </Routes>
+        </ErrorBoundary>
         <Footer />
       </div>
     </div>
