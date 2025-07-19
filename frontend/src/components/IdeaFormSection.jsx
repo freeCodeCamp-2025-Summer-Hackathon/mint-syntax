@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link, NavLink } from 'react-router';
-
+import { Link, NavLink } from 'react-router-dom';
 import UpvoteImg from '../assets/Upvote.svg';
-
 import { useApi } from '../hooks/useApi';
 import { Pagination } from './Pagination';
+import Spinny from './Spinny';
 
 const IdeaFormSection = ({
+  headerText = 'Vote on Current Ideas',
   count,
   sort = null,
   page = 0,
@@ -67,15 +67,17 @@ const IdeaFormSection = ({
 
   return (
     <section className='idea-form-section'>
-      <div className='voting-section' tabIndex='0'>
-        <h3>Vote on Current Ideas</h3>
+      <div className='section-card' tabIndex='0'>
+        <h3 className='section-heading'>{headerText}</h3>
         {error ? (
           `${error}`
         ) : isLoading && !entries ? (
-          'Loading...'
+          <div className='spinner-wrapper-container'>
+            <Spinny />
+          </div>
         ) : (
           <ul className='idea-list'>
-            {entries === 0
+            {!entries || entries.length === 0
               ? "There's no ideas, add yours!"
               : entries.map(({ id, name, upvoted_by }) => {
                   return (
