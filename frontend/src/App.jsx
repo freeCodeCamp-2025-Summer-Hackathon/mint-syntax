@@ -8,9 +8,10 @@ import HelpPage from './components/HelpPage';
 import LoginPage from './pages/LoginPage';
 import ForgotPassword from './pages/ForgotPassword';
 import RegisterPage from './pages/RegisterPage';
-import MePage from './pages/MePage';
-import MeEditPage from './pages/MeEditPage';
-import MyIdeasPage from './pages/MyIdeasPage';
+import MePage from './pages/MePage'; // From me/pages branch
+import MeEditPage from './pages/MeEditPage'; // From me/pages branch
+import MyIdeasPage from './pages/MyIdeasPage'; // From me/pages branch
+import SearchPage from './pages/SearchPage'; // From main branch
 
 import { IdeaAddPage, IdeaEditPage, IdeaPage, IdeasPage } from './pages/Ideas';
 import './styles.css';
@@ -42,6 +43,7 @@ function App() {
           <Routes>
             <Route path='' element={<LandingPage />} />
             <Route path='help' element={<HelpPage />} />
+            <Route path='search' element={<SearchPage />} />
             <Route path='login' element={<LoginPage />} />
             <Route path='forgot-password' element={<ForgotPassword />} />
             <Route path='register' element={<RegisterPage />} />
