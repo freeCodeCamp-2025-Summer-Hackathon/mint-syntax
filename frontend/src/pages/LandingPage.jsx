@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import IdeaFormSection from '../components/IdeaFormSection';
 import IdeaSubmissionForm from '../components/IdeaSubmissionForm';
 import LandingPageContent from '../components/LandingPageContent';
