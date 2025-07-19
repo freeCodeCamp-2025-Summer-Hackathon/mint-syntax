@@ -8,6 +8,9 @@ import HelpPage from './components/HelpPage';
 import LoginPage from './pages/LoginPage';
 import ForgotPassword from './pages/ForgotPassword';
 import RegisterPage from './pages/RegisterPage';
+import UsersPage from './pages/UsersPage';
+import UserPage from './pages/UserPage';
+import UserEditPage from './pages/UserEditPage';
 import SearchPage from './pages/SearchPage';
 
 import { IdeaAddPage, IdeaEditPage, IdeaPage, IdeasPage } from './pages/Ideas';
@@ -44,6 +47,11 @@ function App() {
             <Route path='login' element={<LoginPage />} />
             <Route path='forgot-password' element={<ForgotPassword />} />
             <Route path='register' element={<RegisterPage />} />
+            <Route path='users'>
+              <Route index element={<UsersPage />} />
+              <Route path=':id' element={<UserPage />} />
+              <Route path=':id/edit' element={<UserEditPage />} />
+            </Route>
             <Route path='ideas'>
               <Route index element={<IdeasPage headerText='All Ideas' />} />
               <Route path=':ideaId' element={<IdeaPage />} />
