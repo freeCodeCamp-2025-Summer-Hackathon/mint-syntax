@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router';
 import UpvoteImg from '../assets/Upvote.svg';
 import { useApi } from '../hooks/useApi';
 import { Pagination } from './Pagination';
