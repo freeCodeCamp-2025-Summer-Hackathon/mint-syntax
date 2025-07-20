@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 const UserPage = () => {
   const { id } = useParams(); // Get the user ID from the URL
 
