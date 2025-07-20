@@ -11,7 +11,12 @@ import RegisterPage from './pages/RegisterPage';
 import UsersPage from './pages/UsersPage';
 import UserPage from './pages/UserPage';
 import UserEditPage from './pages/UserEditPage';
+import MePage from './pages/MePage';
+import MeEditPage from './pages/MeEditPage';
+import MyIdeasPage from './pages/MyIdeasPage';
+import LogoutPage from './pages/LogoutPage';
 import SearchPage from './pages/SearchPage';
+import UserIdeasPage from './pages/UserIdeasPage';
 
 import { IdeaAddPage, IdeaEditPage, IdeaPage, IdeasPage } from './pages/Ideas';
 import './styles.css';
@@ -34,7 +39,7 @@ function App() {
         <title>Idea Forge</title>
         <meta
           name='description'
-          content='A collaborative brainstorming board where users can post new ideas or feature requests, upvote, comment on, and suggest improvements for ideas, and see trending or implemented ideas.'
+          content='A collaborative brainstorming board where users can post new ideas or feature requests, upvote, comment on, and suggest improvements for ideas, and and see trending or implemented ideas.'
         />
       </Helmet>
       <div className='container-wrapper'>
@@ -51,7 +56,14 @@ function App() {
               <Route index element={<UsersPage />} />
               <Route path=':id' element={<UserPage />} />
               <Route path=':id/edit' element={<UserEditPage />} />
+              <Route path=':id/ideas' element={<UserIdeasPage />} />
             </Route>
+            <Route path='me'>
+              <Route index element={<MePage />} />
+              <Route path='edit' element={<MeEditPage />} />
+              <Route path='ideas' element={<MyIdeasPage />} />
+            </Route>
+            <Route path='logout' element={<LogoutPage />} />
             <Route path='ideas'>
               <Route index element={<IdeasPage headerText='All Ideas' />} />
               <Route path=':ideaId' element={<IdeaPage />} />
