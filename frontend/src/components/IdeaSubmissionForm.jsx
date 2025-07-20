@@ -38,7 +38,7 @@ const IdeaSubmissionForm = () => {
   useEffect(() => {
     if (data && !error) {
       setSuccess(true);
-      navigate(`/idea/${data.id}`);
+      navigate(`/ideas/${data.id}`);
     }
     if (error) {
       setSubmitError(error.message);
