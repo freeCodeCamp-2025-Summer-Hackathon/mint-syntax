@@ -1,6 +1,8 @@
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router';
 import { useApi } from '../hooks/useApi';
+import { useUser } from '../hooks/useUser';
 
 const UserIcon = () => {
   return (
@@ -44,16 +46,33 @@ const PasswordIcon = () => {
   );
 };
 
-export function RegisterForm() {
+export function RegisterForm({ redirect_to = '/' }) {
   const formRef = useRef();
   const {
-    formState: { errors },
+    formState: { errors, isSubmitting, isValid },
     handleSubmit,
     register,
     getValues,
   } = useForm();
+  const { isLogged, login } = useUser();
+  const navigate = useNavigate();
 
-  const { fetchFromApi } = useApi({ method: 'POST' });
+  const { error, response, data, fetchFromApi } = useApi({ method: 'POST' });
+
+  useEffect(() => {
+    if (data && !error) {
+      login(data);
+    }
+    if (error) {
+      console.log('Error:', error);
+    }
+  }, [response, data, error, login]);
+
+  useEffect(() => {
+    if (isLogged && redirect_to) {
+      navigate(redirect_to);
+    }
+  }, [isLogged, navigate, redirect_to]);
 
   const onSubmit = async () => {
     try {
@@ -62,7 +81,7 @@ export function RegisterForm() {
         body: new FormData(formRef.current),
       });
     } catch (e) {
-      console.log(e);
+      console.log('error!', e);
     }
   };
 
@@ -81,10 +100,17 @@ export function RegisterForm() {
           />
         </label>
       </label>
-      {errors.username?.type === 'required' && (
+      {errors.username?.type === 'required' ? (
         <p role='alert' className='text-error'>
           The field "Username" is required.
         </p>
+      ) : (
+        error &&
+        response.status === 409 && (
+          <p role='alert' className='text-error'>
+            This username is already in use.
+          </p>
+        )
       )}
 
       <label className='floating-label flex justify-between py-2'>
@@ -159,8 +185,19 @@ export function RegisterForm() {
         )
       )}
 
+      {error && response.status !== 409 && (
+        <div className='text-error text-center'>
+          Something went wrong, please try again later.
+        </div>
+      )}
+
       <div className='flex justify-center'>
-        <button className='my-1 animated-button'>Register</button>
+        <button
+          className='my-1 animated-button'
+          {...((isSubmitting || !isValid) && { disabled: 'disabled' })}
+        >
+          Register
+        </button>
       </div>
     </form>
   );
