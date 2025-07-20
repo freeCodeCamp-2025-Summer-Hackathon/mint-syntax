@@ -114,7 +114,7 @@ async def upvote_idea(
     if current_user.id in idea.upvoted_by or idea.id in current_user.upvotes:
         return idea
 
-    with suppress(KeyError):
+    with suppress(ValueError):
         idea.downvoted_by.remove(current_user.id)
         current_user.downvotes.remove(idea.id)
 
@@ -137,7 +137,7 @@ async def downvote_idea(
     if current_user.id in idea.downvoted_by or idea.id in current_user.downvotes:
         return idea
 
-    with suppress(KeyError):
+    with suppress(ValueError):
         idea.upvoted_by.remove(current_user.id)
         current_user.upvotes.remove(idea.id)
 

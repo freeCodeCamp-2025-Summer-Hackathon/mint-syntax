@@ -8,6 +8,11 @@ import HelpPage from './components/HelpPage';
 import LoginPage from './pages/LoginPage';
 import ForgotPassword from './pages/ForgotPassword';
 import RegisterPage from './pages/RegisterPage';
+import MePage from './pages/MePage';
+import MeEditPage from './pages/MeEditPage';
+import MyIdeasPage from './pages/MyIdeasPage';
+import LogoutPage from './pages/LogoutPage';
+import SearchPage from './pages/SearchPage';
 
 import { IdeaAddPage, IdeaEditPage, IdeaPage, IdeasPage } from './pages/Ideas';
 import './styles.css';
@@ -39,9 +44,16 @@ function App() {
           <Routes>
             <Route path='' element={<LandingPage />} />
             <Route path='help' element={<HelpPage />} />
+            <Route path='search' element={<SearchPage />} />
             <Route path='login' element={<LoginPage />} />
             <Route path='forgot-password' element={<ForgotPassword />} />
             <Route path='register' element={<RegisterPage />} />
+            <Route path='me'>
+              <Route index element={<MePage />} />
+              <Route path='edit' element={<MeEditPage />} />
+              <Route path='ideas' element={<MyIdeasPage />} />
+            </Route>
+            <Route path='logout' element={<LogoutPage />} />
             <Route path='ideas'>
               <Route index element={<IdeasPage headerText='All Ideas' />} />
               <Route path=':ideaId' element={<IdeaPage />} />

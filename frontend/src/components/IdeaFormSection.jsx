@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, NavLink } from 'react-router';
 import UpvoteImg from '../assets/Upvote.svg';
+import { IdeaListItem } from './IdeaListItem';
 import { useApi } from '../hooks/useApi';
 import { Pagination } from './Pagination';
 import Spinny from './Spinny';
@@ -71,37 +72,17 @@ const IdeaFormSection = ({
         <h3 className='section-heading'>{headerText}</h3>
         {error ? (
           `${error}`
-        ) : isLoading && !entries ? (
+        ) : isLoading && entries.length === 0 ? (
           <div className='spinner-wrapper-container'>
             <Spinny />
           </div>
         ) : (
           <ul className='idea-list'>
-            {!entries || entries.length === 0
+            {entries.length === 0
               ? "There's no ideas, add yours!"
-              : entries.map(({ id, name, upvoted_by }) => {
-                  return (
-                    <Link to={`/ideas/${id}`} key={id}>
-                      <li className='idea-item'>
-                        <span className='idea-text'>{name}</span>
-                        <div className='vote-controls'>
-                          <form onSubmit={() => {}}>
-                            <button className='image-only-upvote-button'>
-                              <img
-                                src={UpvoteImg}
-                                alt='Upvote'
-                                className='upvote-icon'
-                              />
-                            </button>
-                          </form>
-                          <span className='vote-count'>
-                            {upvoted_by?.length}
-                          </span>
-                        </div>
-                      </li>
-                    </Link>
-                  );
-                })}
+              : entries.map(entry => (
+                  <IdeaListItem key={entry.id} {...entry} />
+                ))}
           </ul>
         )}
         {paginate && showPages && entries.length > 0 && <>{pagination}</>}
