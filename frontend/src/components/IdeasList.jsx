@@ -1,6 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link, NavLink } from 'react-router';
-import UpvoteImg from '../assets/Upvote.svg';
 import { IdeaListItem } from './IdeaListItem';
 import { useApi } from '../hooks/useApi';
 import { Pagination } from './Pagination';
