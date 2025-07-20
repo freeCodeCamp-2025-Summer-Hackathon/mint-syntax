@@ -20,12 +20,12 @@ async def create_user(db: Db, register_data: Annotated[UserRegister, Form()]):
             hashed_password=get_password_hash(register_data.password),
         )
         await db.save(user)
-    except DuplicateKeyError:
+    except DuplicateKeyError as e:
         raise HTTPException(
             status_code=409,
             detail="User with this username already exists. "
             "Please choose a different username",
-        ) from DuplicateKeyError
+        ) from e
     except Exception as e:
         raise HTTPException(
             status_code=400,
