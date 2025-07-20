@@ -1,16 +1,13 @@
+import React from 'react';
 import { Link } from 'react-router';
-import IdeaFormSection from '../components/IdeaFormSection';
+import IdeasList from '../components/IdeasList';
 import IdeaSubmissionForm from '../components/IdeaSubmissionForm';
 import LandingPageContent from '../components/LandingPageContent';
 
 const LandingPage = () => {
   return (
     <>
-      <IdeaFormSection
-        count='3'
-        sort='trending'
-        headerText='Vote on Current Ideas'
-      />
+      <IdeasList count='3' sort='trending' headerText='Vote on Current Ideas' />
       <IdeaSubmissionForm />
       <LandingPageContent />
       <div style={{ textAlign: 'center', marginTop: 'var(--spacing-md)' }}>
