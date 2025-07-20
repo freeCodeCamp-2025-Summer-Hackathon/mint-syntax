@@ -11,6 +11,7 @@ import RegisterPage from './pages/RegisterPage';
 import MePage from './pages/MePage';
 import MeEditPage from './pages/MeEditPage';
 import MyIdeasPage from './pages/MyIdeasPage';
+import LogoutPage from './pages/LogoutPage';
 import SearchPage from './pages/SearchPage';
 
 import { IdeaAddPage, IdeaEditPage, IdeaPage, IdeasPage } from './pages/Ideas';
@@ -52,6 +53,7 @@ function App() {
               <Route path='edit' element={<MeEditPage />} />
               <Route path='ideas' element={<MyIdeasPage />} />
             </Route>
+            <Route path='logout' element={<LogoutPage />} />
             <Route path='ideas'>
               <Route index element={<IdeasPage headerText='All Ideas' />} />
               <Route path=':ideaId' element={<IdeaPage />} />
