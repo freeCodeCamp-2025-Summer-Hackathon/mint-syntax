@@ -4,7 +4,7 @@ import { useApi } from '../hooks/useApi';
 import { Pagination } from './Pagination';
 import Spinny from './Spinny';
 
-const IdeaFormSection = ({
+const IdeasList = ({
   headerText = 'Vote on Current Ideas',
   count,
   sort = null,
@@ -89,4 +89,4 @@ const IdeaFormSection = ({
   );
 };
 
-export default IdeaFormSection;
+export default IdeasList;
