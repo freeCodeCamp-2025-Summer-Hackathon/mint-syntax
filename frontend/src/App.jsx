@@ -39,7 +39,7 @@ function App() {
         <title>Idea Forge</title>
         <meta
           name='description'
-          content='A collaborative brainstorming board where users can post new ideas or feature requests, upvote, comment on, and suggest improvements for ideas, and and see trending or implemented ideas.'
+          content='A collaborative brainstorming board where users can post new ideas or feature requests, upvote, comment on, and suggest improvements for ideas, and see trending or implemented ideas.'
         />
       </Helmet>
       <div className='container-wrapper'>
