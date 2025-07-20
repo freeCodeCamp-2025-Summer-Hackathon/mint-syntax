@@ -4,7 +4,7 @@ import { Helmet } from '@dr.pogodin/react-helmet';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import LandingPage from './pages/LandingPage';
-import HelpPage from './components/HelpPage';
+import HelpPage from './pages/HelpPage';
 import LoginPage from './pages/LoginPage';
 import ForgotPassword from './pages/ForgotPassword';
 import RegisterPage from './pages/RegisterPage';
