@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router';
 import IdeasList from '../components/IdeasList';
 import IdeaSubmissionForm from '../components/IdeaSubmissionForm';
