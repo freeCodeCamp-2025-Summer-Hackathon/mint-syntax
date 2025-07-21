@@ -4,7 +4,7 @@ import { useApi } from '../hooks/useApi';
 import { Pagination } from './Pagination';
 import Spinny from './Spinny';
 
-const IdeaFormSection = ({
+const IdeasList = ({
   headerText = 'Vote on Current Ideas',
   count,
   sort = null,
@@ -70,13 +70,13 @@ const IdeaFormSection = ({
         <h3 className='section-heading'>{headerText}</h3>
         {error ? (
           `${error}`
-        ) : isLoading && !entries ? (
+        ) : isLoading && entries.length === 0 ? (
           <div className='spinner-wrapper-container'>
             <Spinny />
           </div>
         ) : (
           <ul className='idea-list'>
-            {!entries || entries.length === 0
+            {entries.length === 0
               ? "There's no ideas, add yours!"
               : entries.map(entry => (
                   <IdeaListItem key={entry.id} {...entry} />
@@ -89,4 +89,4 @@ const IdeaFormSection = ({
   );
 };
 
-export default IdeaFormSection;
+export default IdeasList;

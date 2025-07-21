@@ -1,18 +1,22 @@
 import React, { useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router';
 import { Helmet } from '@dr.pogodin/react-helmet';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import LandingPage from './pages/LandingPage';
-import HelpPage from './components/HelpPage';
+import HelpPage from './pages/HelpPage';
 import LoginPage from './pages/LoginPage';
 import ForgotPassword from './pages/ForgotPassword';
 import RegisterPage from './pages/RegisterPage';
+import UsersPage from './pages/UsersPage';
+import UserPage from './pages/UserPage';
+import UserEditPage from './pages/UserEditPage';
 import MePage from './pages/MePage';
 import MeEditPage from './pages/MeEditPage';
 import MyIdeasPage from './pages/MyIdeasPage';
 import LogoutPage from './pages/LogoutPage';
 import SearchPage from './pages/SearchPage';
+import UserIdeasPage from './pages/UserIdeasPage';
 
 import { IdeaAddPage, IdeaEditPage, IdeaPage, IdeasPage } from './pages/Ideas';
 import './styles.css';
@@ -48,6 +52,12 @@ function App() {
             <Route path='login' element={<LoginPage />} />
             <Route path='forgot-password' element={<ForgotPassword />} />
             <Route path='register' element={<RegisterPage />} />
+            <Route path='users'>
+              <Route index element={<UsersPage />} />
+              <Route path=':id' element={<UserPage />} />
+              <Route path=':id/edit' element={<UserEditPage />} />
+              <Route path=':id/ideas' element={<UserIdeasPage />} />
+            </Route>
             <Route path='me'>
               <Route index element={<MePage />} />
               <Route path='edit' element={<MeEditPage />} />

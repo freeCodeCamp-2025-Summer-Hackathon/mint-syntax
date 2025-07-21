@@ -38,7 +38,7 @@ const IdeaSubmissionForm = () => {
   useEffect(() => {
     if (data && !error) {
       setSuccess(true);
-      navigate(`/idea/${data.id}`);
+      navigate(`/ideas/${data.id}`);
     }
     if (error) {
       setSubmitError(error.message);
@@ -117,19 +117,27 @@ const IdeaSubmissionForm = () => {
             <option value='other'>Other</option>
           </select>
         </div> */}
-        <button
-          type='submit'
-          className='animated-button golden'
-          {...((loading || success) && { disabled: true })}
+        <div
+          style={{ width: 'fit-content', alignSelf: 'center' }}
+          {...(!isLogged && {
+            className: 'tooltip tooltip-warning',
+            'data-tip': 'Login to add ideas',
+          })}
         >
-          {success ? (
-            <SuccessIcon />
-          ) : loading ? (
-            <Spinny />
-          ) : (
-            <>Start Your IdeaForge</>
-          )}
-        </button>
+          <button
+            type='submit'
+            className='animated-button golden'
+            {...((loading || success || !isLogged) && { disabled: true })}
+          >
+            {success ? (
+              <SuccessIcon />
+            ) : loading ? (
+              <Spinny />
+            ) : (
+              <>Start Your IdeaForge</>
+            )}
+          </button>
+        </div>
         {submitError && (
           <p role='alert' className='text-error'>
             Error: {submitError}

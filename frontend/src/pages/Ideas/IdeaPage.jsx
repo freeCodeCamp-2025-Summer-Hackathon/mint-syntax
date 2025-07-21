@@ -8,10 +8,12 @@ import { DownvoteButton, UpvoteButton } from '../../components/VoteButtons';
 
 export const IdeaPage = () => {
   const { ideaId } = useParams();
-  const { isLogged } = useUser();
+  const { isLogged, userState, upvote, downvote } = useUser();
   const [loading, setLoading] = useState(true);
-  const [isUpvoted, setIsUpvoted] = useState(false);
-  const [isDownvoted, setIsDownvoted] = useState(false);
+  const [isUpvoted, setIsUpvoted] = useState(userState.upvotes.has(ideaId));
+  const [isDownvoted, setIsDownvoted] = useState(
+    userState.downvotes.has(ideaId)
+  );
   const { error, data, fetchFromApi } = useApi({
     loadingInitially: true,
   });
@@ -25,6 +27,7 @@ export const IdeaPage = () => {
         upvotes: idea.upvotes + 1,
         ...(isDownvoted && { downvotes: idea.downvotes - 1 }),
       }));
+      upvote(ideaId);
       setIsUpvoted(true);
     }
   };
@@ -40,6 +43,7 @@ export const IdeaPage = () => {
         downvotes: idea.downvotes + 1,
         ...(isUpvoted && { upvotes: idea.upvotes - 1 }),
       }));
+      downvote(ideaId);
       setIsDownvoted(true);
     }
   };
@@ -69,12 +73,14 @@ export const IdeaPage = () => {
   return loading ? (
     <Spinny />
   ) : error ? (
-    <>{error}</>
+    <div className='section-card flex flex-col items-center justify-center min-h-[60vh]'>
+      <p className='text-error'>{error}</p>
+    </div>
   ) : (
-    <section>
-      <h1 className='header'>{idea?.name}</h1>
-      <p>{idea?.description}</p>
-      <div className='stats stats-vertical lg:stats-horizontal shadow'>
+    <section className='section-card'>
+      <h1 className='section-heading'>{idea?.name}</h1>
+      <p className='text-lg text-gray-700 mb-4'>{idea?.description}</p>
+      <div className='stats stats-vertical lg:stats-horizontal shadow my-4'>
         <div className='stat'>
           <div className='stat-title'>Upvotes</div>
           <div className='stat-value'>{idea?.upvotes}</div>
@@ -86,7 +92,7 @@ export const IdeaPage = () => {
         </div>
       </div>
       {isLogged && (
-        <>
+        <div className='flex gap-4 mt-4 justify-center'>
           <UpvoteButton {...{ ideaId, onSuccess: onUpvoteSuccess, onError }} />
           <DownvoteButton
             {...{
@@ -95,7 +101,7 @@ export const IdeaPage = () => {
               onError,
             }}
           />
-        </>
+        </div>
       )}
     </section>
   );

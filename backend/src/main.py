@@ -4,8 +4,10 @@ from fastapi.responses import JSONResponse
 from fastapi_csrf_protect.exceptions import CsrfProtectError
 
 from src.api.main import api_router
+from src.auth import get_current_active_user
 from src.config import get_settings
 from src.csrf import verify_csrf
+from src.models import User, UserMe
 
 app = FastAPI(dependencies=[Depends(verify_csrf)])
 
@@ -43,6 +45,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.get("/me")
+async def get_me(current_user: Annotated[User, Depends(get_current_active_user)]):
+    return UserMe(**current_user.model_dump())
 
 
 @app.get("/")
