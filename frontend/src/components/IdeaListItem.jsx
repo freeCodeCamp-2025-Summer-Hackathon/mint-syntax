@@ -2,14 +2,16 @@ import { useState } from 'react';
 import { Link } from 'react-router';
 
 import { UpvoteButton } from './VoteButtons';
+import { useUser } from '../hooks/useUser';
 
 export const IdeaListItem = ({ id, name, upvoted_by }) => {
+  const { userState, dispatch } = useUser();
   const [idea, setIdea] = useState({
     id,
     name,
     upvotes: upvoted_by.length,
   });
-  const [isUpvoted, setIsUpvoted] = useState(false);
+  const [isUpvoted, setIsUpvoted] = useState(userState?.upvotes?.has(id));
 
   const onSuccess = () => {
     if (!isUpvoted) {
@@ -17,6 +19,7 @@ export const IdeaListItem = ({ id, name, upvoted_by }) => {
         ...idea,
         upvotes: idea.upvotes + 1,
       }));
+      dispatch({ type: 'upvote', ideaId: id });
       setIsUpvoted(true);
     }
   };
