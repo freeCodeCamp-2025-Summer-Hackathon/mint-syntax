@@ -1,5 +1,6 @@
 import { useApi } from '../hooks/useApi';
-import UpvoteImg from '../assets/Upvote.svg';
+import UpvoteButtonImg from '../assets/UpvoteButton.svg';
+import DownvoteButtonImg from '../assets/DownvoteButton.svg';
 import { useEffect, useState } from 'react';
 import Spinny from './Spinny';
 import { useUser } from '../hooks/useUser';
@@ -84,7 +85,9 @@ export const DownvoteButton = ({ ideaId, onSuccess, onError }) => (
       buttonProps: {
         className: 'image-only-downvote-button',
       },
-      buttonContents: <>downvote</>,
+      buttonContents: (
+        <img src={DownvoteButtonImg} alt='Downvote' className='downvote-icon' />
+      ),
       fetchAddr: `/ideas/${ideaId}/downvote`,
       ideaId,
       onSuccess,
@@ -100,7 +103,7 @@ export const UpvoteButton = ({ ideaId, onSuccess, onError }) => (
         className: 'image-only-upvote-button',
       },
       buttonContents: (
-        <img src={UpvoteImg} alt='Upvote' className='upvote-icon' />
+        <img src={UpvoteButtonImg} alt='Upvote' className='upvote-icon' />
       ),
       fetchAddr: `/ideas/${ideaId}/upvote`,
       ideaId,
