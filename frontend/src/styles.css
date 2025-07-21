@@ -892,6 +892,41 @@ body {
   filter: drop-shadow(0 0 0.1rem rgba(0, 0, 0, 0.2));
 }
 
+.image-only-downvote-button {
+  background-color: transparent;
+  border: 2px solid var(--palette-borders-separators);
+  padding: var(--image-only-upvote-button-padding);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease-in-out;
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.image-only-downvote-button img {
+  width: var(--upvote-icon-size);
+  height: var(--upvote-icon-size);
+  filter: drop-shadow(0 0 0.1rem rgba(0, 0, 0, 0.2));
+}
+
+.image-only-downvote-button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--palette-code-accent);
+}
+
+.image-only-downvote-button:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-active);
+  border-color: var(--palette-code-accent);
+}
+
+.image-only-downvote-button:active img {
+  filter: drop-shadow(0 0 0.1rem rgba(0, 0, 0, 0.2));
+}
+
 .vote-count {
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-semibold);
