@@ -38,8 +38,10 @@ def generate_idea(user_ids: list[ObjectId], user_lookup: dict[ObjectId, User]) -
             "name": fake.sentence(nb_words=5, variable_nb_words=True),
             "description": fake.paragraph(nb_sentences=5, variable_nb_sentences=True),
             "creator_id": creator_id,
+            "creation_time": fake.date_time(),
         }
     )
+    new_idea.last_edit_time = fake.date_time_between(start_date=new_idea.creation_time)
 
     for voter_id in generate_votes(user_ids):
         if voter_id != creator_id:
