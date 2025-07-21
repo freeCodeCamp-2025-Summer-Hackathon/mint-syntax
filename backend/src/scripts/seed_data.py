@@ -75,13 +75,17 @@ async def seed_ideas(
 
 
 async def main():
-    await seed_users(hard_prune=True)
+    await seed_users(  # hard_prune=False
+    )
     engine = await get_engine()
     users = await engine.find(User)
     user_ids = [user.id for user in users]
     if not user_ids:
         raise RuntimeError("No user ids found in the database; cannot seed ideas.")
-    await seed_ideas(user_ids, hard_prune=True)
+    await seed_ideas(
+        user_ids,
+        # hard_prune=True
+    )
     print("Database seeded successfully.")
 
 
