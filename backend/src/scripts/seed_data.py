@@ -20,9 +20,11 @@ def generate_user() -> User:
     )
 
 
-async def seed_users(num_users: int = 10) -> list[User]:
+async def seed_users(num_users: int = 10, hard_prune: bool = False) -> list[User]:
     new_users = [generate_user() for _ in range(num_users)]
     engine = await get_engine()
+    if hard_prune:
+        await engine.remove(User)
     await engine.save_all(new_users)
     return new_users
 
@@ -33,15 +35,16 @@ def generate_votes(voter_ids: list[ObjectId]) -> list[ObjectId]:
 
 def generate_idea(user_ids: list[ObjectId], user_lookup: dict[ObjectId, User]) -> Idea:
     creator_id = fake.random_element(user_ids)
+    creation_time = fake.date_time()
     new_idea = Idea.model_validate(
         {
             "name": fake.sentence(nb_words=5, variable_nb_words=True),
             "description": fake.paragraph(nb_sentences=5, variable_nb_sentences=True),
             "creator_id": creator_id,
-            "creation_time": fake.date_time(),
+            "creation_time": creation_time,
+            "last_edit_time": fake.date_time_between(start_date=creation_time),
         }
     )
-    new_idea.last_edit_time = fake.date_time_between(start_date=new_idea.creation_time)
 
     for voter_id in generate_votes(user_ids):
         if voter_id != creator_id:
@@ -56,8 +59,12 @@ def generate_idea(user_ids: list[ObjectId], user_lookup: dict[ObjectId, User]) -
     return new_idea
 
 
-async def seed_ideas(user_ids: list[ObjectId], num_ideas: int = 20) -> list[Idea]:
+async def seed_ideas(
+    user_ids: list[ObjectId], num_ideas: int = 20, hard_prune: bool = False
+) -> list[Idea]:
     engine = await get_engine()
+    if hard_prune:
+        await engine.remove(Idea)
     users = await engine.find(User)
     user_lookup = {user.id: user for user in users}
     new_ideas = [generate_idea(user_ids, user_lookup) for _ in range(num_ideas)]
@@ -67,15 +74,14 @@ async def seed_ideas(user_ids: list[ObjectId], num_ideas: int = 20) -> list[Idea
     return new_ideas
 
 
-# TODO: add optional database pruning before seeding
 async def main():
-    await seed_users()
+    await seed_users(hard_prune=True)
     engine = await get_engine()
     users = await engine.find(User)
     user_ids = [user.id for user in users]
     if not user_ids:
         raise RuntimeError("No user ids found in the database; cannot seed ideas.")
-    await seed_ideas(user_ids)
+    await seed_ideas(user_ids, hard_prune=True)
     print("Database seeded successfully.")
 
 
