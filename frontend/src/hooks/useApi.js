@@ -47,7 +47,7 @@ export const useApi = ({ method = 'GET', loadingInitially = false }) => {
       };
     }
 
-    return options;
+    return { ...options, credentials: 'include' };
   }, []);
 
   // TODO handle responses when access_token is no longer valid -> refreshing it with refresh_token
