@@ -44,6 +44,8 @@ async def login_for_access_token(
     )
 
 
-@router.post("/refresh")
-async def get_new_access_token(db: Db, refresh_token: str):
-    return await refresh_access_token(db, refresh_token)
+@router.get("/refresh")
+async def get_new_access_token(
+    db: Db, refresh_token: Annotated[RefreshToken, Cookie()]
+) -> Token:
+    return Token(**(await refresh_access_token(db, refresh_token.refresh_token)))
