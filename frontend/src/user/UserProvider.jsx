@@ -73,7 +73,7 @@ export const UserProvider = ({ children }) => {
                 credentials: 'include',
               }
             );
-            if (response.ok) {
+            if (refresh_response.ok) {
               const data = await refresh_response.json();
               localStorage.setItem('access_token', data.access_token);
               return fetchUser();
