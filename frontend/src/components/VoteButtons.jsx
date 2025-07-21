@@ -79,44 +79,36 @@ const Button = ({
   );
 };
 
-export const DownvoteButton = ({ ideaId, onSuccess, onError }) => {
-  const { userState } = useUser();
-  return (
-    <Button
-      {...{
-        buttonProps: {
-          className: 'image-only-downvote-button',
-          ...(userState.downvotes.has(ideaId) && { disabled: true }),
-        },
-        buttonContents: (
-          <img src={DownvoteButtonImg} alt='Downvote' className='downvote-icon' />
-        ),
-        fetchAddr: `/ideas/${ideaId}/downvote`,
-        ideaId,
-        onSuccess,
-        onError,
-      }}
-    />
-  );
-};
+export const DownvoteButton = ({ ideaId, onSuccess, onError }) => (
+  <Button
+    {...{
+      buttonProps: {
+        className: 'image-only-downvote-button',
+      },
+      buttonContents: (
+        <img src={DownvoteButtonImg} alt='Downvote' className='downvote-icon' />
+      ),
+      fetchAddr: `/ideas/${ideaId}/downvote`,
+      ideaId,
+      onSuccess,
+      onError,
+    }}
+  />
+);
 
-export const UpvoteButton = ({ ideaId, onSuccess, onError }) => {
-  const { userState } = useUser();
-  return (
-    <Button
-      {...{
-        buttonProps: {
-          className: 'image-only-upvote-button',
-          ...(userState.upvotes.has(ideaId) && { disabled: true }),
-        },
-        buttonContents: (
-          <img src={UpvoteButtonImg} alt='Upvote' className='upvote-icon' />
-        ),
-        fetchAddr: `/ideas/${ideaId}/upvote`,
-        ideaId,
-        onSuccess,
-        onError,
-      }}
-    />
-  );
-};
+export const UpvoteButton = ({ ideaId, onSuccess, onError }) => (
+  <Button
+    {...{
+      buttonProps: {
+        className: 'image-only-upvote-button',
+      },
+      buttonContents: (
+        <img src={UpvoteButtonImg} alt='Upvote' className='upvote-icon' />
+      ),
+      fetchAddr: `/ideas/${ideaId}/upvote`,
+      ideaId,
+      onSuccess,
+      onError,
+    }}
+  />
+);
