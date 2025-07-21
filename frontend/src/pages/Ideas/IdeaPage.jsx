@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { Link } from 'react-router';
 
 import { useApi } from '../../hooks/useApi';
 import Spinny from '../../components/Spinny';
