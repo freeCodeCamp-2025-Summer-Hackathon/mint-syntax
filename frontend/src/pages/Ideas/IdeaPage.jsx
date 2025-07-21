@@ -8,10 +8,12 @@ import { DownvoteButton, UpvoteButton } from '../../components/VoteButtons';
 
 export const IdeaPage = () => {
   const { ideaId } = useParams();
-  const { isLogged } = useUser();
+  const { isLogged, userState, upvote, downvote } = useUser();
   const [loading, setLoading] = useState(true);
-  const [isUpvoted, setIsUpvoted] = useState(false);
-  const [isDownvoted, setIsDownvoted] = useState(false);
+  const [isUpvoted, setIsUpvoted] = useState(userState.upvotes.has(ideaId));
+  const [isDownvoted, setIsDownvoted] = useState(
+    userState.downvotes.has(ideaId)
+  );
   const { error, data, fetchFromApi } = useApi({
     loadingInitially: true,
   });
@@ -25,6 +27,7 @@ export const IdeaPage = () => {
         upvotes: idea.upvotes + 1,
         ...(isDownvoted && { downvotes: idea.downvotes - 1 }),
       }));
+      upvote(ideaId);
       setIsUpvoted(true);
     }
   };
@@ -40,6 +43,7 @@ export const IdeaPage = () => {
         downvotes: idea.downvotes + 1,
         ...(isUpvoted && { upvotes: idea.upvotes - 1 }),
       }));
+      downvote(ideaId);
       setIsDownvoted(true);
     }
   };

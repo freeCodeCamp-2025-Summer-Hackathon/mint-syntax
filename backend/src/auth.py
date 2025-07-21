@@ -1,5 +1,5 @@
 from datetime import UTC, datetime, timedelta
-from typing import Annotated
+from typing import Annotated, Literal
 
 import jwt
 from fastapi import Depends, HTTPException, status
@@ -28,7 +28,7 @@ def get_password_hash(plain_password):
     return password_context.hash(plain_password)
 
 
-async def authenticate_user(db, username, plain_password):
+async def authenticate_user(db, username, plain_password) -> User | Literal[False]:
     user = await db.find_one(User, User.username == username)
     if not user:
         return False
@@ -54,7 +54,7 @@ def create_access_token(
 def create_refresh_token(
     data: dict, expires_delta: timedelta = REFRESH_TOKEN_EXPIRE_MINUTES
 ):
-    return create_access_token(data, expires_delta)
+    return create_access_token(data, expires_delta), expires_delta
 
 
 credentials_exception = HTTPException(
