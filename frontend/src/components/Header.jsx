@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import { Link } from 'react-router';
 import { useUser } from '../hooks/useUser';
 import LoginForm from './LoginForm';
 import IdeaForgeLogo from '../assets/Idea-Forge-logo.svg';
@@ -70,18 +71,18 @@ const Header = () => {
                   className='menu dropdown-content dropdown-main-brand-green'
                 >
                   <li>
-                    <a href='/me'>My profile</a>
+                    <Link to='/me'>My profile</Link>
                   </li>
                   <li>
-                    <a href='/me/ideas'>My Ideas</a>
+                    <Link to='/me/ideas'>My Ideas</Link>
                   </li>
                   <li>
-                    <a href='/me/edit'>Edit profile</a>
+                    <Link to='/me/edit'>Edit profile</Link>
                   </li>
                   <li>
-                    <a onClick={logout} href='/logout'>
+                    <Link onClick={logout} to='/logout'>
                       Logout
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </div>
