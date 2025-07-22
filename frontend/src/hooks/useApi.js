@@ -42,7 +42,7 @@ export const useApi = ({ method = 'GET', loadingInitially = false }) => {
       }
     }
 
-    const access_token = sessionStorage.getItem('access_token');
+    const access_token = localStorage.getItem('access_token');
     if (access_token) {
       options['headers'] = {
         Authorization: `Bearer ${access_token}`,
