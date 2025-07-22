@@ -12,6 +12,16 @@ class User(Model):
     downvotes: list[ObjectId] = []
 
 
+class UserMe(BaseModel):
+    id: ObjectId
+    username: str
+    name: str
+    is_active: bool
+    is_admin: bool
+    upvotes: list[ObjectId]
+    downvotes: list[ObjectId]
+
+
 class UserPublic(BaseModel):
     id: ObjectId
     name: str = Field(max_length=255)
@@ -78,9 +88,17 @@ class Message(BaseModel):
 
 class Token(BaseModel):
     access_token: str
-    refresh_token: str
     token_type: str
+
+
+class RefreshToken(BaseModel):
+    refresh_token: str
 
 
 class TokenData(BaseModel):
     id: ObjectId | None = None
+
+
+class LoginData(BaseModel):
+    user_data: UserMe
+    token: Token
