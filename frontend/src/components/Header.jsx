@@ -25,9 +25,7 @@ const Chevron = () => {
 
 const Header = () => {
   const dialogRef = useRef();
-  const { isLogged, logout } = useUser();
-  console.log('asdfg', dialogRef);
-
+  const { isLogged, logout, userState } = useUser();
   return (
     <header className='header-style'>
       <div className='header-banner-content'>
@@ -64,7 +62,7 @@ const Header = () => {
                   tabIndex={0}
                   className='auth-button logged-in-button active'
                 >
-                  User:
+                  User: {userState.name}
                   <Chevron />
                 </button>
                 <ul
@@ -73,6 +71,12 @@ const Header = () => {
                 >
                   <li>
                     <a href='/me'>My profile</a>
+                  </li>
+                  <li>
+                    <a href='/me/ideas'>My Ideas</a>
+                  </li>
+                  <li>
+                    <a href='/me/edit'>Edit profile</a>
                   </li>
                   <li>
                     <a onClick={logout} href='/logout'>
