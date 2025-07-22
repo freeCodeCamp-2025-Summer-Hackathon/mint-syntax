@@ -8,7 +8,10 @@ const getCrsfToken = async () => {
 
   try {
     const response = await fetch(
-      import.meta.env.VITE_API_LOCATION + '/csrf/get-token'
+      import.meta.env.VITE_API_LOCATION + '/csrf/get-token',
+      {
+        credentials: 'include',
+      }
     );
 
     if (!response.ok) {
