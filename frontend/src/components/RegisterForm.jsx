@@ -88,7 +88,7 @@ export function RegisterForm({ redirect_to = '/' }) {
   return (
     <form ref={formRef} onSubmit={handleSubmit(onSubmit)}>
       <label className='floating-label flex justify-between py-2'>
-        Username:
+        Username: <span className='text-red-500'>*</span>
         <label className='input input-sm'>
           <UserIcon />
           <input
@@ -114,7 +114,7 @@ export function RegisterForm({ redirect_to = '/' }) {
       )}
 
       <label className='floating-label flex justify-between py-2'>
-        Name:
+        Name: <span className='text-red-500'>*</span>
         <label className='input input-sm'>
           <UserIcon />
           <input
@@ -133,7 +133,7 @@ export function RegisterForm({ redirect_to = '/' }) {
       )}
 
       <label className='floating-label flex justify-between py-2'>
-        Password:
+        Password: <span className='text-red-500'>*</span>
         <label className='input input-sm'>
           <PasswordIcon />
           <input
@@ -158,7 +158,7 @@ export function RegisterForm({ redirect_to = '/' }) {
       )}
 
       <label className='floating-label flex justify-between py-2'>
-        Repeat Password:
+        Repeat Password: <span className='text-red-500'>*</span>
         <label className='input input-sm'>
           <PasswordIcon />
           <input
