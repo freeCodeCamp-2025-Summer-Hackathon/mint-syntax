@@ -1,5 +1,6 @@
 from collections.abc import Mapping, Sequence
 from contextlib import suppress
+from datetime import datetime
 from typing import Annotated, Any
 
 from fastapi import APIRouter, HTTPException
@@ -26,7 +27,11 @@ router = APIRouter(prefix="/ideas")
 async def create_idea(
     db: Db, current_user: Annotated[User, LoggedInUser], idea_data: IdeaCreate
 ):
-    idea = Idea(**idea_data.model_dump(), creator_id=current_user.id)
+    idea = Idea(
+        **idea_data.model_dump(),
+        creator_id=current_user.id,
+        creation_time=datetime.now(),
+    )
     await db.save(idea)
     return idea
 
@@ -45,6 +50,8 @@ async def get_ideas(db: Db, skip: int = 0, limit: int = 20, sort: str | None = N
                     "downvoted_by": 1,
                     "creator_id": 1,
                     "upvotes": {"$size": "$upvoted_by"},
+                    "creation_time": 1,
+                    "last_edit_time": 1,
                 }
             },
             {"$sort": {"upvotes": -1}},

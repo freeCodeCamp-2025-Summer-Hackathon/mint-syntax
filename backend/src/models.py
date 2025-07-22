@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from odmantic import Field, Model, ObjectId
 from pydantic import BaseModel
 
@@ -48,6 +50,8 @@ class Idea(Model):
     upvoted_by: list[ObjectId] = []
     downvoted_by: list[ObjectId] = []
     creator_id: ObjectId
+    creation_time: datetime
+    last_edit_time: datetime
 
 
 class IdeaPublic(BaseModel):
@@ -57,6 +61,8 @@ class IdeaPublic(BaseModel):
     upvoted_by: list[ObjectId] = []
     downvoted_by: list[ObjectId] = []
     creator_id: ObjectId
+    creation_time: datetime
+    last_edit_time: datetime
 
 
 class IdeasPublic(BaseModel):
