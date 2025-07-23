@@ -1110,3 +1110,30 @@ body {
   box-shadow: var(--shadow-md);
   border-radius: var(--border-radius-md);
 }
+.dropdown-main-brand-green:hover {
+  background-color: var(--palette-dark-contrast-green);
+  box-shadow: var(--shadow-lg);
+}
+
+button:disabled,
+.animated-button:disabled,
+.auth-button:disabled,
+.image-only-upvote-button:disabled,
+.image-only-downvote-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+  pointer-events: none;
+  filter: grayscale(50%);
+}
+
+button:disabled:hover,
+.animated-button:disabled:hover,
+.auth-button:disabled:hover,
+.image-only-upvote-button:disabled:hover,
+.image-only-downvote-button:disabled:hover {
+  box-shadow: none;
+  transform: none;
+  border-color: var(--palette-borders-separators);
+}
