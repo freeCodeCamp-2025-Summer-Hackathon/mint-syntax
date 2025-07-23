@@ -110,12 +110,12 @@ const Header = () => {
                   <button>close</button>
                 </form>
               </dialog>
-              <a
+              <Link
                 className='auth-button not-logged-in-button active'
-                href='/register'
+                to='/register'
               >
                 Register
-              </a>
+              </Link>
             </>
           )}
         </div>
