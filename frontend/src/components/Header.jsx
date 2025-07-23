@@ -40,12 +40,12 @@ const Header = () => {
         <div className='header-center-content'>
           <nav className='navbar'>
             <div className='nav-list'>
-              <a href='/' className='nav-link'>
+              <Link to='/' className='nav-link'>
                 Home
-              </a>
-              <a href='/ideas/add/' className='nav-link'>
+              </Link>
+              <Link to='/ideas/add/' className='nav-link'>
                 Post Idea
-              </a>
+              </Link>
               <a href='/#about-project-section' className='nav-link'>
                 Project
               </a>
@@ -70,6 +70,11 @@ const Header = () => {
                   tabIndex={0}
                   className='menu dropdown-content dropdown-main-brand-green'
                 >
+                  {userState.is_admin && (
+                    <li>
+                      <Link to='/users'>All users</Link>
+                    </li>
+                  )}
                   <li>
                     <Link to='/me'>My profile</Link>
                   </li>
