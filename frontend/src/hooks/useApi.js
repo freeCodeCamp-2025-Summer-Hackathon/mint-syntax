@@ -1,10 +1,14 @@
 import { useCallback, useState } from 'react';
 
-const getCrsfToken = async () => {
-  const token = sessionStorage.getItem('csrf_token');
-  if (token) {
-    return token;
+const getCrsfToken = async ({ forceNew = false } = {}) => {
+  if (!forceNew) {
+    const token = sessionStorage.getItem('csrf_token');
+    if (token) {
+      return token;
+    }
   }
+
+  sessionStorage.removeItem('csrf_token');
 
   try {
     const response = await fetch(
@@ -17,9 +21,9 @@ const getCrsfToken = async () => {
     if (!response.ok) {
       throw new Error(response.statusText);
     }
-    const fresh_token = (await response.json())?.csrf_token;
-    sessionStorage.setItem('csrf_token', fresh_token);
-    return fresh_token;
+    const freshToken = (await response.json())?.csrf_token;
+    sessionStorage.setItem('csrf_token', freshToken);
+    return freshToken;
   } catch (e) {
     console.error(e);
   }
@@ -33,19 +37,19 @@ export const useApi = ({ method = 'GET', loadingInitially = false }) => {
 
   const attachDefaultHeaders = useCallback(async options => {
     if (!['GET', 'HEAD', 'OPTIONS'].includes(options?.method)) {
-      const csrf_token = await getCrsfToken();
-      if (csrf_token) {
+      const csrfToken = await getCrsfToken();
+      if (csrfToken) {
         options['headers'] = {
-          'X-CSRF-TOKEN': csrf_token,
+          'X-CSRF-TOKEN': csrfToken,
           ...options?.headers,
         };
       }
     }
 
-    const access_token = sessionStorage.getItem('access_token');
-    if (access_token) {
+    const accessToken = localStorage.getItem('access_token');
+    if (accessToken) {
       options['headers'] = {
-        Authorization: `Bearer ${access_token}`,
+        Authorization: `Bearer ${accessToken}`,
         ...options?.headers,
       };
     }
@@ -53,13 +57,8 @@ export const useApi = ({ method = 'GET', loadingInitially = false }) => {
     return { ...options, credentials: 'include' };
   }, []);
 
-  // TODO handle responses when access_token is no longer valid -> refreshing it with refresh_token
-  const fetchFromApi = useCallback(
+  const sendRequest = useCallback(
     async (path = '', extraFetchOptions = {}) => {
-      setError(null);
-      setLoading(true);
-      setResponse(null);
-      setData(null);
       try {
         const response = await fetch(
           import.meta.env.VITE_API_LOCATION + path,
@@ -72,7 +71,15 @@ export const useApi = ({ method = 'GET', loadingInitially = false }) => {
         setResponse(response);
         if (!response.ok) {
           try {
-            setData(await response.json());
+            const responseJson = await response.json();
+            if (
+              response.status === 403 &&
+              responseJson.detail.includes('Missing Cookie')
+            ) {
+              await getCrsfToken({ forceNew: true });
+              return await sendRequest();
+            }
+            setData(responseJson);
           } catch (e) {
             console.error(e);
           }
@@ -84,9 +91,21 @@ export const useApi = ({ method = 'GET', loadingInitially = false }) => {
         console.error('error', e);
         setError(e);
       }
-      setLoading(false);
     },
     [attachDefaultHeaders, method]
+  );
+
+  // TODO handle responses when access_token is no longer valid -> refreshing it with refresh_token
+  const fetchFromApi = useCallback(
+    async (path = '', extraFetchOptions = {}) => {
+      setError(null);
+      setLoading(true);
+      setResponse(null);
+      setData(null);
+      await sendRequest(path, extraFetchOptions);
+      setLoading(false);
+    },
+    [sendRequest]
   );
 
   return {
