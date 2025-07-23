@@ -12,7 +12,8 @@ const MePage = () => {
           <h1 className='section-heading'>{loggedUser.name}'s Profile</h1>
           <div className='h-full w-full text-lg text-gray-600 mb-8 flex flex-col'>
             <p>
-              <span className='font-bold'>Account Name:</span> {loggedUser.username}
+              <span className='font-bold'>Account Name:</span>{' '}
+              {loggedUser.username}
               {loggedUser.is_admin && <span> (Admin)</span>}
             </p>
             <p>
