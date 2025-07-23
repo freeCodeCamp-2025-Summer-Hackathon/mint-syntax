@@ -69,10 +69,10 @@ const IdeaSubmissionForm = () => {
       <form className='idea-form' onSubmit={handleSubmit(onSubmit)}>
         <div className='form-group'>
           <label htmlFor='idea-title' className='form-label'>
-            Idea Title:
+            Idea Title: <span className='text-red-500'>*</span>
           </label>
           <input
-            {...register('name')}
+            {...register('name', { required: 'Idea Title is required' })}
             type='text'
             className='form-input'
             placeholder='e.g., Dark Mode for IdeaForge'
@@ -86,13 +86,16 @@ const IdeaSubmissionForm = () => {
         </div>
         <div className='form-group'>
           <label htmlFor='idea-description' className='form-label'>
-            Idea Description:
+            Idea Description: <span className='text-red-500'>*</span>
           </label>
           <textarea
-            {...register('description')}
+            {...register('description', {
+              required: 'Idea Description is required',
+            })}
             className='form-textarea'
             placeholder='Provide a detailed description of your idea, its benefits, and how it could be implemented.'
             rows='6'
+            required
           ></textarea>
           {errors?.description && (
             <p role='alert' className='text-error'>
@@ -100,7 +103,7 @@ const IdeaSubmissionForm = () => {
             </p>
           )}
         </div>
-        {/*         <div className='form-group'>
+        {/* <div className='form-group'>
           <label htmlFor='idea-category' className='form-label'>
             Category:
           </label>
