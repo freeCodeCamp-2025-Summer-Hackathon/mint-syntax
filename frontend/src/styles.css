@@ -1103,3 +1103,10 @@ body {
     max-width: none;
   }
 }
+
+.dropdown-main-brand-green {
+  background-color: var(--palette-main-brand-green);
+  color: var(--palette-accent-white);
+  box-shadow: var(--shadow-md);
+  border-radius: var(--border-radius-md);
+}
