@@ -24,7 +24,7 @@ const SuccessIcon = () => (
 export const IdeaForm = ({
   api,
   buttonText,
-  disableButton,
+  disableSubmit,
   headerText,
   initialData,
   onSubmit,
@@ -62,9 +62,9 @@ export const IdeaForm = ({
     await onSubmit(ideaData);
   };
 
-  const buttonDisable = useMemo(
-    () => disableButton({ loading, success, isDirty, isLogged }),
-    [disableButton, loading, success, isDirty, isLogged]
+  const isSubmitDisabled = useMemo(
+    () => disableSubmit({ loading, success, isDirty, isLogged }),
+    [disableSubmit, loading, success, isDirty, isLogged]
   );
 
   return (
@@ -127,7 +127,7 @@ export const IdeaForm = ({
         <button
           type='submit'
           className='animated-button golden'
-          {...(!!buttonDisable && { disabled: true })}
+          {...(isSubmitDisabled && { disabled: true })}
         >
           {success ? <SuccessIcon /> : loading ? <Spinny /> : <>{buttonText}</>}
         </button>

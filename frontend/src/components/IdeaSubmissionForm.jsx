@@ -19,7 +19,7 @@ const IdeaSubmissionForm = () => {
     <IdeaForm
       {...{
         api,
-        disableButton: ({ loading, success, isLogged }) =>
+        disableSubmit: ({ loading, success, isLogged }) =>
           loading || success || !isLogged,
         buttonText: 'Start Your IdeaForge',
         headerText: 'Submit Your New Idea',

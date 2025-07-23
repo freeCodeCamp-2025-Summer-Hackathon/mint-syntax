@@ -44,7 +44,7 @@ export const IdeaEditPage = () => {
       {...{
         api,
         initialData: data,
-        disableButton: ({ loading, success, isDirty }) =>
+        disableSubmit: ({ loading, success, isDirty }) =>
           loading || success || !isDirty,
         buttonText: 'Edit Idea',
         headerText: 'Edit Idea',
