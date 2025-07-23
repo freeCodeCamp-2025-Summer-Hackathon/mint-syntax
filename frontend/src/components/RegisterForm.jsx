@@ -54,7 +54,7 @@ export function RegisterForm({ redirect_to = '/' }) {
     register,
     getValues,
   } = useForm();
-  const { isLogged, login } = useUser();
+  const { isLogged } = useUser();
   const navigate = useNavigate();
 
   const { error, response, data, fetchFromApi } = useApi({ method: 'POST' });
