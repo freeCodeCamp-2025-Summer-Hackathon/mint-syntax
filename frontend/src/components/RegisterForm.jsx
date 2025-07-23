@@ -61,12 +61,12 @@ export function RegisterForm({ redirect_to = '/' }) {
 
   useEffect(() => {
     if (data && !error) {
-      login(data);
+      navigate('/login');
     }
     if (error) {
       console.log('Error:', error);
     }
-  }, [response, data, error, login]);
+  }, [response, data, error, navigate]);
 
   useEffect(() => {
     if (isLogged && redirect_to) {
