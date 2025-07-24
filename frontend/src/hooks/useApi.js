@@ -77,7 +77,7 @@ export const useApi = ({ method = 'GET', loadingInitially = false }) => {
               responseJson.detail.includes('Missing Cookie')
             ) {
               await getCrsfToken({ forceNew: true });
-              return await sendRequest();
+              return await sendRequest(path, extraFetchOptions);
             }
             setData(responseJson);
           } catch (e) {

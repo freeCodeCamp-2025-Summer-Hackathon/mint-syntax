@@ -87,11 +87,14 @@ export function RegisterForm({ redirect_to = '/' }) {
 
   return (
     <form ref={formRef} onSubmit={handleSubmit(onSubmit)}>
-      <label className='floating-label flex justify-between py-2'>
-        Username: <span className='text-red-500'>*</span>
+      <div className='form-group'>
+        <label htmlFor='username' className='form-label'>
+          Username: <span className='text-red-500'>*</span>
+        </label>
         <label className='input input-sm'>
           <UserIcon />
           <input
+            id='username'
             {...register('username', { required: true })}
             type='Text'
             placeholder='Username'
@@ -99,7 +102,7 @@ export function RegisterForm({ redirect_to = '/' }) {
             aria-invalid={!!errors.username}
           />
         </label>
-      </label>
+      </div>
       {errors.username?.type === 'required' ? (
         <p role='alert' className='text-error'>
           The field "Username" is required.
@@ -113,11 +116,14 @@ export function RegisterForm({ redirect_to = '/' }) {
         )
       )}
 
-      <label className='floating-label flex justify-between py-2'>
-        Name: <span className='text-red-500'>*</span>
+      <div className='form-group'>
+        <label htmlFor='name' className='form-label'>
+          Name: <span className='text-red-500'>*</span>
+        </label>
         <label className='input input-sm'>
           <UserIcon />
           <input
+            id='name'
             {...register('name', { required: true })}
             type='Text'
             placeholder='Name'
@@ -125,18 +131,21 @@ export function RegisterForm({ redirect_to = '/' }) {
             aria-invalid={!!errors.name}
           />
         </label>
-      </label>
+      </div>
       {errors.name?.type === 'required' && (
         <p role='alert' className='text-error'>
           The field "Name" is required.
         </p>
       )}
 
-      <label className='floating-label flex justify-between py-2'>
-        Password: <span className='text-red-500'>*</span>
+      <div className='form-group'>
+        <label htmlFor='password' className='form-label'>
+          Password: <span className='text-red-500'>*</span>
+        </label>
         <label className='input input-sm'>
           <PasswordIcon />
           <input
+            id='password'
             {...register('password', { required: true, minLength: 8 })}
             type='Password'
             placeholder='Password'
@@ -144,7 +153,7 @@ export function RegisterForm({ redirect_to = '/' }) {
             aria-invalid={!!errors.password}
           />
         </label>
-      </label>
+      </div>
       {errors.password?.type === 'required' ? (
         <p role='alert' className='text-error'>
           The field "Password" is required.
@@ -157,11 +166,14 @@ export function RegisterForm({ redirect_to = '/' }) {
         )
       )}
 
-      <label className='floating-label flex justify-between py-2'>
-        Repeat Password: <span className='text-red-500'>*</span>
+      <div className='form-group'>
+        <label htmlFor='repeatPassword' className='form-label'>
+          Repeat Password: <span className='text-red-500'>*</span>
+        </label>
         <label className='input input-sm'>
           <PasswordIcon />
           <input
+            id='repeatPassword'
             {...register('repeatPassword', {
               required: true,
               validate: value => getValues('password') === value,
@@ -172,7 +184,7 @@ export function RegisterForm({ redirect_to = '/' }) {
             aria-invalid={!!errors.repeatPassword}
           />
         </label>
-      </label>
+      </div>
       {errors.repeatPassword?.type === 'required' ? (
         <p role='alert' className='text-error'>
           The field "Repeat Password" is required.
