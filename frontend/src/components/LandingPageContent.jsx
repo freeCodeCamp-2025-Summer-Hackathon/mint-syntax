@@ -24,20 +24,20 @@ const LandingPageContent = () => {
   ];
 
   const teamMembers = [
-    { name: 'Apofus' },
+    // { name: 'Apofus' },
     {
       name: '  Bożo (Coding Puppy)',
       github_uri: 'https://github.com/bstojkovic',
     },
     { name: 'Connor', github_uri: 'https://github.com/connororeil' },
     { name: 'Gift Ruwende', github_uri: 'https://github.com/willhitman' },
-    { name: 'longlive247', github_uri: 'https://github.com/MarkoCuk54' },
+    // { name: 'longlive247', github_uri: 'https://github.com/MarkoCuk54' },
     { name: 'Lore', github_uri: 'https://github.com/Lorevdh' },
     { name: 'Ola', github_uri: 'https://github.com/Vallayah' },
     { name: 'Krzysztof', github_uri: 'https://github.com/gikf' },
     { name: 'Sebastian_W', github_uri: 'https://github.com/Sebastian-Wlo' },
-    { name: 'Tetris', github_uri: 'https://github.com/tetrisy' },
-    { name: 'VooDooRe', github_uri: 'https://github.com/nurmukhammad03' },
+    // { name: 'Tetris', github_uri: 'https://github.com/tetrisy' },
+    // { name: 'VooDooRe', github_uri: 'https://github.com/nurmukhammad03' },
   ];
   return (
     <>
