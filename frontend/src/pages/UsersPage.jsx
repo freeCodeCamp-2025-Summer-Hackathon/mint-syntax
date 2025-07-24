@@ -6,8 +6,8 @@ import Spinny from '../components/Spinny';
 import { Pagination } from '../components/Pagination';
 import { Link } from 'react-router';
 
-const UsersPage = () => {
-  const { userState, isLogged } = useUser();
+const UsersPage = ({ count = 20 }) => {
+  const { userState, isLogged, isAdmin } = useUser();
   const navigate = useNavigate();
   const { page = 1 } = useParams();
   const currentPage = parseInt(page, 10) - 1;
@@ -16,8 +16,6 @@ const UsersPage = () => {
   const [totalPages, setTotalPages] = useState(0);
 
   const { data, error, isLoading, fetchFromApi } = useApi();
-
-  const count = 20;
 
   const getApiUrl = useCallback(
     (pageNo = 0) => {
@@ -40,14 +38,7 @@ const UsersPage = () => {
     }
 
     fetchFromApi(getApiUrl(currentPage));
-  }, [
-    isLogged,
-    userState.is_admin,
-    navigate,
-    currentPage,
-    fetchFromApi,
-    getApiUrl,
-  ]);
+  }, [isLogged, isAdmin, navigate, currentPage, fetchFromApi, getApiUrl]);
 
   useEffect(() => {
     if (data && !error) {
@@ -60,7 +51,7 @@ const UsersPage = () => {
     }
   }, [data, error, count]);
 
-  if (isLoading) {
+  if (isLoading && users.length === 0) {
     return <Spinny />;
   }
 
@@ -96,5 +87,4 @@ const UsersPage = () => {
     </div>
   );
 };
-
 export default UsersPage;
