@@ -15,7 +15,7 @@ const UsersPage = () => {
   const [users, setUsers] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
 
-  const { data, error, isLoading, fetchFromApi } = useApi({ method: 'GET' });
+  const { data, error, isLoading, fetchFromApi } = useApi();
 
   const count = 20;
 
