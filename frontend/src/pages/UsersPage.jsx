@@ -1,13 +1,12 @@
-import { useEffect, useState, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useParams, useNavigate, Link } from 'react-router';
 import { useUser } from '../hooks/useUser';
 import { useApi } from '../hooks/useApi';
 import Spinny from '../components/Spinny';
 import { Pagination } from '../components/Pagination';
-import { Link } from 'react-router';
 
-const UsersPage = () => {
-  const { userState, isLogged } = useUser();
+const UsersPage = ({ count = 20 }) => {
+  const { userState, isLogged, isAdmin } = useUser();
   const navigate = useNavigate();
   const { page = 1 } = useParams();
   const currentPage = parseInt(page, 10) - 1;
@@ -15,14 +14,12 @@ const UsersPage = () => {
   const [users, setUsers] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
 
-  const { data, error, isLoading, fetchFromApi } = useApi();
-
-  const count = 20;
+  const { data, error, isLoading, fetchFromApi } = useApi({ method: 'GET' });
 
   const getApiUrl = useCallback(
     (pageNo = 0) => {
       const skip = pageNo > 0 ? `&skip=${pageNo * count}` : '';
-      return `/users/?limit=${count}${skip}`;
+      return `/users?limit=${count}${skip}`;
     },
     [count]
   );
@@ -40,14 +37,7 @@ const UsersPage = () => {
     }
 
     fetchFromApi(getApiUrl(currentPage));
-  }, [
-    isLogged,
-    userState.is_admin,
-    navigate,
-    currentPage,
-    fetchFromApi,
-    getApiUrl,
-  ]);
+  }, [isLogged, isAdmin, navigate, currentPage, fetchFromApi, getApiUrl]);
 
   useEffect(() => {
     if (data && !error) {
@@ -60,7 +50,7 @@ const UsersPage = () => {
     }
   }, [data, error, count]);
 
-  if (isLoading) {
+  if (isLoading && users.length === 0) {
     return <Spinny />;
   }
 
@@ -71,9 +61,18 @@ const UsersPage = () => {
         <>
           <ul className='w-full max-w-2xl'>
             {users.map(user => (
-              <li key={user.id} className='idea-item mb-2'>
+              <li
+                key={user.id}
+                className='idea-item mb-2 flex justify-between items-center'
+              >
                 <Link to={`/users/${user.id}`} className='idea-text'>
                   {user.name} ({user.username})
+                </Link>
+                <Link
+                  to={`/users/${user.id}/ideas`}
+                  className='animated-button-small'
+                >
+                  View Ideas
                 </Link>
               </li>
             ))}
@@ -83,7 +82,7 @@ const UsersPage = () => {
               <Pagination
                 numberOfPages={totalPages}
                 initialPage={currentPage}
-                fetchFromApi={pageNo => fetchFromApi(getApiUrl(pageNo))}
+                fetchFromApi={url => fetchFromApi(url)}
                 getApiUrl={getApiUrl}
                 getPageUrl={getPageUrl}
               />
