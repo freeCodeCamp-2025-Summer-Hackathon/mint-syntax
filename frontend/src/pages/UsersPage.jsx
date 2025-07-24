@@ -7,7 +7,7 @@ import { Pagination } from '../components/Pagination';
 import { Link } from 'react-router';
 
 const UsersPage = ({ count = 20 }) => {
-  const { userState, isLogged, isAdmin } = useUser();
+  const { isLogged, isAdmin } = useUser();
   const navigate = useNavigate();
   const { page = 1 } = useParams();
   const currentPage = parseInt(page, 10) - 1;
