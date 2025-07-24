@@ -6,7 +6,7 @@ import Spinny from '../components/Spinny';
 import { Pagination } from '../components/Pagination';
 
 const UsersPage = ({ count = 20 }) => {
-  const { userState, isLogged, isAdmin } = useUser();
+  const { isLogged, isAdmin } = useUser(); // Removing userState will help?
   const navigate = useNavigate();
   const { page = 1 } = useParams();
   const currentPage = parseInt(page, 10) - 1;
