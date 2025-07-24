@@ -22,7 +22,7 @@ const UsersPage = () => {
   const getApiUrl = useCallback(
     (pageNo = 0) => {
       const skip = pageNo > 0 ? `&skip=${pageNo * count}` : '';
-      return `/users?limit=${count}${skip}`;
+      return `/users/?limit=${count}${skip}`;
     },
     [count]
   );
