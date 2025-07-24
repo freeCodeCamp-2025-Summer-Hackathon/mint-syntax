@@ -7,7 +7,7 @@ import Spinny from '../components/Spinny';
 const UserPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { userState, isLogged, isAdmin } = useUser();
+  const { isLogged, isAdmin } = useUser();
   const [userData, setUserData] = useState(null);
   const [showDeactivateModal, setShowDeactivateModal] = useState(false);
   const deactivateModalRef = useRef(null);
