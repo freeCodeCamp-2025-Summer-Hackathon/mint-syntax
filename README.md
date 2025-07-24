@@ -29,7 +29,7 @@
   <li><a href="https://github.com/connororeil">Connor</a></li>
   <li><a href="https://github.com/willhitman">Gift Ruwende | Zimbabwe</a></li>
   <li><a href="https://github.com/gikf">Krzysztof</a></li>
-   <!--<<li><a href="https://github.com/MarkoCuk54">longlive247</a></li>-->
+   <!--<li><a href="https://github.com/MarkoCuk54">longlive247</a></li>-->
   <li><a href="https://github.com/Lorevdh">Lore</a></li>
   <!--<li>Millicent</li>-->
   <li><a href="https://github.com/Vallayah">Ola</a></li>
