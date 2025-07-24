@@ -34,7 +34,7 @@ const UsersPage = () => {
       navigate('/login');
       return;
     }
-    if (!userState.is_admin) {
+    if (!isAdmin) {
       navigate('/');
       return;
     }
