@@ -60,7 +60,7 @@ const UsersPage = () => {
     }
   }, [data, error, count]);
 
-  if (isLoading) {
+  if (isLoading && users.length === 0) {
     return <Spinny />;
   }
 
