@@ -26,7 +26,7 @@ const Chevron = () => {
 
 const Header = () => {
   const dialogRef = useRef();
-  const { isLogged, logout, userState } = useUser();
+  const { isLogged, logout, userState, isAdmin } = useUser();
   return (
     <header className='header-style'>
       <div className='header-banner-content'>
@@ -70,7 +70,7 @@ const Header = () => {
                   tabIndex={0}
                   className='menu dropdown-content dropdown-main-brand-green'
                 >
-                  {userState.is_admin && (
+                  {isAdmin && (
                     <li>
                       <Link to='/users'>All users</Link>
                     </li>
