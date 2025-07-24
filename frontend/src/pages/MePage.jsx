@@ -1,27 +1,24 @@
-import { useState } from 'react';
 import { useUser } from '../hooks/useUser';
 import { Link } from 'react-router';
 
 const MePage = () => {
-  const { isLogged, userState } = useUser();
-  const [loggedUser] = useState(userState);
+  const { isAdmin, isLogged, userState } = useUser();
   return (
     <div className='section-card min-h-[60vh] flex'>
       {isLogged ? (
         <div className='card bg-base-100 p-4 w-full text-gray-600 mb-8'>
-          <h1 className='section-heading'>{loggedUser.name}'s Profile</h1>
+          <h1 className='section-heading'>{userState.name}'s Profile</h1>
           <p>
             <span className='font-bold'>Account Name:</span>{' '}
-            {loggedUser.username}
-            {loggedUser.is_admin && <span> (Admin)</span>}
+            {userState.username}
+            {isAdmin && <span> (Admin)</span>}
           </p>
           <p>
-            <span className='font-bold'>Upvotes:</span>{' '}
-            {loggedUser.upvotes.size}
+            <span className='font-bold'>Upvotes:</span> {userState.upvotes.size}
           </p>
           <p>
             <span className='font-bold'>Downvotes:</span>{' '}
-            {loggedUser.downvotes.size}
+            {userState.downvotes.size}
           </p>
           <Link className='underline' to='/me/ideas'>
             My ideas
