@@ -62,9 +62,21 @@ const UsersPage = ({ count = 20 }) => {
         <>
           <ul className='w-full max-w-2xl'>
             {users.map(user => (
-              <li key={user.id} className='idea-item mb-2'>
-                <Link to={`/users/${user.id}`} className='idea-text'>
+              <li
+                key={user.id}
+                className='idea-item mb-2 flex justify-between items-center'
+              >
+                <Link
+                  to={`/users/${user.id}`}
+                  className='idea-text flex-grow py-2 px-4 -ml-4 -mr-4'
+                >
                   {user.name} ({user.username})
+                </Link>
+                <Link
+                  to={`/users/${user.id}/ideas`}
+                  className='animated-button-small'
+                >
+                  View Ideas
                 </Link>
               </li>
             ))}
