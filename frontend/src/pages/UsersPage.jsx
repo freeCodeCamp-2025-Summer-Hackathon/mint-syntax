@@ -37,14 +37,7 @@ const UsersPage = ({ count = 20 }) => {
     }
 
     fetchFromApi(getApiUrl(currentPage));
-  }, [
-    isLogged,
-    isAdmin,
-    navigate,
-    currentPage,
-    fetchFromApi,
-    getApiUrl,
-  ]);
+  }, [isLogged, isAdmin, navigate, currentPage, fetchFromApi, getApiUrl]);
 
   useEffect(() => {
     if (data && !error) {
