@@ -71,9 +71,14 @@ const Header = () => {
                   className='menu dropdown-content dropdown-main-brand-green'
                 >
                   {isAdmin && (
-                    <li>
-                      <Link to='/users'>All users</Link>
-                    </li>
+                    <>
+                      <li>
+                        <Link to='/users'>All users</Link>
+                      </li>
+                      <li>
+                        <Link to='/users/add'>Add user</Link>
+                      </li>
+                    </>
                   )}
                   <li>
                     <Link to='/me'>My profile</Link>
