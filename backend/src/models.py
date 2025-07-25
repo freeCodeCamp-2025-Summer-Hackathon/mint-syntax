@@ -22,6 +22,11 @@ class UserMe(BaseModel):
     downvotes: list[ObjectId]
 
 
+class UsersAdmin(BaseModel):
+    users: list[UserMe]
+    count: int
+
+
 class UserPublic(BaseModel):
     id: ObjectId
     name: str = Field(max_length=255)

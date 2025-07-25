@@ -7,7 +7,14 @@ from odmantic.exceptions import DuplicateKeyError
 from src.api.dependencies import AdminUser
 from src.auth import get_password_hash
 from src.dependencies import Db
-from src.models import User, UserEditPatch, UserPublic, UserRegister, UsersPublic
+from src.models import (
+    User,
+    UserEditPatch,
+    UserMe,
+    UserPublic,
+    UserRegister,
+    UsersAdmin,
+)
 
 router = APIRouter(prefix="/users")
 
@@ -36,14 +43,14 @@ async def create_user(db: Db, register_data: Annotated[UserRegister, Form()]):
 
 @router.get(
     "/",
-    response_model=UsersPublic,
+    response_model=UsersAdmin,
     dependencies=[AdminUser],
 )
 async def list_users(db: Db, skip: int = 0, limit: int = 20):
-    users = await db.find(User, limit=limit, skip=skip)
+    users = await db.find(User, limit=limit, skip=skip, sort=User.name)
     count = await db.count(User)
-    return UsersPublic(
-        users=[UserPublic(**user.model_dump()) for user in users], count=count
+    return UsersAdmin(
+        users=[UserMe(**user.model_dump()) for user in users], count=count
     )
 
 
