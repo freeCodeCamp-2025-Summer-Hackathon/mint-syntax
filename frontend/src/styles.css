@@ -1162,11 +1162,11 @@ textarea::placeholder {
 }
 
 @media (prefers-color-scheme: dark) {
-   :root {
+  :root {
     --color-base-content: oklch(21% 0.006 285.885);
     --base-color-100: oklch(100% 0 0);
   }
-  
+
   .bg-base-100,
   .input,
   .modal-box {
