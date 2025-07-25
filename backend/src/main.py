@@ -54,14 +54,4 @@ async def get_me(current_user: Annotated[User, Depends(get_current_active_user)]
     return UserMe(**current_user.model_dump())
 
 
-@app.get("/")
-def home():
-    return {"Hello": "World"}
-
-
-@app.get("/items/{item_id}")
-def read_item(item_id: int, query: str | None = None):
-    return {"item_id": item_id, "query": query}
-
-
 app.include_router(api_router)

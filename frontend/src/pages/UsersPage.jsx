@@ -5,8 +5,8 @@ import { useApi } from '../hooks/useApi';
 import Spinny from '../components/Spinny';
 import { Pagination } from '../components/Pagination';
 
-const UsersPage = () => {
-  const { userState, isLogged } = useUser();
+const UsersPage = ({ count = 20 }) => {
+  const { isLogged, isAdmin } = useUser();
   const navigate = useNavigate();
   const { page = 1 } = useParams();
   const currentPage = parseInt(page, 10) - 1;
@@ -15,8 +15,6 @@ const UsersPage = () => {
   const [totalPages, setTotalPages] = useState(0);
 
   const { data, error, isLoading, fetchFromApi } = useApi({ method: 'GET' });
-
-  const count = 20;
 
   const getApiUrl = useCallback(
     (pageNo = 0) => {
@@ -33,7 +31,7 @@ const UsersPage = () => {
       navigate('/login');
       return;
     }
-    if (!userState.is_admin) {
+    if (!isAdmin) {
       navigate('/');
       return;
     }
@@ -41,7 +39,7 @@ const UsersPage = () => {
     fetchFromApi(getApiUrl(currentPage));
   }, [
     isLogged,
-    userState.is_admin,
+    isAdmin,
     navigate,
     currentPage,
     fetchFromApi,
@@ -59,7 +57,7 @@ const UsersPage = () => {
     }
   }, [data, error, count]);
 
-  if (isLoading) {
+  if (isLoading && users.length === 0) {
     return <Spinny />;
   }
 
@@ -104,5 +102,4 @@ const UsersPage = () => {
     </div>
   );
 };
-
 export default UsersPage;

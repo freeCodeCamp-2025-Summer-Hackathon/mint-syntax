@@ -68,7 +68,7 @@ If needed, update `MONGODB_URI` in `.env` file.
 /frontend$ npm install
 ```
 
-**Note:** The dependency on the helmet-async has been removed recently - if you're getting errors, or the page doesn't load after pulling the latest verstion of the repository, you need to run `npm install` again. If the problem presist, try rebuilding the dependency list using the following commands:
+**Note:** The dependency on the helmet-async has been removed recently - if you're getting errors, or the page doesn't load after pulling the latest version of the repository, you need to run `npm install` again. If the problem persists, try rebuilding the dependency list using the following commands:
 
 ```bash
 /frontend$ rm -rf node_modules
@@ -104,9 +104,9 @@ First commit after this can take a bit longer
 /backend$ uv run fastapi dev src/main.py
 ```
 
-#### Running commands from root folder
+#### Running commands from the root folder
 
-It's possible to run commands without actual navigating to the folder, by running commands in the _subshell_
+It's possible to run commands without actually navigating to the folder, by running commands in the _subshell_
 
 ```bash
 /$ (cd frontend && npm run develop)
@@ -114,4 +114,9 @@ It's possible to run commands without actual navigating to the folder, by runnin
 
 ```bash
 /$ (cd backend && uv run fastapi dev src/main.py)
+```
+#### Running Seed Script
+To seed the database with initial data, run the following command from the `/backend` directory
+```bash
+/backend$ uv run -m src.scripts.seed_data
 ```

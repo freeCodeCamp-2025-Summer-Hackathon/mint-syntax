@@ -29,7 +29,7 @@ const getCrsfToken = async ({ forceNew = false } = {}) => {
   }
 };
 
-export const useApi = ({ method = 'GET', loadingInitially = false }) => {
+export const useApi = ({ method = 'GET', loadingInitially = false } = {}) => {
   const [isLoading, setLoading] = useState(loadingInitially);
   const [error, setError] = useState(null);
   const [data, setData] = useState(null);
