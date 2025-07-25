@@ -1162,16 +1162,14 @@ textarea::placeholder {
 }
 
 @media (prefers-color-scheme: dark) {
-  input[type='text'],
-  input[type='email'],
-  input[type='password'],
-  textarea,
-  select,
-  .form-input,
-  .form-textarea,
-  .form-select {
-    background-color: var(--palette-accent-white) !important;
-    color: var(--palette-primary-text) !important;
-    border-color: var(--palette-borders-separators) !important;
+   :root {
+    --color-base-content: oklch(21% 0.006 285.885);
+    --base-color-100: oklch(100% 0 0);
+  }
+  
+  .bg-base-100,
+  .input,
+  .modal-box {
+    background-color: var(--palette-accent-white);
   }
 }
