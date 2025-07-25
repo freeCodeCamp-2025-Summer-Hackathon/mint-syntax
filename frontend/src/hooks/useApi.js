@@ -77,7 +77,7 @@ export const useApi = ({ method = 'GET', loadingInitially = false } = {}) => {
     [attachDefaultHeaders, method]
   );
 
-  // TODO handle responses when access_token is no longer valid -> refreshing it with refresh_token
+  // TODO occasionally update refresh_token with new value
   const fetchFromApi = useCallback(
     async (path = '', extraFetchOptions = {}) => {
       setError(null);
