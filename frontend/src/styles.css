@@ -1147,3 +1147,31 @@ button:disabled:hover,
   transform: none;
   border-color: var(--palette-borders-separators);
 }
+
+.form-input,
+.form-textarea,
+.form-select {
+  background-color: var(--palette-accent-white) !important;
+  color: var(--palette-primary-text) !important;
+  border-color: var(--palette-borders-separators) !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--palette-secondary-text);
+}
+
+@media (prefers-color-scheme: dark) {
+  input[type='text'],
+  input[type='email'],
+  input[type='password'],
+  textarea,
+  select,
+  .form-input,
+  .form-textarea,
+  .form-select {
+    background-color: var(--palette-accent-white) !important;
+    color: var(--palette-primary-text) !important;
+    border-color: var(--palette-borders-separators) !important;
+  }
+}
