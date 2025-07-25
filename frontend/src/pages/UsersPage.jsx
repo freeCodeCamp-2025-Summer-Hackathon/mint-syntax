@@ -74,7 +74,7 @@ const UsersPage = ({ count = 20 }) => {
               <Pagination
                 numberOfPages={totalPages}
                 initialPage={currentPage}
-                fetchFromApi={pageNo => fetchFromApi(getApiUrl(pageNo))}
+                fetchFromApi={fetchFromApi}
                 getApiUrl={getApiUrl}
                 getPageUrl={getPageUrl}
               />
