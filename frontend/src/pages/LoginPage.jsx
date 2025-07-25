@@ -19,7 +19,10 @@ export const LoginPage = () => {
 
         {/* ✍️ Register link */}
         <p className='mt-4'>
-          Not registered? <Link to='/register' className='link'>Sign up</Link>
+          Not registered?{' '}
+          <Link to='/register' className='link'>
+            Sign up
+          </Link>
         </p>
       </section>
     </div>
