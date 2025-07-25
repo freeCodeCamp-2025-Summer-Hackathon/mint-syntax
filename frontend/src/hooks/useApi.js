@@ -1,33 +1,7 @@
 import { useCallback, useState } from 'react';
 
-const getCrsfToken = async ({ forceNew = false } = {}) => {
-  if (!forceNew) {
-    const token = sessionStorage.getItem('csrf_token');
-    if (token) {
-      return token;
-    }
-  }
-
-  sessionStorage.removeItem('csrf_token');
-
-  try {
-    const response = await fetch(
-      import.meta.env.VITE_API_LOCATION + '/csrf/get-token',
-      {
-        credentials: 'include',
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(response.statusText);
-    }
-    const freshToken = (await response.json())?.csrf_token;
-    sessionStorage.setItem('csrf_token', freshToken);
-    return freshToken;
-  } catch (e) {
-    console.error(e);
-  }
-};
+import { apiUrl } from '../utils/apiUrl';
+import { getCrsfToken, refreshAccessToken } from '../user/utils';
 
 export const useApi = ({ method = 'GET', loadingInitially = false } = {}) => {
   const [isLoading, setLoading] = useState(loadingInitially);
@@ -61,7 +35,7 @@ export const useApi = ({ method = 'GET', loadingInitially = false } = {}) => {
     async (path = '', extraFetchOptions = {}) => {
       try {
         const response = await fetch(
-          import.meta.env.VITE_API_LOCATION + path,
+          apiUrl(path),
           await attachDefaultHeaders({
             method,
             ...extraFetchOptions,
@@ -78,6 +52,14 @@ export const useApi = ({ method = 'GET', loadingInitially = false } = {}) => {
             ) {
               await getCrsfToken({ forceNew: true });
               return await sendRequest(path, extraFetchOptions);
+            } else if (
+              response.status === 401 &&
+              responseJson.detail.includes('Could not validate credentials')
+            ) {
+              const refreshResult = await refreshAccessToken();
+              if (refreshResult) {
+                return await sendRequest(path, extraFetchOptions);
+              }
             }
             setData(responseJson);
           } catch (e) {
