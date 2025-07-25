@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router';
+import { Link, useParams } from 'react-router';
 
 import { useApi } from '../../hooks/useApi';
 import Spinny from '../../components/Spinny';
@@ -8,7 +8,7 @@ import { DownvoteButton, UpvoteButton } from '../../components/VoteButtons';
 
 export const IdeaPage = () => {
   const { ideaId } = useParams();
-  const { isLogged, userState, upvote, downvote } = useUser();
+  const { isAdmin, isLogged, userState, upvote, downvote } = useUser();
   const [loading, setLoading] = useState(true);
   const [isUpvoted, setIsUpvoted] = useState(userState.upvotes.has(ideaId));
   const [isDownvoted, setIsDownvoted] = useState(
@@ -57,6 +57,7 @@ export const IdeaPage = () => {
   useEffect(() => {
     if (data && loading) {
       setIdea({
+        creatorId: data?.creator_id,
         name: data?.name,
         description: data?.description,
         upvotes: data?.upvoted_by.length,
@@ -102,6 +103,11 @@ export const IdeaPage = () => {
             }}
           />
         </div>
+      )}
+      {(isAdmin || userState.id === idea.creatorId) && (
+        <Link className='animated-button' to={`edit`}>
+          Edit
+        </Link>
       )}
     </section>
   );

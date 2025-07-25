@@ -21,7 +21,15 @@ def generate_user() -> User:
 
 
 async def seed_users(num_users: int = 10) -> list[User]:
-    new_users = [generate_user() for _ in range(num_users)]
+    admin = User.model_validate(
+        {
+            "username": "adminUser",
+            "name": "Admin",
+            "hashed_password": get_password_hash("password"),
+            "is_admin": True,
+        }
+    )
+    new_users = [generate_user() for _ in range(num_users)] + [admin]
     engine = await get_engine()
     await engine.save_all(new_users)
     return new_users

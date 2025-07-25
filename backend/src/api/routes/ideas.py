@@ -87,7 +87,7 @@ async def update_idea(
     idea = await db.find_one(Idea, Idea.id == id)
     if idea is None:
         raise HTTPException(status_code=404, detail="Idea not found")
-    if not current_user.is_admin or current_user.id != idea.creator_id:
+    if not current_user.is_admin and current_user.id != idea.creator_id:
         raise HTTPException(status_code=403, detail="Not enough permissions")
     idea.model_update(update_data)
     await db.save(idea)

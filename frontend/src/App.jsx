@@ -57,6 +57,7 @@ function App() {
               <Route path=':id' element={<UserPage />} />
               <Route path=':id/edit' element={<UserEditPage />} />
               <Route path=':id/ideas' element={<UserIdeasPage />} />
+              <Route path='page/:page' element={<UsersPage />} />
             </Route>
             <Route path='me'>
               <Route index element={<MePage />} />

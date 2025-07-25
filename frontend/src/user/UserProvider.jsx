@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useReducer, useState } from 'react';
 
 import { UserContext } from './UserContext';
 import Spinny from '../components/Spinny';
+import { apiUrl } from '../utils/apiUrl';
+import { refreshAccessToken } from './utils';
 
 const initialData = {
   upvotes: new Set(),
@@ -58,26 +60,13 @@ export const UserProvider = ({ children }) => {
         return;
       }
       try {
-        const response = await fetch(
-          import.meta.env.VITE_API_LOCATION + '/me',
-          {
-            headers: { Authorization: `Bearer ${accessToken}` },
-          }
-        );
+        const response = await fetch(apiUrl('/me'), {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        });
         if (!response.ok) {
           localStorage.removeItem('access_token');
-          if (response.status === 401) {
-            const refresh_response = await fetch(
-              import.meta.env.VITE_API_LOCATION + '/refresh',
-              {
-                credentials: 'include',
-              }
-            );
-            if (refresh_response.ok) {
-              const data = await refresh_response.json();
-              localStorage.setItem('access_token', data.access_token);
-              return fetchUser();
-            }
+          if (response.status === 401 && (await refreshAccessToken())) {
+            return fetchUser();
           } else {
             throw new Error(response.statusText);
           }
