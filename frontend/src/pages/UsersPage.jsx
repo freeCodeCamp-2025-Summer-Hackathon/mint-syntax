@@ -62,8 +62,14 @@ const UsersPage = ({ count = 20 }) => {
         <>
           <ul className='w-full max-w-2xl'>
             {users.map(user => (
-              <li key={user.id} className='idea-item mb-2'>
-                <Link to={`/users/${user.id}`} className='idea-text'>
+              <li
+                key={user.id}
+                className='idea-item mb-2 flex justify-between items-center'
+              >
+                <Link
+                  to={`/users/${user.id}`}
+                  className='idea-text flex-grow h-full flex items-center p-4 hover:bg-green-50 hover:font-bold rounded-lg transition-colors duration-200'
+                >
                   {user.name} ({user.username})
                 </Link>
               </li>
