@@ -94,14 +94,16 @@ const Header = () => {
             </>
           ) : (
             <>
-              <button
+              <Link
                 className='auth-button login-button'
-                onClick={() => {
+                to='/login'
+                onClick={e => {
+                  e.preventDefault();
                   dialogRef.current.showModal();
                 }}
               >
                 Login
-              </button>
+              </Link>
               <dialog ref={dialogRef} className='modal'>
                 <div className='modal-box'>
                   <LoginForm />

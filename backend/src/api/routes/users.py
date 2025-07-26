@@ -8,6 +8,9 @@ from src.api.dependencies import AdminUser
 from src.auth import get_password_hash
 from src.dependencies import Db
 from src.models import (
+    Idea,
+    IdeaPublic,
+    IdeasPublic,
     User,
     UserEditPatch,
     UserMe,
@@ -62,7 +65,20 @@ async def get_user(db: Db, id: ObjectId):
     return user
 
 
-@router.patch("/{id}", response_model=UserPublic, dependencies=[AdminUser])
+@router.get("/{id}/ideas", response_model=IdeasPublic, dependencies=[AdminUser])
+async def get_user_ideas(db: Db, id: ObjectId, skip: int = 0, limit: int = 20):
+    ideas = await db.find(
+        Idea, Idea.creator_id == id, skip=skip, limit=limit, sort=Idea.name
+    )
+    count = await db.count(Idea, Idea.creator_id == id)
+
+    return IdeasPublic(
+        data=[IdeaPublic(**idea.model_dump()) for idea in ideas],
+        count=count,
+    )
+
+
+@router.patch("/{id}", response_model=UserMe, dependencies=[AdminUser])
 async def update_user(db: Db, id: ObjectId, update_data: UserEditPatch):
     user = await db.find_one(User, User.id == id)
     if user is None:
