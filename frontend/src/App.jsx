@@ -62,7 +62,12 @@ function App() {
             <Route path='me'>
               <Route index element={<MePage />} />
               <Route path='edit' element={<MeEditPage />} />
-              <Route path='ideas' element={<MyIdeasPage />} />
+              <Route path='ideas' element={<MyIdeasPage />}>
+                <Route
+                  path='page/:page'
+                  element={<IdeasPage headerText='My Ideas' />}
+                />
+              </Route>
             </Route>
             <Route path='logout' element={<LogoutPage />} />
             <Route path='ideas'>
