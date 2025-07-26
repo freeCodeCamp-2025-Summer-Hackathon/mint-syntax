@@ -1,5 +1,5 @@
 import { useParams } from 'react-router';
-import IdeasList from '../../components/IdeasList';
+import IdeasList from '../components/IdeasList';
 
 export const MyIdeasPage = ({ headerText = 'All Ideas' }) => {
   const { page = 1 } = useParams('page');
