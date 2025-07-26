@@ -63,7 +63,7 @@ function App() {
               <Route index element={<MePage />} />
               <Route path='edit' element={<MeEditPage />} />
               <Route path='ideas' element={<MyIdeasPage />}>
-                <Route path='page/:page' element={<MyIdeasPage /> } />
+                <Route path='page/:page' element={<MyIdeasPage />} />
               </Route>
             </Route>
             <Route path='logout' element={<LogoutPage />} />
