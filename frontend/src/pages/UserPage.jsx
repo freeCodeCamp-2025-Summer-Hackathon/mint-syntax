@@ -114,8 +114,8 @@ const UserPage = () => {
     ? `Deactivate ${userData.name}'s account?`
     : `Activate ${userData.name}'s account?`;
   const confirmButtonClass = isUserActive
-    ? 'animated-button !bg-red-500 hover:!bg-red-600'
-    : 'animated-button !bg-green-500 hover:!bg-green-600';
+    ? 'animated-button !bg-gradient-to-r from-red-500 to-red-700 hover:!from-red-600 hover:!to-red-800'
+    : 'animated-button !bg-gradient-to-r from-green-500 to-green-700 hover:!from-green-600 hover:!to-green-800';
 
   return (
     <div className='section-card flex flex-col items-center min-h-[60vh]'>
