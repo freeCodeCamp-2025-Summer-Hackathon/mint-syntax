@@ -5,6 +5,7 @@ import { Pagination } from './Pagination';
 import Spinny from './Spinny';
 
 const IdeasList = ({
+  base = '',
   headerText = 'Vote on Current Ideas',
   count,
   sort = null,
@@ -22,12 +23,12 @@ const IdeasList = ({
     (page = 0) => {
       const sorting = sort ? `&sort=${sort}` : '';
       const skip = page > 0 ? `&skip=${page * count}` : '';
-      return `/ideas/?limit=${count}${sorting}${skip}`;
+      return `${base}?limit=${count}${sorting}${skip}`;
     },
     [count, sort]
   );
 
-  const getPageUrl = page => `/ideas/page/${page + 1}`;
+  const getPageUrl = page => `${base}page/${page + 1}`;
 
   useEffect(() => {
     fetchFromApi(getApiUrl(page));
