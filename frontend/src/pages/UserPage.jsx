@@ -110,9 +110,12 @@ const UserPage = () => {
   const isUserActive = userData.is_active;
   const modalAction = isUserActive ? 'Deactivate' : 'Activate';
   const modalTitle = `Confirm ${isUserActive ? 'Deactivation' : 'Activation'}`;
+  const modalMessage = isUserActive
+    ? `Deactivate ${userData.name}'s account?`
+    : `Activate ${userData.name}'s account?`;
   const confirmButtonClass = isUserActive
-    ? 'animated-button !bg-red-500 hover:bg-red-600'
-    : 'animated-button !bg-green-500 hover:bg-green-600';
+    ? 'animated-button !bg-red-500 hover:!bg-red-600'
+    : 'animated-button !bg-green-500 hover:!bg-green-600';
 
   return (
     <div className='section-card flex flex-col items-center min-h-[60vh]'>
@@ -143,7 +146,7 @@ const UserPage = () => {
             disabled={isUpdating}
             className={confirmButtonClass}
           >
-            {isUpdating ? 'Updating Status...' : buttonText}
+            {isUpdating ? 'Updating Status...' : modalAction}
           </button>
         </div>
       </div>
@@ -172,7 +175,7 @@ const UserPage = () => {
               onClick={confirmToggleStatus}
               disabled={isUpdating}
             >
-              {isUpdating ? 'Confirming...' : confirmButtonText}
+              {isUpdating ? 'Confirming...' : modalAction}
             </button>
           </div>
         </div>
