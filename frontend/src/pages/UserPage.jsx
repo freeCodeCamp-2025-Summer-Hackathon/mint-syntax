@@ -110,9 +110,6 @@ const UserPage = () => {
         <p className='text-lg mb-2'>
           <strong>Name:</strong> {userData.name}
         </p>
-        <p className='text-lg mb-2'>
-          <strong>Email:</strong> {userData.email}
-        </p>
         <p className='text-lg mb-4'>
           <strong>Admin:</strong> {userData.is_admin ? 'Yes' : 'No'}
         </p>
