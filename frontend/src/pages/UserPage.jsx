@@ -158,7 +158,9 @@ const UserPage = () => {
       >
         <div className='modal-box'>
           <h3 className='font-bold text-lg'>{modalTitle}</h3>
-          <p className='py-4'>`${modalAction} ${userData.name}'s account?</p>
+          <p className='py-4'>
+            `${modalAction} ${userData.name}'s account?
+          </p>
           {updateError && (
             <p className='text-error mb-4'>Error: {updateError.message}</p>
           )}
