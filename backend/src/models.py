@@ -45,6 +45,7 @@ class UserRegister(BaseModel):
 
 class UserEditPatch(BaseModel):
     name: str | None = Field(max_length=255)
+    is_active: bool | None = None
 
 
 class Idea(Model):
