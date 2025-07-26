@@ -53,7 +53,7 @@ const UserPage = () => {
   useEffect(() => {
     if (updateUserData && !updateError) {
       console.log('User status updated:', updateUserData);
-      setShowDeactivateModal(false);
+      closeDeactivateModal();
       setUserData(prevData => ({
         ...prevData,
         is_active: updateUserData.is_active,
