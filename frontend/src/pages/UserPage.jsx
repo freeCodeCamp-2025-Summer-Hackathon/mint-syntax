@@ -175,7 +175,7 @@ const UserPage = () => {
               onClick={confirmToggleStatus}
               disabled={isUpdating}
             >
-              {isUpdating ? 'Confirming...' : modalAction}
+              {isUpdating ? 'Confirming...' : `Confirm ${modalAction}`}
             </button>
           </div>
         </div>
