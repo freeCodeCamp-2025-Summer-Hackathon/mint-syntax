@@ -5,7 +5,7 @@ import { Pagination } from './Pagination';
 import Spinny from './Spinny';
 
 const IdeasList = ({
-  base = '',
+  base = '/ideas/',
   headerText = 'Vote on Current Ideas',
   count,
   sort = null,
