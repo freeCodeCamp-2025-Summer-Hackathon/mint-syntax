@@ -68,7 +68,7 @@ const UsersPage = ({ count = 20 }) => {
               >
                 <Link
                   to={`/users/${user.id}`}
-                  className='idea-text flex-grow py-2 px-4 -ml-4 -mr-4'
+                  className='idea-text flex-grow h-full flex items-center py-2 px-4 -ml-4 -mr-4 hover:bg-gray-100 rounded-lg transition-colors duration-200'
                 >
                   {user.name} ({user.username})
                 </Link>
