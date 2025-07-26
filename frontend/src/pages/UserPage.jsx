@@ -146,7 +146,7 @@ const UserPage = () => {
             disabled={isUpdating}
             className={confirmButtonClass}
           >
-            {isUpdating ? 'Updating Status...' : modalAction}
+            {isUpdating ? 'Updating Status...' : `${modalAction} Account`}
           </button>
         </div>
       </div>
