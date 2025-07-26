@@ -108,11 +108,11 @@ const UserPage = () => {
   }
 
   const isUserActive = userData.is_active;
-  const modalAction = isUserActive ? 'Deactivate : 'Activate';
-  const modalTitle =  `Confirm ${isUserActive ? 'Deactivation' : 'Activation'}`;
+  const modalAction = isUserActive ? 'Deactivate' : 'Activate';
+  const modalTitle = `Confirm ${isUserActive ? 'Deactivation' : 'Activation'}`;
   const confirmButtonClass = isUserActive
-    ? 'animated-button bg-red-500 hover:bg-red-600'
-    : 'animated-button bg-green-500 hover:bg-green-600';
+    ? 'animated-button !bg-red-500 hover:bg-red-600'
+    : 'animated-button !bg-green-500 hover:bg-green-600';
 
   return (
     <div className='section-card flex flex-col items-center min-h-[60vh]'>
