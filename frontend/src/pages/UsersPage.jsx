@@ -68,15 +68,9 @@ const UsersPage = ({ count = 20 }) => {
               >
                 <Link
                   to={`/users/${user.id}`}
-                  className='idea-text flex-grow h-full flex items-center py-2 px-4 -ml-4 -mr-4 hover:bg-gray-100 rounded-lg transition-colors duration-200'
+                  className='idea-text flex-grow h-full flex items-center p-4 hover:bg-green-50 hover:font-bold rounded-lg transition-colors duration-200'
                 >
                   {user.name} ({user.username})
-                </Link>
-                <Link
-                  to={`/users/${user.id}/ideas`}
-                  className='animated-button-small'
-                >
-                  View Ideas
                 </Link>
               </li>
             ))}
