@@ -25,7 +25,7 @@ const IdeasList = ({
       const skip = page > 0 ? `&skip=${page * count}` : '';
       return `${base}?limit=${count}${sorting}${skip}`;
     },
-    [count, sort]
+    [count, sort, base]
   );
 
   const getPageUrl = page => `${base}page/${page + 1}`;
@@ -62,7 +62,7 @@ const IdeasList = ({
         }}
       />
     ),
-    [totalPages, fetchFromApi, getApiUrl, page]
+    [totalPages, fetchFromApi, getApiUrl, getPageUrl, page]
   );
 
   return (
