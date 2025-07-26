@@ -28,7 +28,7 @@ const IdeasList = ({
     [count, sort, base]
   );
 
-  const getPageUrl = page => `${base}page/${page + 1}`;
+  const getPageUrl = useCallback(page => `${base}page/${page + 1}`, [base]);
 
   useEffect(() => {
     fetchFromApi(getApiUrl(page));
