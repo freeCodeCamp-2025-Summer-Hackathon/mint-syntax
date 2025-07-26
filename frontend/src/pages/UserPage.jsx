@@ -110,14 +110,6 @@ const UserPage = () => {
   const isUserActive = userData.is_active;
   const modalAction = isUserActive ? 'Deactivate' : 'Activate';
   const modalTitle = `Confirm ${isUserActive ? 'Deactivation' : 'Activation'}`;
-
-  let modalMessage;
-  if (isUserActive) {
-    modalMessage = `Deactivate ${userData.name}'s account?`;
-  } else {
-    modalMessage = `Activate ${userData.name}'s account?`;
-  }
-
   const confirmButtonClass = isUserActive
     ? 'animated-button !bg-gradient-to-r from-red-500 to-red-700 hover:!from-red-600 hover:!to-red-800'
     : 'animated-button !bg-gradient-to-r from-green-500 to-green-700 hover:!from-green-600 hover:!to-green-800';
