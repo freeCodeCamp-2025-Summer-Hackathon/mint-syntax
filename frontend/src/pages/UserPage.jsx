@@ -74,7 +74,10 @@ const UserPage = () => {
   const confirmToggleStatus = () => {
     if (id && !isUpdating && userData) {
       const newStatus = !userData.is_active;
-      updateUserStatus(`/users/${id}`, { is_active: newStatus });
+      updateUserStatus(`/users/${id}`, {
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ is_active: newStatus }),
+      });
     }
   };
 
