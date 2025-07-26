@@ -17,7 +17,7 @@ const UserPage = () => {
     error: fetchUserError,
     isLoading: isUserLoading,
     fetchFromApi: fetchUser,
-  } = useApi({ method: 'GET' });
+  } = useApi();
 
   const {
     data: deactivateData,
