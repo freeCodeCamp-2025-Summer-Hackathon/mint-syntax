@@ -43,7 +43,7 @@ const UserPage = () => {
 
   useEffect(() => {
     if (fetchUserData && !fetchUserError) {
-      setUserData(fetchUserData.user);
+      setUserData(fetchUserData);
     }
     if (fetchUserError) {
       console.error('Error fetching user data:', fetchUserError);
