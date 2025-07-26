@@ -78,7 +78,7 @@ async def get_user_ideas(db: Db, id: ObjectId, skip: int = 0, limit: int = 20):
     )
 
 
-@router.patch("/{id}", response_model=UserPublic, dependencies=[AdminUser])
+@router.patch("/{id}", response_model=UserMe, dependencies=[AdminUser])
 async def update_user(db: Db, id: ObjectId, update_data: UserEditPatch):
     user = await db.find_one(User, User.id == id)
     if user is None:
