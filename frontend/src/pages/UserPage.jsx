@@ -20,11 +20,11 @@ const UserPage = () => {
   } = useApi();
 
   const {
-    data: deactivateData,
-    error: deactivateError,
-    isLoading: isDeactivating,
-    fetchFromApi: deactivateUser,
-  } = useApi({ method: 'DELETE' });
+    data: updateUserData,
+    error: updateError,
+    isLoading: isUpdating,
+    fetchFromApi: updateUserStatus,
+  } = useApi({ method: 'PATCH' });
 
   useEffect(() => {
     if (!isLogged) {
@@ -51,26 +51,30 @@ const UserPage = () => {
   }, [fetchUserData, fetchUserError]);
 
   useEffect(() => {
-    if (deactivateData && !deactivateError) {
-      console.log('User deactivated:', deactivateData);
+    if (updateUserData && !updateError) {
+      console.log('User status updated:', updateUserData);
       setShowDeactivateModal(false);
-      navigate('/users');
+      setUserData(prevData => ({
+        ...prevData,
+        is_active: updateUserData.is_active,
+      }));
     }
-    if (deactivateError) {
-      console.error('Error deactivating user:', deactivateError);
+    if (updateError) {
+      console.error('Error updating user status:', updateError);
     }
-  }, [deactivateData, deactivateError, navigate]);
+  }, [updateUserData, updateError, navigate]);
 
-  const handleDeactivateClick = () => {
+  const handleToggleStatusClick = () => {
     setShowDeactivateModal(true);
     if (deactivateModalRef.current) {
       deactivateModalRef.current.showModal();
     }
   };
 
-  const confirmDeactivate = () => {
-    if (id && !isDeactivating) {
-      deactivateUser(`/users/${id}/deactivate`);
+  const confirmToggleStatus = () => {
+    if (id && !isUpdating && userData) {
+      const newStatus = !userData.is_active;
+      updateUserStatus(`/users/${id}`, { is_active: newStatus });
     }
   };
 
@@ -100,6 +104,21 @@ const UserPage = () => {
     );
   }
 
+  const isUserActive = userData.is_active;
+  const buttonText = isUserActive ? 'Deactivate Account' : 'Activate Account';
+  const modalTitle = isUserActive
+    ? 'Confirm Deactivation'
+    : 'Confirm Activation';
+  const modalMessage = isUserActive
+    ? `Deactivate ${userData.name}'s account?`
+    : `Activate ${userData.name}'s account?`;
+  const confirmButtonText = isUserActive
+    ? 'Confirm Deactivate'
+    : 'Confirm Activate';
+  const confirmButtonClass = isUserActive
+    ? 'animated-button bg-red-500 hover:bg-red-600'
+    : 'animated-button bg-green-500 hover:bg-green-600';
+
   return (
     <div className='section-card flex flex-col items-center min-h-[60vh]'>
       <h1 className='section-heading'>User Profile: {userData.name}</h1>
@@ -113,6 +132,9 @@ const UserPage = () => {
         <p className='text-lg mb-4'>
           <strong>Admin:</strong> {userData.is_admin ? 'Yes' : 'No'}
         </p>
+        <p className='text-lg mb-4'>
+          <strong>Status:</strong> {isUserActive ? 'Active' : 'Inactive'}
+        </p>
 
         <div className='flex flex-col sm:flex-row justify-center gap-4 mt-6'>
           <Link to={`/users/${id}/edit`} className='animated-button'>
@@ -122,11 +144,11 @@ const UserPage = () => {
             View All Ideas
           </Link>
           <button
-            onClick={handleDeactivateClick}
-            disabled={isDeactivating}
-            className='animated-button bg-red-500 hover:bg-red-600'
+            onClick={handleToggleStatusClick}
+            disabled={isUpdating}
+            className={confirmButtonClass}
           >
-            {isDeactivating ? 'Deactivating...' : 'Deactivate Account'}
+            {isUpdating ? 'Updating Status...' : buttonText}
           </button>
         </div>
       </div>
@@ -137,28 +159,25 @@ const UserPage = () => {
         open={showDeactivateModal}
       >
         <div className='modal-box'>
-          <h3 className='font-bold text-lg'>Confirm Deactivation</h3>
-          <p className='py-4'>
-            Are you sure you want to deactivate {userData.name}'s account? This
-            action cannot be undone.
-          </p>
-          {deactivateError && (
-            <p className='text-error mb-4'>Error: {deactivateError.message}</p>
+          <h3 className='font-bold text-lg'>{modalTitle}</h3>
+          <p className='py-4'>{modalMessage}</p>
+          {updateError && (
+            <p className='text-error mb-4'>Error: {updateError.message}</p>
           )}
           <div className='modal-action'>
             <button
               className='animated-button mr-2'
               onClick={closeDeactivateModal}
-              disabled={isDeactivating}
+              disabled={isUpdating}
             >
               Cancel
             </button>
             <button
-              className='animated-button bg-red-500 hover:bg-red-600'
-              onClick={confirmDeactivate}
-              disabled={isDeactivating}
+              className={confirmButtonClass}
+              onClick={confirmToggleStatus}
+              disabled={isUpdating}
             >
-              {isDeactivating ? 'Confirming...' : 'Confirm Deactivate'}
+              {isUpdating ? 'Confirming...' : confirmButtonText}
             </button>
           </div>
         </div>
