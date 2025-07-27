@@ -42,12 +42,20 @@ const MePage = () => {
               <span className='font-bold'>Downvotes:</span>{' '}
               {data.downvotes.length}
             </p>
-            <Link className='underline' to='/me/ideas'>
-              My ideas
-            </Link>
-            <Link className='underline' to='/me/edit'>
-              Edit Profile
-            </Link>
+            <div className='flex flex-col sm:flex-row justify-center gap-4 mt-6'>
+              <Link
+                className='animated-button !text-base !px-5 !py-2'
+                to='/me/ideas'
+              >
+                My ideas
+              </Link>
+              <Link
+                className='animated-button !text-base !px-5 !py-2'
+                to='/me/edit'
+              >
+                Edit Profile
+              </Link>
+            </div>
           </>
         )}
       </div>

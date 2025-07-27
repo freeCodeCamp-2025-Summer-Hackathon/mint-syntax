@@ -114,7 +114,7 @@ export function LoginForm({ redirect_to = '/' }) {
           <PasswordIcon />
           <input
             id='password'
-            {...register('password', { required: true, minLength: 8 })}
+            {...register('password', { required: true })}
             type='password'
             placeholder='Password'
             className='input-validator'
@@ -122,16 +122,10 @@ export function LoginForm({ redirect_to = '/' }) {
           />
         </label>
       </div>
-      {errors.password?.type === 'required' ? (
+      {errors.password?.type === 'required' && (
         <p role='alert' className='text-error'>
           The field "Password" is required.
         </p>
-      ) : (
-        errors.password?.type === 'minLength' && (
-          <p role='alert' className='text-error'>
-            Password needs to be at least 8 characters long.
-          </p>
-        )
       )}
 
       {errors?.root?.responseError && (

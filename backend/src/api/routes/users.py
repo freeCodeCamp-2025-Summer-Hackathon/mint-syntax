@@ -8,11 +8,12 @@ from src.api.dependencies import AdminUser
 from src.auth import get_password_hash
 from src.dependencies import Db
 from src.models import (
+    AdminUserCreate,
+    AdminUserEditPatch,
     Idea,
     IdeaPublic,
     IdeasPublic,
     User,
-    UserEditPatch,
     UserMe,
     UserPublic,
     UserRegister,
@@ -22,12 +23,11 @@ from src.models import (
 router = APIRouter(prefix="/users")
 
 
-@router.post("/", response_model=UserPublic)
-async def create_user(db: Db, register_data: Annotated[UserRegister, Form()]):
+async def add_user(db: Db, data: Annotated[AdminUserCreate | UserRegister, Form()]):
     try:
         user = User(
-            **register_data.model_dump(),
-            hashed_password=get_password_hash(register_data.password),
+            **data.model_dump(),
+            hashed_password=get_password_hash(data.password),
         )
         await db.save(user)
     except DuplicateKeyError as e:
@@ -42,6 +42,16 @@ async def create_user(db: Db, register_data: Annotated[UserRegister, Form()]):
             detail="An unexpected error occurred while creating the user.",
         ) from e
     return user
+
+
+@router.post("/", response_model=UserPublic)
+async def register(db: Db, register_data: Annotated[UserRegister, Form()]):
+    return await add_user(db, register_data)
+
+
+@router.post("/add", response_model=UserPublic, dependencies=[AdminUser])
+async def create_user(db: Db, create_data: Annotated[AdminUserCreate, Form()]):
+    return await add_user(db, create_data)
 
 
 @router.get(
@@ -79,10 +89,12 @@ async def get_user_ideas(db: Db, id: ObjectId, skip: int = 0, limit: int = 20):
 
 
 @router.patch("/{id}", response_model=UserMe, dependencies=[AdminUser])
-async def update_user(db: Db, id: ObjectId, update_data: UserEditPatch):
+async def update_user(db: Db, id: ObjectId, update_data: AdminUserEditPatch):
     user = await db.find_one(User, User.id == id)
     if user is None:
         raise HTTPException(404)
-    user.model_update(update_data)
+    if update_data.new_password is not None:
+        update_data.hashed_password = get_password_hash(update_data.new_password)
+    user.model_update(update_data, exclude={"old_password, new_password"})
     await db.save(user)
     return user

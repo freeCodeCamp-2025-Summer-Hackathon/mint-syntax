@@ -3,13 +3,16 @@ import { IdeaListItem } from './IdeaListItem';
 import { useApi } from '../hooks/useApi';
 import { Pagination } from './Pagination';
 import Spinny from './Spinny';
+import { Link } from 'react-router';
 
 const IdeasList = ({
+  base = '/ideas/',
   headerText = 'Vote on Current Ideas',
   count,
   sort = null,
   page = 0,
   paginate = false,
+  showExploreButton = false,
 }) => {
   const [showPages, setShowPages] = useState(false);
   const [totalPages, setTotalPages] = useState(0);
@@ -22,12 +25,12 @@ const IdeasList = ({
     (page = 0) => {
       const sorting = sort ? `&sort=${sort}` : '';
       const skip = page > 0 ? `&skip=${page * count}` : '';
-      return `/ideas/?limit=${count}${sorting}${skip}`;
+      return `${base}?limit=${count}${sorting}${skip}`;
     },
-    [count, sort]
+    [count, sort, base]
   );
 
-  const getPageUrl = page => `/ideas/page/${page + 1}`;
+  const getPageUrl = useCallback(page => `${base}page/${page + 1}`, [base]);
 
   useEffect(() => {
     fetchFromApi(getApiUrl(page));
@@ -61,7 +64,7 @@ const IdeasList = ({
         }}
       />
     ),
-    [totalPages, fetchFromApi, getApiUrl, page]
+    [totalPages, fetchFromApi, getApiUrl, getPageUrl, page]
   );
 
   return (
@@ -84,6 +87,14 @@ const IdeasList = ({
           </ul>
         )}
         {paginate && showPages && entries.length > 0 && <>{pagination}</>}
+
+        {showExploreButton && (
+          <div style={{ textAlign: 'center', marginTop: 'var(--spacing-md)' }}>
+            <Link to='/ideas' className='animated-button golden'>
+              Explore All Ideas →
+            </Link>
+          </div>
+        )}
       </div>
     </section>
   );

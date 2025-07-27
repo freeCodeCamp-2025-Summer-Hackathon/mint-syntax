@@ -1,9 +1,9 @@
 from typing import Annotated
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
 from src.api.dependencies import LoggedInUser
-from src.auth import User
+from src.auth import User, get_password_hash
 from src.dependencies import Db
 from src.models import Idea, IdeaPublic, IdeasPublic, UserEditPatch, UserMe
 
@@ -15,13 +15,17 @@ async def get_me(current_user: Annotated[User, LoggedInUser]):
     return UserMe(**current_user.model_dump())
 
 
-@router.patch("/")
+@router.patch("/", response_model=UserMe)
 async def patch_me(
     db: Db,
     current_user: Annotated[User, LoggedInUser],
     update_data: UserEditPatch,
 ):
-    current_user.model_update(update_data)
+    if update_data.new_password is not None and update_data.old_password is not None:
+        if get_password_hash(update_data.old_password) != current_user.hashed_password:
+            raise HTTPException(status_code=403, detail="Invalid password")
+        update_data.hashed_password = get_password_hash(update_data.new_password)
+    current_user.model_update(update_data, exclude={"new_password", "old_password"})
     await db.save(current_user)
     return current_user
 
