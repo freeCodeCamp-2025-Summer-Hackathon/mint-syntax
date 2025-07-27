@@ -120,7 +120,7 @@ const MeEditPage = () => {
                 <UserIcon />
                 <input
                   id='name'
-                  {...register('name')}
+                  {...register('name', { required: true })}
                   type='Text'
                   defaultValue={data.name}
                   className='input-validator'
@@ -128,10 +128,17 @@ const MeEditPage = () => {
               </label>
             </div>
 
-            {error && response.status !== 409 && (
-              <div className='text-error text-center'>
-                Something went wrong, please try again later.
-              </div>
+            {errors.username?.type === 'required' ? (
+              <p role='alert' className='text-error'>
+                The field "Username" is required.
+              </p>
+            ) : (
+              error &&
+              response.status === 409 && (
+                <p role='alert' className='text-error'>
+                  This username is already in use.
+                </p>
+              )
             )}
 
             <div className='form-group'>
