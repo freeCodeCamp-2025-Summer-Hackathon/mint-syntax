@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { useUser } from '../hooks/useUser';
 import { useApi } from '../hooks/useApi';
