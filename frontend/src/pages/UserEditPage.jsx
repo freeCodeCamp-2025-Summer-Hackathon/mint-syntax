@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router';
+import { useParams, useNavigate, Link } from 'react-router';
 import { useUser } from '../hooks/useUser';
 import { useApi } from '../hooks/useApi';
 import Spinny from '../components/Spinny';
@@ -152,12 +152,12 @@ const UserEditPage = () => {
         <p className='text-lg text-gray-600 mb-8'>
           {fetchError?.message || 'Could not load user data for editing.'}
         </p>
-        <button
-          onClick={() => navigate(`/users/${id}`)}
-          className='animated-button !text-base !px-5 !py-2'
+        <Link
+          to={`/users/${id}`}
+          className='animated-button !text-base !px-5 !py-2 !bg-gray-500 hover:!bg-gray-600'
         >
           Back to User Profile
-        </button>
+        </Link>
       </div>
     );
   }
@@ -169,12 +169,9 @@ const UserEditPage = () => {
         <p className='text-lg text-gray-600 mb-8'>
           The user you are trying to edit does not exist.
         </p>
-        <button
-          onClick={() => navigate('/users')}
-          className='animated-button !text-base !px-5 !py-2'
-        >
+        <Link to='/users' className='animated-button !text-base !px-5 !py-2'>
           Back to All Users
-        </button>
+        </Link>
       </div>
     );
   }
@@ -339,14 +336,12 @@ const UserEditPage = () => {
         )}
 
         <div className='flex justify-center gap-4 mt-6'>
-          <button
-            type='button'
-            onClick={() => navigate(`/users/${id}`)}
+          <Link
+            to={`/users/${id}`}
             className='animated-button !text-base !px-5 !py-2 !bg-gray-500 hover:!bg-gray-600'
-            disabled={isUpdating}
           >
             Back to User Profile
-          </button>
+          </Link>
           <button
             type='submit'
             className='animated-button !text-base !px-5 !py-2'
