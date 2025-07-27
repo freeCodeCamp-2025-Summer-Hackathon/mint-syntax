@@ -8,6 +8,7 @@ from src.api.dependencies import AdminUser
 from src.auth import get_password_hash
 from src.dependencies import Db
 from src.models import (
+    AdminUserCreate,
     AdminUserEditPatch,
     Idea,
     IdeaPublic,
@@ -22,12 +23,11 @@ from src.models import (
 router = APIRouter(prefix="/users")
 
 
-@router.post("/", response_model=UserPublic)
-async def create_user(db: Db, register_data: Annotated[UserRegister, Form()]):
+async def add_user(db: Db, data: Annotated[AdminUserCreate | UserRegister, Form()]):
     try:
         user = User(
-            **register_data.model_dump(),
-            hashed_password=get_password_hash(register_data.password),
+            **data.model_dump(),
+            hashed_password=get_password_hash(data.password),
         )
         await db.save(user)
     except DuplicateKeyError as e:
@@ -42,6 +42,16 @@ async def create_user(db: Db, register_data: Annotated[UserRegister, Form()]):
             detail="An unexpected error occurred while creating the user.",
         ) from e
     return user
+
+
+@router.post("/", response_model=UserPublic)
+async def register(db: Db, register_data: Annotated[UserRegister, Form()]):
+    return await add_user(db, register_data)
+
+
+@router.post("/add", response_model=UserPublic, dependencies=[AdminUser])
+async def create_user(db: Db, create_data: Annotated[AdminUserCreate, Form()]):
+    return await add_user(db, create_data)
 
 
 @router.get(
