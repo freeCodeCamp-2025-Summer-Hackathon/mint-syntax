@@ -141,6 +141,12 @@ const MeEditPage = () => {
               )
             )}
 
+            {error && response.status !== 409 && (
+              <div className='text-error text-center'>
+                Something went wrong, please try again later.
+              </div>
+            )}
+
             <div className='form-group'>
               <label
                 htmlFor='password'
@@ -203,6 +209,12 @@ const MeEditPage = () => {
                   Both passwords need to match.
                 </p>
               )
+            )}
+
+            {error && response.status !== 409 && (
+              <div className='text-error text-center'>
+                Something went wrong, please try again later.
+              </div>
             )}
 
             {error && response.status !== 409 && (
