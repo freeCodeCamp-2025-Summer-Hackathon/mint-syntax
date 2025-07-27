@@ -13,6 +13,7 @@ const UserEditPage = () => {
     name: '',
     is_admin: false,
   });
+  const [originalFormData, setOriginalFormData] = useState(null);
   const [newPassword, setNewPassword] = useState('');
   const [repeatNewPassword, setRepeatNewPassword] = useState('');
   const [formErrors, setFormErrors] = useState({});
@@ -49,11 +50,13 @@ const UserEditPage = () => {
 
   useEffect(() => {
     if (fetchedUserData && !fetchError) {
-      setFormData({
+      const initialData = {
         username: fetchedUserData.username || '',
         name: fetchedUserData.name || '',
         is_admin: fetchedUserData.is_admin || false,
-      });
+      };
+      setFormData(initialData);
+      setOriginalFormData(initialData);
     }
     if (fetchError) {
       console.error('Error fetching user data:', fetchError);
@@ -66,12 +69,13 @@ const UserEditPage = () => {
       setShowInlineConfirm(false);
       setNewPassword('');
       setRepeatNewPassword('');
+      setOriginalFormData(formData);
       navigate(`/users/${id}`);
     }
     if (updateError) {
       console.error('Error updating user:', updateError);
     }
-  }, [updateResponse, updateError, navigate, id]);
+  }, [updateResponse, updateError, navigate, id, formData]);
 
   const handleChange = e => {
     const { name, value, type } = e.target;
@@ -140,6 +144,12 @@ const UserEditPage = () => {
   const cancelUpdate = () => {
     setShowInlineConfirm(false);
   };
+
+  const hasChanges =
+    originalFormData &&
+    (formData.name !== originalFormData.name ||
+      formData.is_admin !== originalFormData.is_admin ||
+      newPassword.trim() !== '');
 
   if (isFetching) {
     return <Spinny />;
@@ -345,7 +355,7 @@ const UserEditPage = () => {
           <button
             type='submit'
             className='animated-button !text-base !px-5 !py-2'
-            disabled={isUpdating || showInlineConfirm}
+            disabled={isUpdating || showInlineConfirm || !hasChanges}
           >
             Save Changes
           </button>
