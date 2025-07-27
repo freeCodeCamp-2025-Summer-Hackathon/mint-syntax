@@ -143,7 +143,7 @@ const MeEditPage = () => {
 
             <div className='form-group'>
               <label
-                htmlFor='password'
+                htmlFor='old-password'
                 className='block text-lg font-medium text-gray-700 mb-2'
               >
                 Old Password:
@@ -151,24 +151,30 @@ const MeEditPage = () => {
               <label className='input input-sm'>
                 <PasswordIcon />
                 <input
-                  id='password'
-                  {...register('oldPassword', { minLength: 8 })}
+                  id='old-password'
+                  {...register('old_password', { minLength: 8 })}
                   type='Password'
-                  placeholder='Password'
+                  placeholder='Old Password'
                   className='input-validator'
-                  aria-invalid={!!errors.oldPassword}
+                  aria-invalid={!!errors.old_password}
                 />
               </label>
             </div>
-            {errors.password?.type === 'minLength' && (
+            {errors.old_password?.type === 'minLength' ? (
               <p role='alert' className='text-error'>
-                Password needs to be at least 8 characters long.
+                Passwords needs to be at least 8 characters long.
               </p>
+            ) : (
+              errors.new_password?.type === 'validate' && (
+                <p role='alert' className='text-error'>
+                  Old password needs to pe provided when changing passwords.
+                </p>
+              )
             )}
 
             <div className='form-group'>
               <label
-                htmlFor='password'
+                htmlFor='new-password'
                 className='block text-lg font-medium text-gray-700 mb-2'
               >
                 New Password:
@@ -176,33 +182,28 @@ const MeEditPage = () => {
               <label className='input input-sm'>
                 <PasswordIcon />
                 <input
-                  id='password'
-                  {...register('password', {
+                  id='new-password'
+                  {...register('new_password', {
                     minLength: 8,
-                    validate: () => getValues('oldPassword').length > 0,
+                    validate: () => getValues('old_password').length > 0,
                   })}
                   type='Password'
-                  placeholder='Password'
+                  placeholder='New Password'
                   className='input-validator'
-                  aria-invalid={!!errors.password}
+                  aria-invalid={!!errors.new_password}
                 />
               </label>
             </div>
-            {errors.password?.type === 'validate' ? (
-              <p role='alert' className='text-error'>
-                Old password needs to pe provided when changing passwords.
-              </p>
-            ) : (
-              errors.password?.type === 'minLength' && (
+            {errors.new_password?.type === 'validate' &&
+              errors.new_password?.type === 'minLength' && (
                 <p role='alert' className='text-error'>
-                  Password needs to be at least 8 characters long.
+                  Passwords needs to be at least 8 characters long.
                 </p>
-              )
-            )}
+              )}
 
             <div className='form-group'>
               <label
-                htmlFor='repeatPassword'
+                htmlFor='repeat-password'
                 className='block text-lg font-medium text-gray-700 mb-2'
               >
                 Repeat New Password:
@@ -210,23 +211,23 @@ const MeEditPage = () => {
               <label className='input input-sm'>
                 <PasswordIcon />
                 <input
-                  id='repeatPassword'
-                  {...register('repeatPassword', {
-                    validate: value => getValues('password') === value,
+                  id='repeat-password'
+                  {...register('repeat_password', {
+                    validate: value => getValues('new_password') === value,
                   })}
                   type='password'
-                  placeholder='Password'
+                  placeholder='Repeat Password'
                   title='Must match the password entered in the previous input field'
-                  aria-invalid={!!errors.repeatPassword}
+                  aria-invalid={!!errors.repeat_password}
                 />
               </label>
             </div>
-            {errors.repeatPassword?.type === 'required' ? (
+            {errors.repeat_password?.type === 'required' ? (
               <p role='alert' className='text-error'>
                 The field "Repeat New Password" is required.
               </p>
             ) : (
-              errors.repeatPassword?.type === 'validate' && (
+              errors.repeat_password?.type === 'validate' && (
                 <p role='alert' className='text-error'>
                   Both passwords need to match.
                 </p>
