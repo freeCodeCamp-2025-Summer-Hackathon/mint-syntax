@@ -152,13 +152,13 @@ const MeEditPage = () => {
                 htmlFor='password'
                 className='block text-lg font-medium text-gray-700 mb-2'
               >
-                New Password:
+                Old Password:
               </label>
               <label className='input input-sm'>
                 <PasswordIcon />
                 <input
                   id='password'
-                  {...register('password', { minLength: 8 })}
+                  {...register('oldPassword', { minLength: 8 })}
                   type='Password'
                   placeholder='Password'
                   className='input-validator'
@@ -169,6 +169,40 @@ const MeEditPage = () => {
             {errors.password?.type === 'required' ? (
               <p role='alert' className='text-error'>
                 The field "Password" is required.
+              </p>
+            ) : (
+              errors.password?.type === 'minLength' && (
+                <p role='alert' className='text-error'>
+                  Password needs to be at least 8 characters long.
+                </p>
+              )
+            )}
+
+            <div className='form-group'>
+              <label
+                htmlFor='password'
+                className='block text-lg font-medium text-gray-700 mb-2'
+              >
+                New Password:
+              </label>
+              <label className='input input-sm'>
+                <PasswordIcon />
+                <input
+                  id='password'
+                  {...register('password', {
+                    minLength: 8,
+                    validate: () => getValues('oldPassword').length > 0,
+                  })}
+                  type='Password'
+                  placeholder='Password'
+                  className='input-validator'
+                  aria-invalid={!!errors.password}
+                />
+              </label>
+            </div>
+            {errors.password?.type === 'validate' ? (
+              <p role='alert' className='text-error'>
+                Old password is needs to pe provided when changing passwords.
               </p>
             ) : (
               errors.password?.type === 'minLength' && (
