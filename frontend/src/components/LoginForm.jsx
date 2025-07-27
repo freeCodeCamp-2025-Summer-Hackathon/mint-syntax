@@ -84,7 +84,6 @@ export function LoginForm({ redirect_to = '/' }) {
 
   return (
     <>
-      {/* Login form */}
       <form ref={formRef} onSubmit={handleSubmit(onSubmit)}>
         <div className='form-group'>
           <label htmlFor='username' className='form-label'>
@@ -105,6 +104,28 @@ export function LoginForm({ redirect_to = '/' }) {
         {errors.username?.type === 'required' && (
           <p role='alert' className='text-error'>
             The field "Username" is required.
+          </p>
+        )}
+
+        <div className='form-group'>
+          <label htmlFor='password' className='form-label'>
+            Password: <span className='text-red-500'>*</span>
+          </label>
+          <label className='input input-sm'>
+            <PasswordIcon />
+            <input
+              id='password'
+              {...register('password', { required: true })}
+              type='password'
+              placeholder='Password'
+              className='input-validator'
+              aria-invalid={!!errors.password}
+            />
+          </label>
+        </div>
+        {errors.password?.type === 'required' && (
+          <p role='alert' className='text-error'>
+            The field "Password" is required.
           </p>
         )}
 

@@ -72,25 +72,54 @@ const Header = () => {
                 >
                   {isAdmin && (
                     <>
-                      <li>
-                        <Link to='/users'>All users</Link>
+                      <li className='group'>
+                        <Link
+                          to='/users'
+                          className='block !text-base !px-6 !py-2 hover:bg-white hover:text-gray-800 hover:font-bold transition-colors duration-200'
+                        >
+                          Manage Users
+                        </Link>
                       </li>
-                      <li>
-                        <Link to='/users/add'>Add user</Link>
+                      <li className='group'>
+                        <Link
+                          to='/users/add'
+                          className='block !text-base !px-6 !py-2 hover:bg-white hover:text-gray-800 hover:font-bold transition-colors duration-200'
+                        >
+                          Add user
+                        </Link>
                       </li>
                     </>
                   )}
-                  <li>
-                    <Link to='/me'>My profile</Link>
+                  <li className='group'>
+                    <Link
+                      to='/me'
+                      className='block !text-base !px-5 !py-2 hover:bg-white hover:text-gray-800 hover:font-bold transition-colors duration-200'
+                    >
+                      My profile
+                    </Link>
                   </li>
-                  <li>
-                    <Link to='/me/ideas'>My Ideas</Link>
+                  <li className='group'>
+                    <Link
+                      to='/me/ideas'
+                      className='block !text-base !px-5 !py-2 hover:bg-white hover:text-gray-800 hover:font-bold transition-colors duration-200'
+                    >
+                      My Ideas
+                    </Link>
                   </li>
-                  <li>
-                    <Link to='/me/edit'>Edit profile</Link>
+                  <li className='group'>
+                    <Link
+                      to='/me/edit'
+                      className='block !text-base !px-5 !py-2 hover:bg-white hover:text-gray-800 hover:font-bold transition-colors duration-200'
+                    >
+                      Edit profile
+                    </Link>
                   </li>
-                  <li>
-                    <Link onClick={logout} to='/logout'>
+                  <li className='group'>
+                    <Link
+                      onClick={logout}
+                      to='/logout'
+                      className='block !text-base !px-5 !py-2 hover:bg-white hover:text-gray-800 hover:font-bold transition-colors duration-200'
+                    >
                       Logout
                     </Link>
                   </li>
