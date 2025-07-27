@@ -14,8 +14,7 @@ const UserEditPage = () => {
     is_admin: false,
   });
   const [formErrors, setFormErrors] = useState({});
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const confirmModalRef = useRef(null);
+  const [showInlineConfirm, setShowInlineConfirm] = useState(false);
 
   const {
     data: fetchedUserData,
@@ -62,7 +61,7 @@ const UserEditPage = () => {
   useEffect(() => {
     if (updateResponse && !updateError) {
       console.log('User updated successfully:', updateResponse);
-      closeConfirmModal();
+      setShowInlineConfirm(false);
       navigate(`/users/${id}`);
     }
     if (updateError) {
@@ -80,6 +79,7 @@ const UserEditPage = () => {
       ...prevErrors,
       [name]: undefined,
     }));
+    setShowInlineConfirm(false);
   };
 
   const validateForm = () => {
@@ -97,10 +97,7 @@ const UserEditPage = () => {
   const handleSubmit = e => {
     e.preventDefault();
     if (validateForm()) {
-      setShowConfirmModal(true);
-      if (confirmModalRef.current) {
-        confirmModalRef.current.showModal();
-      }
+      setShowInlineConfirm(true);
     }
   };
 
@@ -113,11 +110,8 @@ const UserEditPage = () => {
     }
   };
 
-  const closeConfirmModal = () => {
-    setShowConfirmModal(false);
-    if (confirmModalRef.current) {
-      confirmModalRef.current.close();
-    }
+  const cancelUpdate = () => {
+    setShowInlineConfirm(false);
   };
 
   if (isFetching) {
@@ -242,6 +236,37 @@ const UserEditPage = () => {
           </div>
         </div>
 
+        {showInlineConfirm && (
+          <div
+            className='bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4'
+            role='alert'
+          >
+            <p className='font-bold'>Confirm Update</p>
+            <p>Are you sure you want to save these changes?</p>
+            {updateError && (
+              <p className='text-error mt-2'>Error: {updateError.message}</p>
+            )}
+            <div className='flex justify-end gap-4 mt-4'>
+              <button
+                type='button'
+                onClick={cancelUpdate}
+                className='animated-button !text-base !px-5 !py-2 !bg-gray-500 hover:!bg-gray-600'
+                disabled={isUpdating}
+              >
+                Cancel
+              </button>
+              <button
+                type='button'
+                onClick={confirmUpdate}
+                className='animated-button !text-base !px-5 !py-2'
+                disabled={isUpdating}
+              >
+                {isUpdating ? 'Confirming...' : 'Confirm Save'}
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className='flex justify-center gap-4 mt-6'>
           <button
             type='button'
@@ -249,50 +274,17 @@ const UserEditPage = () => {
             className='animated-button !text-base !px-5 !py-2 !bg-gray-500 hover:!bg-gray-600'
             disabled={isUpdating}
           >
-            Cancel
+            Back to User Profile
           </button>
           <button
             type='submit'
             className='animated-button !text-base !px-5 !py-2'
-            disabled={isUpdating}
+            disabled={isUpdating || showInlineConfirm}
           >
-            {isUpdating ? 'Saving...' : 'Save Changes'}
+            Save Changes
           </button>
         </div>
       </form>
-
-      <dialog ref={confirmModalRef} className='modal' open={showConfirmModal}>
-        <div className='modal-box'>
-          <h3 className='font-bold text-lg'>Confirm Update</h3>
-          <p className='py-4'>Are you sure you want to save these changes?</p>
-          {updateError && (
-            <p className='text-error mb-4'>Error: {updateError.message}</p>
-          )}
-          <div className='modal-action'>
-            <button
-              className='animated-button !text-base !px-5 !py-2 !bg-gray-500 mr-2'
-              onClick={closeConfirmModal}
-              disabled={isUpdating}
-            >
-              Cancel
-            </button>
-            <button
-              className='animated-button !text-base !px-5 !py-2'
-              onClick={confirmUpdate}
-              disabled={isUpdating}
-            >
-              {isUpdating ? 'Confirming...' : 'Confirm Save'}
-            </button>
-          </div>
-        </div>
-        <form
-          method='dialog'
-          className='modal-backdrop'
-          onClick={closeConfirmModal}
-        >
-          <button>close</button>
-        </form>
-      </dialog>
     </div>
   );
 };
