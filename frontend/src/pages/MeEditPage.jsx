@@ -75,7 +75,7 @@ const MeEditPage = () => {
 
   const onSubmit = async formData => {
     try {
-      await fetchFromApi(`/users/${data.id}`, {
+      await fetchFromApi(`/me`, {
         method: 'PATCH',
         headers: {
           'content-type': 'application/json',
