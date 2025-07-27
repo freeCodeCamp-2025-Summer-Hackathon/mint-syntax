@@ -54,6 +54,10 @@ class AdminUserEditPatch(UserEditPatch):
     is_admin: bool | None = None
 
 
+class AdminUserCreate(UserRegister):
+    is_admin: bool = False
+
+
 class Idea(Model):
     name: str
     description: str
