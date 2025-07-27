@@ -34,6 +34,7 @@
   <!--<li>Millicent</li>-->
   <li><a href="https://github.com/Vallayah">Ola</a></li>
   <li><a href="https://github.com/Sebastian-Wlo">Sebastian_W</a></li>
+  <li><a href="https://github.com/cosmonewt">Theo</a></li>
  <!--<li><a href="https://github.com/tetrisy">Tetris</li>-->
  <!--<li><a href="https://github.com/nurmukhammad03">VooDooRe</a></li>-->
 </ul>

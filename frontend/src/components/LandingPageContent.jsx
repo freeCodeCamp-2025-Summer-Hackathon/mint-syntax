@@ -36,6 +36,7 @@ const LandingPageContent = () => {
     { name: 'Ola', github_uri: 'https://github.com/Vallayah' },
     { name: 'Krzysztof', github_uri: 'https://github.com/gikf' },
     { name: 'Sebastian_W', github_uri: 'https://github.com/Sebastian-Wlo' },
+    { name: 'Theo', github_uri: 'https://github.com/cosmonewt' },
     // { name: 'Tetris', github_uri: 'https://github.com/tetrisy' },
     // { name: 'VooDooRe', github_uri: 'https://github.com/nurmukhammad03' },
   ];
