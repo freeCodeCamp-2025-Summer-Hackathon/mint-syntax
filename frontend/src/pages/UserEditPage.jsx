@@ -209,39 +209,37 @@ const UserEditPage = () => {
           )}
         </div>
 
-        {isAdmin && (
-          <div className='mb-4'>
-            <label className='block text-lg font-medium text-gray-700 mb-2'>
-              Admin Status:
+        <div className='mb-4'>
+          <label className='block text-lg font-medium text-gray-700 mb-2'>
+            Admin Status:
+          </label>
+          <div className='flex items-center space-x-4'>
+            <label className='inline-flex items-center'>
+              <input
+                type='radio'
+                name='is_admin'
+                value='true'
+                checked={formData.is_admin === true}
+                onChange={handleChange}
+                className='radio radio-primary'
+                disabled={isUpdating}
+              />
+              <span className='ml-2 text-gray-700'>Yes</span>
             </label>
-            <div className='flex items-center space-x-4'>
-              <label className='inline-flex items-center'>
-                <input
-                  type='radio'
-                  name='is_admin'
-                  value='true'
-                  checked={formData.is_admin === true}
-                  onChange={handleChange}
-                  className='radio radio-primary'
-                  disabled={isUpdating}
-                />
-                <span className='ml-2 text-gray-700'>Yes</span>
-              </label>
-              <label className='inline-flex items-center'>
-                <input
-                  type='radio'
-                  name='is_admin'
-                  value='false'
-                  checked={formData.is_admin === false}
-                  onChange={handleChange}
-                  className='radio radio-primary'
-                  disabled={isUpdating}
-                />
-                <span className='ml-2 text-gray-700'>No</span>
-              </label>
-            </div>
+            <label className='inline-flex items-center'>
+              <input
+                type='radio'
+                name='is_admin'
+                value='false'
+                checked={formData.is_admin === false}
+                onChange={handleChange}
+                className='radio radio-primary'
+                disabled={isUpdating}
+              />
+              <span className='ml-2 text-gray-700'>No</span>
+            </label>
           </div>
-        )}
+        </div>
 
         <div className='flex justify-center gap-4 mt-6'>
           <button
