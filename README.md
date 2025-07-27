@@ -90,6 +90,37 @@ If needed, update `MONGODB_URI` in `.env` file.
 ```
 First commit after this can take a bit longer
 
+#### Database
+
+##### Local Database Deployment (MongoDB Community)
+
+This section references the official [Install MongoDB Community with Docker Tutorial](https://www.mongodb.com/docs/manual/tutorial/install-mongodb-community-with-docker/). Visit the link for more details.
+
+- Before you begin, install and start [Docker](https://docs.docker.com/get-started/get-docker/)
+- No need to make changes to the .env file, as it is already setup to connect to the local database deployment
+
+```bash
+/$ docker pull mongodb/mongodb-community-server:latest
+```
+
+```bash
+/$ docker run --name mongodb -p 27017:27017 -d mongodb/mongodb-community-server:latest
+```
+Check, if the docker container is running:
+```bash
+/$ docker container ls
+```
+The above command should output something similar to below:
+```
+CONTAINER ID   IMAGE                                       COMMAND                  CREATED         STATUS         PORTS       NAMES
+c29db5687290   mongodb/mongodb-community-server:5.0-ubi8   "docker-entrypoint.s…"   4 seconds ago   Up 3 seconds   27017/tcp   mongo
+```
+
+##### Cloud Database Deployment (MongoDB Atlas)
+
+1. Follow the offical [MongoDB Atlas Tutorial](https://www.mongodb.com/resources/products/platform/mongodb-atlas-tutorial) to create an account, setup a cluster, and access the connection string.
+2. In the .env file, replace the string after "MongoDB_UR=" with the MongoDB Atlas connection string. Don't forget to replace the password placeholder with the password.
+
 ### Development
 
 #### Frontend Client
