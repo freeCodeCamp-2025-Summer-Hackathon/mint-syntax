@@ -53,15 +53,19 @@ const MeEditPage = () => {
     }
   }, [response, data, error]);
 
-  const onSubmit = async () => {
+  const onSubmit = async formData => {
     try {
       await fetchFromApi(`/users/${data.id}`, {
         method: 'PATCH',
-        body: new FormData(formRef.current),
+        headers: {
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify(formData),
       });
     } catch (e) {
       console.log('error!', e);
     }
+    console.log(formData);
   };
   return (
     <div className='section-card min-h-[60vh] flex'>
