@@ -182,6 +182,7 @@ const UserEditPage = () => {
             onChange={handleChange}
             className='input input-bordered w-full p-2 rounded-md'
             disabled={isUpdating}
+            readOnly
           />
           {formErrors.username && (
             <p className='text-error text-sm mt-1'>{formErrors.username}</p>
