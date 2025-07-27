@@ -44,7 +44,7 @@ const UserAddPage = () => {
         setMessage('');
       }
     }
-  }, [data, navigate]);
+  }, [data, navigate, response]);
 
   const handleSubmit = async e => {
     e.preventDefault();
