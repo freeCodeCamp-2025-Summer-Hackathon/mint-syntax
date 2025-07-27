@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter
 
 from src.api.dependencies import LoggedInUser
-from src.auth import User
+from src.auth import User, get_password_hash
 from src.dependencies import Db
 from src.models import Idea, IdeaPublic, IdeasPublic, UserEditPatch, UserMe
 
@@ -15,13 +15,15 @@ async def get_me(current_user: Annotated[User, LoggedInUser]):
     return UserMe(**current_user.model_dump())
 
 
-@router.patch("/")
+@router.patch("/", response_model=UserMe)
 async def patch_me(
     db: Db,
     current_user: Annotated[User, LoggedInUser],
     update_data: UserEditPatch,
 ):
-    current_user.model_update(update_data)
+    if hasattr(update_data, "password") and update_data.password is not None:
+        update_data.hashed_password = get_password_hash(update_data.password)
+    current_user.model_update(update_data, exclude={"password"})
     await db.save(current_user)
     return current_user
 

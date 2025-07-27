@@ -45,7 +45,13 @@ class UserRegister(BaseModel):
 
 class UserEditPatch(BaseModel):
     name: str | None = Field(max_length=255)
+    password: str | None = None
+    hashed_password: str | None = None
+
+
+class AdminUserEditPatch(UserEditPatch):
     is_active: bool | None = None
+    is_admin: bool | None = None
 
 
 class Idea(Model):

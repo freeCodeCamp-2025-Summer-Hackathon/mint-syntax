@@ -8,11 +8,11 @@ from src.api.dependencies import AdminUser
 from src.auth import get_password_hash
 from src.dependencies import Db
 from src.models import (
+    AdminUserEditPatch,
     Idea,
     IdeaPublic,
     IdeasPublic,
     User,
-    UserEditPatch,
     UserMe,
     UserPublic,
     UserRegister,
@@ -79,10 +79,12 @@ async def get_user_ideas(db: Db, id: ObjectId, skip: int = 0, limit: int = 20):
 
 
 @router.patch("/{id}", response_model=UserMe, dependencies=[AdminUser])
-async def update_user(db: Db, id: ObjectId, update_data: UserEditPatch):
+async def update_user(db: Db, id: ObjectId, update_data: AdminUserEditPatch):
     user = await db.find_one(User, User.id == id)
     if user is None:
         raise HTTPException(404)
-    user.model_update(update_data)
+    if hasattr(update_data, "password") and update_data.password is not None:
+        update_data.hashed_password = get_password_hash(update_data.password)
+    user.model_update(update_data, exclude={"password"})
     await db.save(user)
     return user
