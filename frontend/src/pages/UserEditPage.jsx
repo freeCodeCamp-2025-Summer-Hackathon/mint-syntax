@@ -13,6 +13,8 @@ const UserEditPage = () => {
     name: '',
     is_admin: false,
   });
+  const [newPassword, setNewPassword] = useState('');
+  const [repeatNewPassword, setRepeatNewPassword] = useState('');
   const [formErrors, setFormErrors] = useState({});
   const [showInlineConfirm, setShowInlineConfirm] = useState(false);
 
@@ -62,6 +64,8 @@ const UserEditPage = () => {
     if (updateResponse && !updateError) {
       console.log('User updated successfully:', updateResponse);
       setShowInlineConfirm(false);
+      setNewPassword('');
+      setRepeatNewPassword('');
       navigate(`/users/${id}`);
     }
     if (updateError) {
@@ -71,13 +75,21 @@ const UserEditPage = () => {
 
   const handleChange = e => {
     const { name, value, type } = e.target;
-    setFormData(prevData => ({
-      ...prevData,
-      [name]: type === 'radio' ? value === 'true' : value,
-    }));
+    if (name === 'newPassword') {
+      setNewPassword(value);
+    } else if (name === 'repeatNewPassword') {
+      setRepeatNewPassword(value);
+    } else {
+      setFormData(prevData => ({
+        ...prevData,
+        [name]: type === 'radio' ? value === 'true' : value,
+      }));
+    }
     setFormErrors(prevErrors => ({
       ...prevErrors,
       [name]: undefined,
+      newPassword: undefined,
+      repeatNewPassword: undefined,
     }));
     setShowInlineConfirm(false);
   };
@@ -90,6 +102,16 @@ const UserEditPage = () => {
     if (!formData.name.trim()) {
       errors.name = 'Name is required.';
     }
+
+    if (newPassword.trim()) {
+      if (newPassword.length < 8) {
+        errors.newPassword = 'Password must be at least 8 characters long.';
+      }
+      if (newPassword !== repeatNewPassword) {
+        errors.repeatNewPassword = 'Passwords do not match.';
+      }
+    }
+
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -103,9 +125,14 @@ const UserEditPage = () => {
 
   const confirmUpdate = () => {
     if (id && !isUpdating) {
+      const dataToUpdate = { ...formData };
+      if (newPassword.trim()) {
+        dataToUpdate.password = newPassword;
+      }
+
       updateUser(`/users/${id}`, {
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(dataToUpdate),
       });
     }
   };
@@ -174,7 +201,7 @@ const UserEditPage = () => {
             name='username'
             value={formData.username}
             onChange={handleChange}
-            className='input input-bordered w-full p-2 rounded-md'
+            className='input input-bordered w-full p-2 rounded-md focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-300 hover:border-yellow-500'
             disabled={isUpdating}
             readOnly
           />
@@ -196,11 +223,55 @@ const UserEditPage = () => {
             name='name'
             value={formData.name}
             onChange={handleChange}
-            className='input input-bordered w-full p-2 rounded-md'
+            className='input input-bordered w-full p-2 rounded-md focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-300 hover:border-yellow-500'
             disabled={isUpdating}
           />
           {formErrors.name && (
             <p className='text-error text-sm mt-1'>{formErrors.name}</p>
+          )}
+        </div>
+
+        <div className='mb-4'>
+          <label
+            htmlFor='newPassword'
+            className='block text-lg font-medium text-gray-700 mb-2'
+          >
+            New Password: (optional)
+          </label>
+          <input
+            type='password'
+            id='newPassword'
+            name='newPassword'
+            value={newPassword}
+            onChange={handleChange}
+            className='input input-bordered w-full p-2 rounded-md focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-300 hover:border-yellow-500'
+            disabled={isUpdating}
+          />
+          {formErrors.newPassword && (
+            <p className='text-error text-sm mt-1'>{formErrors.newPassword}</p>
+          )}
+        </div>
+
+        <div className='mb-4'>
+          <label
+            htmlFor='repeatNewPassword'
+            className='block text-lg font-medium text-gray-700 mb-2'
+          >
+            Repeat New Password:
+          </label>
+          <input
+            type='password'
+            id='repeatNewPassword'
+            name='repeatNewPassword'
+            value={repeatNewPassword}
+            onChange={handleChange}
+            className='input input-bordered w-full p-2 rounded-md focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-300 hover:border-yellow-500'
+            disabled={isUpdating}
+          />
+          {formErrors.repeatNewPassword && (
+            <p className='text-error text-sm mt-1'>
+              {formErrors.repeatNewPassword}
+            </p>
           )}
         </div>
 
