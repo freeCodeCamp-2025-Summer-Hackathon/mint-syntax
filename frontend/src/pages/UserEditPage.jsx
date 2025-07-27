@@ -131,7 +131,7 @@ const UserEditPage = () => {
     if (id && !isUpdating) {
       const dataToUpdate = { ...formData };
       if (newPassword.trim()) {
-        dataToUpdate.password = newPassword;
+        dataToUpdate.new_password = newPassword.trim();
       }
 
       updateUser(`/users/${id}`, {

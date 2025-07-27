@@ -45,7 +45,8 @@ class UserRegister(BaseModel):
 
 class UserEditPatch(BaseModel):
     name: str | None = Field(max_length=255)
-    password: str | None = None
+    old_password: str | None = None
+    new_password: str | None = None
     hashed_password: str | None = None
 
 

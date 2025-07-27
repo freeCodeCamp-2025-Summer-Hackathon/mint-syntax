@@ -93,8 +93,8 @@ async def update_user(db: Db, id: ObjectId, update_data: AdminUserEditPatch):
     user = await db.find_one(User, User.id == id)
     if user is None:
         raise HTTPException(404)
-    if hasattr(update_data, "password") and update_data.password is not None:
-        update_data.hashed_password = get_password_hash(update_data.password)
-    user.model_update(update_data, exclude={"password"})
+    if update_data.new_password is not None:
+        update_data.hashed_password = get_password_hash(update_data.new_password)
+    user.model_update(update_data, exclude={"old_password, new_password"})
     await db.save(user)
     return user
