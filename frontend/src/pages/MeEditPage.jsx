@@ -141,12 +141,6 @@ const MeEditPage = () => {
               )
             )}
 
-            {error && response.status !== 409 && (
-              <div className='text-error text-center'>
-                Something went wrong, please try again later.
-              </div>
-            )}
-
             <div className='form-group'>
               <label
                 htmlFor='password'
@@ -162,20 +156,14 @@ const MeEditPage = () => {
                   type='Password'
                   placeholder='Password'
                   className='input-validator'
-                  aria-invalid={!!errors.password}
+                  aria-invalid={!!errors.oldPassword}
                 />
               </label>
             </div>
-            {errors.password?.type === 'required' ? (
+            {errors.password?.type === 'minLength' && (
               <p role='alert' className='text-error'>
-                The field "Password" is required.
+                Password needs to be at least 8 characters long.
               </p>
-            ) : (
-              errors.password?.type === 'minLength' && (
-                <p role='alert' className='text-error'>
-                  Password needs to be at least 8 characters long.
-                </p>
-              )
             )}
 
             <div className='form-group'>
@@ -202,7 +190,7 @@ const MeEditPage = () => {
             </div>
             {errors.password?.type === 'validate' ? (
               <p role='alert' className='text-error'>
-                Old password is needs to pe provided when changing passwords.
+                Old password needs to pe provided when changing passwords.
               </p>
             ) : (
               errors.password?.type === 'minLength' && (
@@ -235,7 +223,7 @@ const MeEditPage = () => {
             </div>
             {errors.repeatPassword?.type === 'required' ? (
               <p role='alert' className='text-error'>
-                The field "Repeat Password" is required.
+                The field "Repeat New Password" is required.
               </p>
             ) : (
               errors.repeatPassword?.type === 'validate' && (
@@ -243,12 +231,6 @@ const MeEditPage = () => {
                   Both passwords need to match.
                 </p>
               )
-            )}
-
-            {error && response.status !== 409 && (
-              <div className='text-error text-center'>
-                Something went wrong, please try again later.
-              </div>
             )}
 
             {error && response.status !== 409 && (
