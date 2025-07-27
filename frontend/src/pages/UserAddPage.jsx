@@ -30,8 +30,8 @@ const UserAddPage = () => {
   }, [isLogged, isAdmin, navigate]);
 
   useEffect(() => {
-    if (data) {
-      if (data.success) {
+    if (response && data) {
+      if (response.ok) {
         setMessage('User created successfully!');
         setError('');
         setUsername('');
