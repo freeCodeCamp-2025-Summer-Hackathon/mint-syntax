@@ -53,31 +53,24 @@ export function RegisterForm({ redirect_to = '/' }) {
     handleSubmit,
     register,
     getValues,
-  } = useForm();
+  } = useForm({ mode: 'onTouched' });
+
   const { isLogged } = useUser();
   const navigate = useNavigate();
-
   const { error, response, data, fetchFromApi } = useApi({ method: 'POST' });
 
   useEffect(() => {
-    if (data && !error) {
-      navigate('/login');
-    }
-    if (error) {
-      console.log('Error:', error);
-    }
+    if (data && !error) navigate('/login');
+    if (error) console.log('Error:', error);
   }, [response, data, error, navigate]);
 
   useEffect(() => {
-    if (isLogged && redirect_to) {
-      navigate(redirect_to);
-    }
+    if (isLogged && redirect_to) navigate(redirect_to);
   }, [isLogged, navigate, redirect_to]);
 
   const onSubmit = async () => {
     try {
       await fetchFromApi('/users', {
-        method: 'POST',
         body: new FormData(formRef.current),
       });
     } catch (e) {
@@ -86,91 +79,96 @@ export function RegisterForm({ redirect_to = '/' }) {
   };
 
   return (
-    <form ref={formRef} onSubmit={handleSubmit(onSubmit)}>
+    <form
+      noValidate
+      ref={formRef}
+      onSubmit={handleSubmit(onSubmit)}
+      className='w-full max-w-md p-4 bg-white'
+    >
       <div className='form-group'>
         <label htmlFor='username' className='form-label'>
           Username: <span className='text-red-500'>*</span>
         </label>
-        <label className='input input-sm'>
+        <label className='input input-bordered input-sm flex items-center gap-2'>
           <UserIcon />
           <input
             id='username'
             {...register('username', { required: true })}
-            type='Text'
+            type='text'
             placeholder='Username'
-            className='input-validator'
+            className='grow focus:outline-none'
             aria-invalid={!!errors.username}
           />
         </label>
-      </div>
-      {errors.username?.type === 'required' ? (
-        <p role='alert' className='text-error'>
-          The field "Username" is required.
-        </p>
-      ) : (
-        error &&
-        response.status === 409 && (
-          <p role='alert' className='text-error'>
-            This username is already in use.
+        {errors.username?.type === 'required' ? (
+          <p role='alert' className='text-error text-xs mt-0.5'>
+            The field "Username" is required.
           </p>
-        )
-      )}
+        ) : (
+          error &&
+          response?.status === 409 && (
+            <p role='alert' className='text-error text-xs mt-0.5'>
+              This username is already in use.
+            </p>
+          )
+        )}
+      </div>
 
       <div className='form-group'>
         <label htmlFor='name' className='form-label'>
           Name: <span className='text-red-500'>*</span>
         </label>
-        <label className='input input-sm'>
+        <label className='input input-bordered input-sm flex items-center gap-2'>
           <UserIcon />
           <input
             id='name'
             {...register('name', { required: true })}
-            type='Text'
+            type='text'
             placeholder='Name'
-            className='input-validator'
+            className='grow focus:outline-none'
             aria-invalid={!!errors.name}
           />
         </label>
+        {errors.name?.type === 'required' && (
+          <p role='alert' className='text-error text-xs mt-0.5'>
+            The field "Name" is required.
+          </p>
+        )}
       </div>
-      {errors.name?.type === 'required' && (
-        <p role='alert' className='text-error'>
-          The field "Name" is required.
-        </p>
-      )}
 
       <div className='form-group'>
         <label htmlFor='password' className='form-label'>
           Password: <span className='text-red-500'>*</span>
         </label>
-        <label className='input input-sm'>
+        <label className='input input-bordered input-sm flex items-center gap-2'>
           <PasswordIcon />
           <input
             id='password'
             {...register('password', { required: true, minLength: 8 })}
-            type='Password'
+            type='password'
             placeholder='Password'
-            className='input-validator'
+            className='grow focus:outline-none'
             aria-invalid={!!errors.password}
           />
         </label>
-      </div>
-      {errors.password?.type === 'required' ? (
-        <p role='alert' className='text-error'>
-          The field "Password" is required.
-        </p>
-      ) : (
-        errors.password?.type === 'minLength' && (
-          <p role='alert' className='text-error'>
-            Password needs to be at least 8 characters long.
+        {errors.password?.type === 'required' ? (
+          <p role='alert' className='text-error text-xs mt-0.5'>
+            The field "Password" is required.
           </p>
-        )
-      )}
+        ) : (
+          errors.password?.type === 'minLength' && (
+            <p role='alert' className='text-error text-xs mt-0.5'>
+              Password needs to be at least 8 characters long.
+            </p>
+          )
+        )}
+      </div>
 
       <div className='form-group'>
         <label htmlFor='repeatPassword' className='form-label'>
           Repeat Password: <span className='text-red-500'>*</span>
         </label>
-        <label className='input input-sm'>
+        <label className='input input-bordered input-sm flex items-center gap-2'>
           <PasswordIcon />
           <input
             id='repeatPassword'
@@ -179,26 +177,26 @@ export function RegisterForm({ redirect_to = '/' }) {
               validate: value => getValues('password') === value,
             })}
             type='password'
-            placeholder='Password'
+            placeholder='Repeat Password'
             title='Must match the password entered in the previous input field'
             aria-invalid={!!errors.repeatPassword}
           />
         </label>
-      </div>
-      {errors.repeatPassword?.type === 'required' ? (
-        <p role='alert' className='text-error'>
-          The field "Repeat Password" is required.
-        </p>
-      ) : (
-        errors.repeatPassword?.type === 'validate' && (
-          <p role='alert' className='text-error'>
-            Both passwords need to match.
+        {errors.repeatPassword?.type === 'required' ? (
+          <p role='alert' className='text-error text-xs mt-0.5'>
+            The field "Repeat Password" is required.
           </p>
-        )
-      )}
+        ) : (
+          errors.repeatPassword?.type === 'validate' && (
+            <p role='alert' className='text-error text-xs mt-0.5'>
+              Both passwords need to match.
+            </p>
+          )
+        )}
+      </div>
 
-      {error && response.status !== 409 && (
-        <div className='text-error text-center'>
+      {error && response?.status !== 409 && (
+        <div role='alert' className='text-error text-center text-xs mt-0.5'>
           Something went wrong, please try again later.
         </div>
       )}
@@ -206,7 +204,7 @@ export function RegisterForm({ redirect_to = '/' }) {
       <div className='flex justify-center'>
         <button
           className='my-1 animated-button'
-          {...((isSubmitting || !isValid) && { disabled: 'disabled' })}
+          {...(isSubmitting && { disabled: 'disabled' })}
         >
           Register
         </button>
