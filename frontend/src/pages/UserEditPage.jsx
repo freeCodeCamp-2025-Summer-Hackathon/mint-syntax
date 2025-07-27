@@ -22,7 +22,7 @@ const UserEditPage = () => {
     error: fetchError,
     isLoading: isFetching,
     fetchFromApi: fetchUser,
-  } = useApi();
+  } = useApi({ loadingInitially: true });
 
   const {
     data: updateResponse,
