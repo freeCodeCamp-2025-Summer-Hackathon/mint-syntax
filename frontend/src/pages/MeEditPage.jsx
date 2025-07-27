@@ -98,8 +98,6 @@ const MeEditPage = () => {
         </>
       ) : isLoading ? (
         <Spinny />
-      ) : error ? (
-        <>`${error}`</>
       ) : (
         <>
           <h1 className='section-heading'>Edit {data.name}'s Profile</h1>
@@ -170,7 +168,7 @@ const MeEditPage = () => {
               </p>
             ) : (
               error &&
-              response.status !== 403 && (
+              response.status === 403 && (
                 <p role='alert' className='text-error'>
                   Old password is invalid.
                 </p>
@@ -190,7 +188,6 @@ const MeEditPage = () => {
                   id='new-password'
                   {...register('new_password', {
                     minLength: 8,
-                    validate: () => getValues('old_password').length > 0,
                   })}
                   type='Password'
                   placeholder='New Password'
@@ -227,16 +224,10 @@ const MeEditPage = () => {
                 />
               </label>
             </div>
-            {errors.repeat_password?.type === 'required' ? (
+            {errors.repeat_password?.type === 'validate' && (
               <p role='alert' className='text-error'>
-                The field "Repeat New Password" is required.
+                Both passwords need to match.
               </p>
-            ) : (
-              errors.repeat_password?.type === 'validate' && (
-                <p role='alert' className='text-error'>
-                  Both passwords need to match.
-                </p>
-              )
             )}
 
             {error && response.status !== 409 && (
