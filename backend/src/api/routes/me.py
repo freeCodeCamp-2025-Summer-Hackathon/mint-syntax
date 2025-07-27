@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
 from src.api.dependencies import LoggedInUser
 from src.auth import User, get_password_hash
@@ -21,9 +21,11 @@ async def patch_me(
     current_user: Annotated[User, LoggedInUser],
     update_data: UserEditPatch,
 ):
-    if hasattr(update_data, "password") and update_data.password is not None:
-        update_data.hashed_password = get_password_hash(update_data.password)
-    current_user.model_update(update_data, exclude={"password"})
+    if update_data.new_password is not None and update_data.old_password is not None:
+        if get_password_hash(update_data.old_password) != current_user.hashed_password:
+            raise HTTPException(status_code=403, detail="Invalid password")
+        update_data.hashed_password = get_password_hash(update_data.new_password)
+    current_user.model_update(update_data, exclude={"new_password", "old_password"})
     await db.save(current_user)
     return current_user
 

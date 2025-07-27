@@ -3,6 +3,7 @@ import { IdeaListItem } from './IdeaListItem';
 import { useApi } from '../hooks/useApi';
 import { Pagination } from './Pagination';
 import Spinny from './Spinny';
+import { Link } from 'react-router';
 
 const IdeasList = ({
   base = '/ideas/',
@@ -11,6 +12,7 @@ const IdeasList = ({
   sort = null,
   page = 0,
   paginate = false,
+  showExploreButton = false,
 }) => {
   const [showPages, setShowPages] = useState(false);
   const [totalPages, setTotalPages] = useState(0);
@@ -85,6 +87,14 @@ const IdeasList = ({
           </ul>
         )}
         {paginate && showPages && entries.length > 0 && <>{pagination}</>}
+
+        {showExploreButton && (
+          <div style={{ textAlign: 'center', marginTop: 'var(--spacing-md)' }}>
+            <Link to='/ideas' className='animated-button golden'>
+              Explore All Ideas →
+            </Link>
+          </div>
+        )}
       </div>
     </section>
   );
