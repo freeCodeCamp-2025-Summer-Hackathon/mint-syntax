@@ -8,13 +8,6 @@ export const LoginPage = () => {
         <h3 className='section-heading'>Login to your account:</h3>
         <div className='card bg-base-100 w-lg p-4 auto'>
           <LoginForm redirect_to='/' />
-
-          {/* 🔐 Forgot password link */}
-          <div className='text-center mt-4'>
-            <Link to='/forgot-password' className='link link-hover'>
-              Forgot your password?
-            </Link>
-          </div>
         </div>
 
         {/* ✍️ Register link */}

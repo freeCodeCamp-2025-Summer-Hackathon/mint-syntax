@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router';
+import { useNavigate, Link } from 'react-router';
 import { useApi } from '../hooks/useApi';
 import { useUser } from '../hooks/useUser';
 
@@ -83,78 +83,88 @@ export function LoginForm({ redirect_to = '/' }) {
   };
 
   return (
-    <form ref={formRef} onSubmit={handleSubmit(onSubmit)}>
-      <div className='form-group'>
-        <label htmlFor='username' className='form-label'>
-          Username: <span className='text-red-500'>*</span>
-        </label>
-        <label className='input input-sm'>
-          <UserIcon />
-          <input
-            id='username'
-            {...register('username', { required: true })}
-            type='text'
-            placeholder='Username'
-            className='input-validator'
-            aria-invalid={!!errors.username}
-          />
-        </label>
-      </div>
-      {errors.username?.type === 'required' && (
-        <p role='alert' className='text-error'>
-          The field "Username" is required.
-        </p>
-      )}
-
-      <div className='form-group'>
-        <label htmlFor='password' className='form-label'>
-          Password: <span className='text-red-500'>*</span>
-        </label>
-        <label className='input input-sm'>
-          <PasswordIcon />
-          <input
-            id='password'
-            {...register('password', { required: true, minLength: 8 })}
-            type='password'
-            placeholder='Password'
-            className='input-validator'
-            aria-invalid={!!errors.password}
-          />
-        </label>
-      </div>
-      {errors.password?.type === 'required' ? (
-        <p role='alert' className='text-error'>
-          The field "Password" is required.
-        </p>
-      ) : (
-        errors.password?.type === 'minLength' && (
+    <>
+      {/* Login form */}
+      <form ref={formRef} onSubmit={handleSubmit(onSubmit)}>
+        <div className='form-group'>
+          <label htmlFor='username' className='form-label'>
+            Username: <span className='text-red-500'>*</span>
+          </label>
+          <label className='input input-sm'>
+            <UserIcon />
+            <input
+              id='username'
+              {...register('username', { required: true })}
+              type='text'
+              placeholder='Username'
+              className='input-validator'
+              aria-invalid={!!errors.username}
+            />
+          </label>
+        </div>
+        {errors.username?.type === 'required' && (
           <p role='alert' className='text-error'>
-            Password needs to be at least 8 characters long.
+            The field "Username" is required.
           </p>
-        )
-      )}
+        )}
 
-      {errors?.root?.responseError && (
-        <p role='alert' className='text-error text-center'>
-          {errors.root.responseError.message}
-        </p>
-      )}
-      {error && !errors.root?.responseError && (
-        <p role='alert' className='text-error text-center'>
-          Error, try again later.
-        </p>
-      )}
+        <div className='form-group'>
+          <label htmlFor='password' className='form-label'>
+            Password: <span className='text-red-500'>*</span>
+          </label>
+          <label className='input input-sm'>
+            <PasswordIcon />
+            <input
+              id='password'
+              {...register('password', { required: true, minLength: 8 })}
+              type='password'
+              placeholder='Password'
+              className='input-validator'
+              aria-invalid={!!errors.password}
+            />
+          </label>
+        </div>
+        {errors.password?.type === 'required' ? (
+          <p role='alert' className='text-error'>
+            The field "Password" is required.
+          </p>
+        ) : (
+          errors.password?.type === 'minLength' && (
+            <p role='alert' className='text-error'>
+              Password needs to be at least 8 characters long.
+            </p>
+          )
+        )}
 
-      <div className='flex justify-center'>
-        <button
-          className='my-1 animated-button'
-          {...((isSubmitting || !isValid) && { disabled: 'disabled' })}
-        >
-          {isSubmitting && <span className='loading loading-spinner'></span>}
-          Login
-        </button>
+        {errors?.root?.responseError && (
+          <p role='alert' className='text-error text-center'>
+            {errors.root.responseError.message}
+          </p>
+        )}
+        {error && !errors.root?.responseError && (
+          <p role='alert' className='text-error text-center'>
+            Error, try again later.
+          </p>
+        )}
+
+        <div className='flex justify-center'>
+          <button
+            className='my-1 animated-button'
+            {...((isSubmitting || !isValid) && { disabled: 'disabled' })}
+          >
+            {isSubmitting && <span className='loading loading-spinner'></span>}
+            Login
+          </button>
+        </div>
+      </form>
+
+      {/* 🔐 Forgot password link */}
+      <div className='text-center mt-4'>
+        <Link to='/forgot-password' className='link link-hover'>
+          Forgot your password?
+        </Link>
       </div>
-    </form>
+    </>
   );
 }
 
