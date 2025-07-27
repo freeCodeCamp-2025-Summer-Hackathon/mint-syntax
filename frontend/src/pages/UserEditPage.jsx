@@ -71,7 +71,7 @@ const UserEditPage = () => {
   }, [updateResponse, updateError, navigate, id]);
 
   const handleChange = e => {
-    const { name, value, type, checked } = e.target;
+    const { name, value, type } = e.target;
     setFormData(prevData => ({
       ...prevData,
       [name]: type === 'radio' ? value === 'true' : value,
@@ -133,7 +133,7 @@ const UserEditPage = () => {
         </p>
         <button
           onClick={() => navigate(`/users/${id}`)}
-          className='animated-button'
+          className='animated-button !text-base !px-5 !py-2'
         >
           Back to User Profile
         </button>
@@ -148,7 +148,10 @@ const UserEditPage = () => {
         <p className='text-lg text-gray-600 mb-8'>
           The user you are trying to edit does not exist.
         </p>
-        <button onClick={() => navigate('/users')} className='animated-button'>
+        <button
+          onClick={() => navigate('/users')}
+          className='animated-button !text-base !px-5 !py-2'
+        >
           Back to All Users
         </button>
       </div>
@@ -244,14 +247,14 @@ const UserEditPage = () => {
           <button
             type='button'
             onClick={() => navigate(`/users/${id}`)}
-            className='animated-button !bg-gray-500 hover:!bg-gray-600'
+            className='animated-button !text-base !px-5 !py-2 !bg-gray-500 hover:!bg-gray-600'
             disabled={isUpdating}
           >
             Cancel
           </button>
           <button
             type='submit'
-            className='animated-button'
+            className='animated-button !text-base !px-5 !py-2'
             disabled={isUpdating}
           >
             {isUpdating ? 'Saving...' : 'Save Changes'}
@@ -268,14 +271,14 @@ const UserEditPage = () => {
           )}
           <div className='modal-action'>
             <button
-              className='animated-button !bg-gray-500 mr-2'
+              className='animated-button !text-base !px-5 !py-2 !bg-gray-500 mr-2'
               onClick={closeConfirmModal}
               disabled={isUpdating}
             >
               Cancel
             </button>
             <button
-              className='animated-button'
+              className='animated-button !text-base !px-5 !py-2'
               onClick={confirmUpdate}
               disabled={isUpdating}
             >
