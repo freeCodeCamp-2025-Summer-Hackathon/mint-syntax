@@ -119,7 +119,7 @@ c29db5687290   mongodb/mongodb-community-server:5.0-ubi8   "docker-entrypoint.sâ
 ##### Cloud Database Deployment (MongoDB Atlas)
 
 1. Follow the offical [MongoDB Atlas Tutorial](https://www.mongodb.com/resources/products/platform/mongodb-atlas-tutorial) to create an account, setup a cluster, and access the connection string.
-2. In the .env file, replace the string after "MongoDB_UR=" with the MongoDB Atlas connection string. Don't forget to replace the password placeholder with the password.
+2. In the .env file, replace the string after "MONGODB_URI=" with the MongoDB Atlas connection string. Don't forget to replace the password placeholder with the password.
 
 ### Development
 
