@@ -15,7 +15,9 @@ const UserAddPage = () => {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
-  const { data, isLoading, fetchFromApi } = useApi({ method: 'POST' });
+  const { data, isLoading, response, fetchFromApi } = useApi({
+    method: 'POST',
+  });
 
   useEffect(() => {
     if (!isLogged) {
