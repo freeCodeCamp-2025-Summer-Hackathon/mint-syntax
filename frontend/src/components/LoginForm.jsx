@@ -129,34 +129,6 @@ export function LoginForm({ redirect_to = '/' }) {
           </p>
         )}
 
-        <div className='form-group'>
-          <label htmlFor='password' className='form-label'>
-            Password: <span className='text-red-500'>*</span>
-          </label>
-          <label className='input input-sm'>
-            <PasswordIcon />
-            <input
-              id='password'
-              {...register('password', { required: true, minLength: 8 })}
-              type='password'
-              placeholder='Password'
-              className='input-validator'
-              aria-invalid={!!errors.password}
-            />
-          </label>
-        </div>
-        {errors.password?.type === 'required' ? (
-          <p role='alert' className='text-error'>
-            The field "Password" is required.
-          </p>
-        ) : (
-          errors.password?.type === 'minLength' && (
-            <p role='alert' className='text-error'>
-              Password needs to be at least 8 characters long.
-            </p>
-          )
-        )}
-
         {errors?.root?.responseError && (
           <p role='alert' className='text-error text-center'>
             {errors.root.responseError.message}
