@@ -164,10 +164,15 @@ const MeEditPage = () => {
               <p role='alert' className='text-error'>
                 Passwords needs to be at least 8 characters long.
               </p>
+            ) : errors.new_password?.type === 'validate' ? (
+              <p role='alert' className='text-error'>
+                Old password needs to pe provided when changing passwords.
+              </p>
             ) : (
-              errors.new_password?.type === 'validate' && (
+              error &&
+              response.status !== 403 && (
                 <p role='alert' className='text-error'>
-                  Old password needs to pe provided when changing passwords.
+                  Old password is invalid.
                 </p>
               )
             )}
