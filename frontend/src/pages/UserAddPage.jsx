@@ -61,14 +61,13 @@ const UserAddPage = () => {
       return;
     }
 
-    const payload = {
-      username,
-      name,
-      password,
-      ...(isAdmin && { is_admin: isNewAdmin }),
-    };
+    const formData = new FormData();
+    formData.append('username', username);
+    formData.append('name', name);
+    formData.append('password', password);
+    formData.append('is_admin', isNewAdmin);
 
-    await fetchFromApi('/users', payload);
+    await fetchFromApi('/users/add', { body: formData});
   };
 
   if (isLoading) {
