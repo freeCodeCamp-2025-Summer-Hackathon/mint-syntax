@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import { Link } from 'react-router';
 import { useUser } from '../hooks/useUser';
 import LoginForm from './LoginForm';
+import ScrollToHashElement from './ScrollToHashElement';
 import IdeaForgeLogo from '../assets/Idea-Forge-logo.svg';
 
 const Chevron = () => {
@@ -29,6 +30,7 @@ const Header = () => {
   const { isLogged, logout, userState, isAdmin } = useUser();
   return (
     <header className='header-style'>
+      <ScrollToHashElement />
       <div className='header-banner-content'>
         <div className='logo-area left-logo'>
           <img
@@ -46,12 +48,12 @@ const Header = () => {
               <Link to='/ideas/add/' className='nav-link'>
                 Post Idea
               </Link>
-              <a href='/#about-project-section' className='nav-link'>
+              <Link to='/#about-project-section' className='nav-link'>
                 Project
-              </a>
-              <a href='/#about-team-section' className='nav-link'>
+              </Link>
+              <Link to='/#about-team-section' className='nav-link'>
                 Team
-              </a>
+              </Link>
             </div>
           </nav>
         </div>
