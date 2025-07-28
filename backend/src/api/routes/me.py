@@ -10,12 +10,12 @@ from src.models import Idea, IdeaPublic, IdeasPublic, UserEditPatch, UserMe
 router = APIRouter(prefix="/me")
 
 
-@router.get("/")
+@router.get("")
 async def get_me(current_user: Annotated[User, LoggedInUser]):
     return UserMe(**current_user.model_dump())
 
 
-@router.patch("/", response_model=UserMe)
+@router.patch("", response_model=UserMe)
 async def patch_me(
     db: Db,
     current_user: Annotated[User, LoggedInUser],
@@ -32,7 +32,7 @@ async def patch_me(
     return current_user
 
 
-@router.get("/ideas", response_model=IdeasPublic)
+@router.get("/ideas/", response_model=IdeasPublic)
 async def get_ideas(
     db: Db, current_user: Annotated[User, LoggedInUser], skip: int = 0, limit: int = 20
 ):
