@@ -106,8 +106,8 @@
   --voting-section-h3-margin-bottom: 1.5rem;
   --idea-item-padding: 1rem;
   --idea-item-margin-bottom: 0.5rem;
-  --image-only-upvote-button-padding: 0.3rem;
-  --upvote-icon-size: 2.5rem;
+  --image-only-upvote-button-padding: 0.025rem;
+  --upvote-icon-size: 4rem;
   --vote-count-min-width: 2rem;
   --auth-button-padding-y: 0.5rem;
   --auth-button-padding-x: 1rem;
@@ -878,11 +878,20 @@ body {
   transition: all 0.2s ease-in-out;
   border-radius: var(--border-radius-md);
   box-shadow: var(--shadow-sm);
+  width: calc(
+    var(--upvote-icon-size) + (2 * var(--image-only-upvote-button-padding)) +
+      (2 * 2px)
+  );
+  height: calc(
+    var(--upvote-icon-size) + (2 * var(--image-only-upvote-button-padding)) +
+      (2 * 2px)
+  );
 }
 
 .image-only-upvote-button img {
-  width: var(--upvote-icon-size);
-  height: var(--upvote-icon-size);
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
   filter: drop-shadow(0 0 0.1rem rgba(0, 0, 0, 0.2));
 }
 
@@ -913,11 +922,20 @@ body {
   transition: all 0.2s ease-in-out;
   border-radius: var(--border-radius-md);
   box-shadow: var(--shadow-sm);
+  width: calc(
+    var(--upvote-icon-size) + (2 * var(--image-only-upvote-button-padding)) +
+      (2 * 2px)
+  );
+  height: calc(
+    var(--upvote-icon-size) + (2 * var(--image-only-upvote-button-padding)) +
+      (2 * 2px)
+  );
 }
 
 .image-only-downvote-button img {
-  width: var(--upvote-icon-size);
-  height: var(--upvote-icon-size);
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
   filter: drop-shadow(0 0 0.1rem rgba(0, 0, 0, 0.2));
 }
 
