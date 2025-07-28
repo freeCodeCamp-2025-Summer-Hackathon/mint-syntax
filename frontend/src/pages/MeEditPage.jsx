@@ -1,6 +1,6 @@
 import { useUser } from '../hooks/useUser';
 import { Link } from 'react-router';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useApi } from '../hooks/useApi';
 import { useForm } from 'react-hook-form';
 import Spinny from '../components/Spinny';
@@ -52,6 +52,7 @@ const MeEditPage = () => {
     loadingInitially: true,
   });
   const { isLogged } = useUser();
+  const [formSent, setFormSent] = useState(false);
 
   useEffect(() => {
     fetchFromApi(`/me`);
@@ -71,6 +72,7 @@ const MeEditPage = () => {
   }, [response, data, error]);
 
   const onSubmit = async formData => {
+    setFormSent(true);
     try {
       await fetchFromApi(`/me`, {
         method: 'PATCH',
@@ -230,10 +232,14 @@ const MeEditPage = () => {
               )
             )}
 
-            {error && response.status !== 409 && (
+            {error && response.status !== 403 && (
               <div className='text-error text-center'>
                 Something went wrong, please try again later.
               </div>
+            )}
+
+            {response.status === 200 && formSent && (
+              <div className='text-info text-center'>Changes applied!</div>
             )}
 
             <div className='flex justify-center gap-4 mt-6'>
