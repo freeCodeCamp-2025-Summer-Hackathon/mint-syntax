@@ -1,5 +1,12 @@
+from typing import Annotated
+
 from odmantic import Field, Model, ObjectId
-from pydantic import BaseModel
+from pydantic import BaseModel, StringConstraints
+
+StrippedString = Annotated[str, StringConstraints(strip_whitespace=True)]
+NonEmptyString = Annotated[StrippedString, StringConstraints(min_length=1)]
+Max255CharsString = Annotated[StrippedString, StringConstraints(max_length=255)]
+NonEmptyMax255CharsString = Annotated[NonEmptyString, Max255CharsString]
 
 
 class User(Model):
@@ -38,15 +45,15 @@ class UsersPublic(BaseModel):
 
 
 class UserRegister(BaseModel):
-    username: str = Field(unique=True)
-    name: str = Field(max_length=255)
-    password: str
+    username: NonEmptyMax255CharsString
+    name: NonEmptyMax255CharsString
+    password: Annotated[StrippedString, StringConstraints(min_length=8)]
 
 
 class UserEditPatch(BaseModel):
-    name: str | None = Field(max_length=255)
-    old_password: str | None = None
-    new_password: str | None = None
+    name: Max255CharsString | None = Field(max_length=255)
+    old_password: StrippedString | None = None
+    new_password: StrippedString | None = None
     hashed_password: str | None = None
 
 
@@ -82,13 +89,13 @@ class IdeasPublic(BaseModel):
 
 
 class IdeaCreate(BaseModel):
-    name: str = Field(max_length=255)
-    description: str | None
+    name: NonEmptyMax255CharsString
+    description: NonEmptyString
 
 
 class IdeaEditPatch(BaseModel):
-    name: str | None = Field(max_length=255)
-    description: str | None
+    name: NonEmptyMax255CharsString | None = Field(max_length=255)
+    description: StrippedString | None
 
 
 class IdeaUpvote(BaseModel):
