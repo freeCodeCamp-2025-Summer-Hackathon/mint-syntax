@@ -65,9 +65,6 @@ const MeEditPage = () => {
   } = useForm();
 
   useEffect(() => {
-    if (data && !error) {
-      console.log('Changes applied!');
-    }
     if (error) {
       console.log('Error:', error);
     }
@@ -85,8 +82,8 @@ const MeEditPage = () => {
     } catch (e) {
       console.log('error!', e);
     }
-    console.log(formData);
   };
+
   return (
     <div className='section-card min-h-[60vh] flex flex-col items-center'>
       {!isLogged ? (
@@ -135,42 +132,6 @@ const MeEditPage = () => {
               response.status === 409 && (
                 <p role='alert' className='text-error'>
                   This username is already in use.
-                </p>
-              )
-            )}
-
-            <div className='form-group'>
-              <label
-                htmlFor='old-password'
-                className='block text-lg font-medium text-gray-700 mb-2'
-              >
-                Old Password:
-              </label>
-              <label className='input input-sm'>
-                <PasswordIcon />
-                <input
-                  id='old-password'
-                  {...register('old_password', { minLength: 8 })}
-                  type='Password'
-                  placeholder='Old Password'
-                  className='input-validator'
-                  aria-invalid={!!errors.old_password}
-                />
-              </label>
-            </div>
-            {errors.old_password?.type === 'minLength' ? (
-              <p role='alert' className='text-error'>
-                Passwords needs to be at least 8 characters long.
-              </p>
-            ) : errors.new_password?.type === 'validate' ? (
-              <p role='alert' className='text-error'>
-                Old password needs to pe provided when changing passwords.
-              </p>
-            ) : (
-              error &&
-              response.status === 403 && (
-                <p role='alert' className='text-error'>
-                  Old password is invalid.
                 </p>
               )
             )}
@@ -228,6 +189,45 @@ const MeEditPage = () => {
               <p role='alert' className='text-error'>
                 Both passwords need to match.
               </p>
+            )}
+
+            <div className='form-group'>
+              <label
+                htmlFor='old-password'
+                className='block text-lg font-medium text-gray-700 mb-2'
+              >
+                Old Password (confirm password change):
+              </label>
+              <label className='input input-sm'>
+                <PasswordIcon />
+                <input
+                  id='old-password'
+                  {...register('old_password', {
+                    minLength: 8,
+                    disabled: getValues('new_password') === '',
+                  })}
+                  type='Password'
+                  placeholder='Old Password'
+                  className='input-validator'
+                  aria-invalid={!!errors.old_password}
+                />
+              </label>
+            </div>
+            {errors.old_password?.type === 'minLength' ? (
+              <p role='alert' className='text-error'>
+                Passwords needs to be at least 8 characters long.
+              </p>
+            ) : errors.new_password?.type === 'validate' ? (
+              <p role='alert' className='text-error'>
+                Old password needs to pe provided when changing passwords.
+              </p>
+            ) : (
+              error &&
+              response.status === 403 && (
+                <p role='alert' className='text-error'>
+                  Old password is invalid.
+                </p>
+              )
             )}
 
             {error && response.status !== 409 && (
