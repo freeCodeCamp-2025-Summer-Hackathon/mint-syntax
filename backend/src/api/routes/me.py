@@ -21,8 +21,10 @@ async def patch_me(
     current_user: Annotated[User, LoggedInUser],
     update_data: UserEditPatch,
 ):
-    if update_data.new_password and update_data.old_password:
-        if not verify_password(update_data.old_password, current_user.hashed_password):
+    if update_data.new_password:
+        if not update_data.old_password or not verify_password(
+            update_data.old_password, current_user.hashed_password
+        ):
             raise HTTPException(status_code=403, detail="Invalid password")
         update_data.hashed_password = get_password_hash(update_data.new_password)
     current_user.model_update(update_data, exclude={"new_password", "old_password"})
