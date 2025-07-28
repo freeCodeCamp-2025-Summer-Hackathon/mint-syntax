@@ -1,6 +1,7 @@
 import { useRef, useEffect } from 'react';
 import { useLocation } from 'react-router';
 
+// From https://dev.to/mindactuate/scroll-to-anchor-element-with-react-router-v6-38op
 const ScrollToHashElement = () => {
   const location = useLocation();
   const lastHash = useRef('');
