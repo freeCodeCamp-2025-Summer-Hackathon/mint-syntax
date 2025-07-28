@@ -53,6 +53,7 @@ const MeEditPage = () => {
   });
   const { isLogged } = useUser();
   const [formSent, setFormSent] = useState(false);
+  const [headerUserName, setHeaderUserName] = useState('');
 
   useEffect(() => {
     fetchFromApi(`/me`);
@@ -66,6 +67,9 @@ const MeEditPage = () => {
   } = useForm();
 
   useEffect(() => {
+    if (data?.name) {
+      setHeaderUserName(data.name);
+    }
     if (error) {
       console.log('Error:', error);
     }
@@ -99,7 +103,7 @@ const MeEditPage = () => {
         <Spinny />
       ) : (
         <>
-          <h1 className='section-heading'>Edit {data.name}'s Profile</h1>
+          <h1 className='section-heading'>Edit {headerUserName}'s Profile</h1>
 
           <form
             className='w-full max-w-xl p-4 bg-base-200 rounded-lg shadow-md'
@@ -206,7 +210,6 @@ const MeEditPage = () => {
                   id='old-password'
                   {...register('old_password', {
                     minLength: 8,
-                    disabled: getValues('new_password') === '',
                   })}
                   type='Password'
                   placeholder='Old Password'
