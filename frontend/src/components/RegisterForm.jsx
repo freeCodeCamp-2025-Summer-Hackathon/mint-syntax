@@ -87,12 +87,7 @@ export function RegisterForm({ redirect_to = '/' }) {
   };
 
   return (
-    <form
-      noValidate
-      ref={formRef}
-      onSubmit={handleSubmit(onSubmit)}
-      className='w-full max-w-md p-4 bg-white'
-    >
+    <form ref={formRef} onSubmit={handleSubmit(onSubmit)}>
       <div className='form-group'>
         <label htmlFor='username' className='form-label'>
           Username: <span className='text-red-500'>*</span>
