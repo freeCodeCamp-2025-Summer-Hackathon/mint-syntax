@@ -33,7 +33,17 @@ export const IdeaListItem = ({ id, name, upvoted_by }) => {
       <li className='idea-item'>
         <span className='idea-text'>{idea.name}</span>
         <div className='vote-controls'>
-          <UpvoteButton {...{ ideaId: idea.id, onSuccess, onError }} />
+          <UpvoteButton
+            {...{
+              ideaId: idea.id,
+              onSuccess,
+              onError,
+              ...(isUpvoted && {
+                buttonProps: { disabled: true },
+                alreadyVoted: true,
+              }),
+            }}
+          />
           <span className='vote-count'>{idea.upvotes}</span>
         </div>
       </li>

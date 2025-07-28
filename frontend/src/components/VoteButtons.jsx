@@ -8,7 +8,7 @@ import { useUser } from '../hooks/useUser';
 const SuccessIcon = () => (
   <svg
     xmlns='http://www.w3.org/2000/svg'
-    className='h-6 w-6 shrink-0 stroke-current'
+    className='h-9 w-9 shrink-0 stroke-current'
     fill='none'
     width='100%'
     height='100%'
@@ -26,10 +26,11 @@ const SuccessIcon = () => (
 const Button = ({
   ideaId,
   fetchAddr,
-  buttonProps,
+  buttonProps: { className, ...restButtonProps } = {},
   buttonContents,
   onSuccess,
   onError,
+  alreadyVoted,
 }) => {
   const { isLogged } = useUser();
   const [loading, setLoading] = useState(false);
@@ -39,6 +40,7 @@ const Button = ({
   const onVote = async event => {
     event.preventDefault();
     setLoading(true);
+    setSuccess(false);
     try {
       await fetchFromApi(fetchAddr, {
         headers: { 'content-type': 'application/json' },
@@ -49,7 +51,15 @@ const Button = ({
     }
   };
 
+  const buttonClass =
+    (className ? className : '') +
+    (alreadyVoted ? ' !ring-2 !ring-green-500' : '');
+
   useEffect(() => {
+    if (success) {
+      return;
+    }
+
     if (data && !error) {
       setSuccess(true);
       setLoading(false);
@@ -59,7 +69,7 @@ const Button = ({
       setLoading(false);
       onError(error);
     }
-  }, [data, error, onError, onSuccess, setLoading, setSuccess]);
+  }, [data, error, success, onError, onSuccess, setLoading, setSuccess]);
 
   return (
     <div
@@ -67,22 +77,35 @@ const Button = ({
         className: 'tooltip tooltip-warning',
         'data-tip': 'Login to vote',
       })}
+      {...(alreadyVoted && {
+        className: 'tooltip tooltip-success',
+        'data-tip': 'Already voted!',
+      })}
     >
       <button
         onClick={onVote}
-        {...((loading || success || !isLogged) && { disabled: true })}
-        {...buttonProps}
+        className={buttonClass}
+        {...((loading || !isLogged || alreadyVoted) && { disabled: true })}
+        {...restButtonProps}
       >
-        {loading ? <Spinny /> : success ? <SuccessIcon /> : buttonContents}
+        {loading ? <Spinny /> : alreadyVoted ? <SuccessIcon /> : buttonContents}
       </button>
     </div>
   );
 };
 
-export const DownvoteButton = ({ ideaId, onSuccess, onError }) => (
+export const DownvoteButton = ({
+  ideaId,
+  onSuccess,
+  onError,
+  buttonProps,
+  alreadyVoted,
+  ...restProps
+}) => (
   <Button
     {...{
       buttonProps: {
+        ...buttonProps,
         className: 'image-only-downvote-button',
       },
       buttonContents: (
@@ -92,14 +115,24 @@ export const DownvoteButton = ({ ideaId, onSuccess, onError }) => (
       ideaId,
       onSuccess,
       onError,
+      alreadyVoted,
+      ...restProps,
     }}
   />
 );
 
-export const UpvoteButton = ({ ideaId, onSuccess, onError }) => (
+export const UpvoteButton = ({
+  ideaId,
+  onSuccess,
+  onError,
+  buttonProps,
+  alreadyVoted = false,
+  ...restProps
+}) => (
   <Button
     {...{
       buttonProps: {
+        ...buttonProps,
         className: 'image-only-upvote-button',
       },
       buttonContents: (
@@ -109,6 +142,8 @@ export const UpvoteButton = ({ ideaId, onSuccess, onError }) => (
       ideaId,
       onSuccess,
       onError,
+      alreadyVoted,
+      ...restProps,
     }}
   />
 );

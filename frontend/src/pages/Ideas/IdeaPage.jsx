@@ -10,10 +10,10 @@ export const IdeaPage = () => {
   const { ideaId } = useParams();
   const { isAdmin, isLogged, userState, upvote, downvote } = useUser();
   const [loading, setLoading] = useState(true);
-  const [isUpvoted, setIsUpvoted] = useState(userState.upvotes.has(ideaId));
-  const [isDownvoted, setIsDownvoted] = useState(
-    userState.downvotes.has(ideaId)
-  );
+  const [voting, setVoting] = useState({
+    upvoted: userState.upvotes.has(ideaId),
+    downvoted: userState.downvotes.has(ideaId),
+  });
   const { error, data, fetchFromApi } = useApi({
     loadingInitially: true,
   });
@@ -21,14 +21,17 @@ export const IdeaPage = () => {
   const [idea, setIdea] = useState();
 
   const onUpvoteSuccess = () => {
-    if (!isUpvoted) {
+    if (!voting.upvoted) {
       setIdea(idea => ({
         ...idea,
         upvotes: idea.upvotes + 1,
-        ...(isDownvoted && { downvotes: idea.downvotes - 1 }),
+        ...(voting.downvoted && { downvotes: idea.downvotes - 1 }),
       }));
       upvote(ideaId);
-      setIsUpvoted(true);
+      setVoting({
+        upvoted: true,
+        downvoted: false,
+      });
     }
   };
 
@@ -37,14 +40,17 @@ export const IdeaPage = () => {
   };
 
   const onDownvoteSuccess = () => {
-    if (!isDownvoted) {
+    if (!voting.downvoted) {
       setIdea(idea => ({
         ...idea,
         downvotes: idea.downvotes + 1,
-        ...(isUpvoted && { upvotes: idea.upvotes - 1 }),
+        ...(voting.upvoted && { upvotes: idea.upvotes - 1 }),
       }));
       downvote(ideaId);
-      setIsDownvoted(true);
+      setVoting({
+        upvoted: false,
+        downvoted: true,
+      });
     }
   };
 
@@ -94,12 +100,20 @@ export const IdeaPage = () => {
       </div>
       {isLogged && (
         <div className='flex gap-4 mt-4 justify-center'>
-          <UpvoteButton {...{ ideaId, onSuccess: onUpvoteSuccess, onError }} />
+          <UpvoteButton
+            {...{
+              ideaId,
+              onSuccess: onUpvoteSuccess,
+              onError,
+              alreadyVoted: voting.upvoted,
+            }}
+          />
           <DownvoteButton
             {...{
               ideaId,
               onSuccess: onDownvoteSuccess,
               onError,
+              alreadyVoted: voting.downvoted,
             }}
           />
         </div>
