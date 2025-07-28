@@ -87,7 +87,9 @@ export function RegisterForm({ redirect_to = '/' }) {
   };
 
   return (
-    <form ref={formRef} onSubmit={handleSubmit(onSubmit)}>
+    <form ref={formRef} onSubmit={handleSubmit(onSubmit)}
+      className='w-full max-w-md p-4 bg-white'
+    >
       <div className='form-group'>
         <label htmlFor='username' className='form-label'>
           Username: <span className='text-red-500'>*</span>
@@ -162,7 +164,7 @@ export function RegisterForm({ redirect_to = '/' }) {
       ) : (
         errors.password?.type === 'minLength' && (
           <p role='alert' className='text-error text-xs mt-0.5'>
-            Password needs to be at least 8 characters long.
+            The password needs to be at least 8 characters long.
           </p>
         )
       )}
