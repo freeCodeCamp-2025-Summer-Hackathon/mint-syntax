@@ -87,7 +87,9 @@ export function RegisterForm({ redirect_to = '/' }) {
   };
 
   return (
-    <form ref={formRef} onSubmit={handleSubmit(onSubmit)}
+    <form
+      ref={formRef}
+      onSubmit={handleSubmit(onSubmit)}
       className='w-full max-w-md p-4 bg-white'
     >
       <div className='form-group'>
