@@ -42,7 +42,7 @@ const PasswordIcon = () => (
   </svg>
 );
 
-export function LoginForm({ redirect_to = '/' }) {
+export function LoginForm({ redirect_to = '/', dialogRef }) {
   const formRef = useRef();
   const {
     formState: { errors, isSubmitting, isValid },
@@ -153,7 +153,13 @@ export function LoginForm({ redirect_to = '/' }) {
 
       {/* 🔐 Forgot password link */}
       <div className='text-center mt-4'>
-        <Link to='/forgot-password' className='link link-hover'>
+        <Link
+          to='/forgot-password'
+          className='link link-hover'
+          onClick={() => {
+            dialogRef.current.close();
+          }}
+        >
           Forgot your password?
         </Link>
       </div>

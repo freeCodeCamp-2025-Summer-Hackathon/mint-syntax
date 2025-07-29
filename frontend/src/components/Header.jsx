@@ -140,7 +140,7 @@ const Header = () => {
               </Link>
               <dialog ref={dialogRef} className='modal'>
                 <div className='modal-box'>
-                  <LoginForm />
+                  <LoginForm dialogRef={dialogRef} />
                   <form method='dialog'>
                     <button className='btn btn-sm btn-circle btn-ghost absolute right-2 top-2'>
                       ✕
