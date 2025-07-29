@@ -156,11 +156,11 @@ export function LoginForm({ redirect_to = '/', dialogRef }) {
         <Link
           to='/forgot-password'
           className='link link-hover'
-          onClick={() => {
-            if (dialogRef) {
+          {...(dialogRef && {
+            onClick: () => {
               dialogRef.current.close();
-            }
-          }}
+            },
+          })}
         >
           Forgot your password?
         </Link>
