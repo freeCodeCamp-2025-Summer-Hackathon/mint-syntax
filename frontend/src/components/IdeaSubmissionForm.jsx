@@ -6,10 +6,7 @@ const IdeaSubmissionForm = () => {
 
   const onSubmit = async ideaData => {
     try {
-      await api.fetchFromApi(`/ideas`, {
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(ideaData),
-      });
+      await api.sendAsJson('/ideas', ideaData);
     } catch (e) {
       console.error('error', e);
     }

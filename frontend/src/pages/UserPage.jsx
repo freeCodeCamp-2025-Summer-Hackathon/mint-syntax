@@ -23,7 +23,7 @@ const UserPage = () => {
     data: updateUserData,
     error: updateError,
     isLoading: isUpdating,
-    fetchFromApi: updateUserStatus,
+    sendAsJson: updateUserStatus,
   } = useApi({ method: 'PATCH' });
 
   useEffect(() => {
@@ -74,10 +74,7 @@ const UserPage = () => {
   const confirmToggleStatus = () => {
     if (id && !isUpdating && userData) {
       const newStatus = !userData.is_active;
-      updateUserStatus(`/users/${id}`, {
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ is_active: newStatus }),
-      });
+      updateUserStatus(`/users/${id}`, { is_active: newStatus });
     }
   };
 

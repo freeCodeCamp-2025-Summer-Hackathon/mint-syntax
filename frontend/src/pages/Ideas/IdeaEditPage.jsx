@@ -28,10 +28,7 @@ export const IdeaEditPage = () => {
 
   const onSubmit = async ideaData => {
     try {
-      await api.fetchFromApi(`/ideas/${ideaId}`, {
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(ideaData),
-      });
+      await api.sendAsJson(`/ideas/${ideaId}`, ideaData);
     } catch (e) {
       console.error('error', e);
     }

@@ -52,7 +52,7 @@ export function LoginForm({ redirect_to = '/', dialogRef }) {
   } = useForm();
   const { isLogged, login } = useUser();
   const navigate = useNavigate();
-  const { error, response, data, fetchFromApi } = useApi({ method: 'POST' });
+  const { error, response, data, sendFormData } = useApi({ method: 'POST' });
 
   useEffect(() => {
     if (isLogged && redirect_to) {
@@ -73,10 +73,7 @@ export function LoginForm({ redirect_to = '/', dialogRef }) {
 
   const onSubmit = async () => {
     try {
-      await fetchFromApi('/auth', {
-        method: 'POST',
-        body: new FormData(formRef.current),
-      });
+      await sendFormData('/auth', { formRef });
     } catch (e) {
       console.error(e);
     }

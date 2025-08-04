@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { apiUrl } from '../utils/apiUrl';
 import { getCrsfToken, refreshAccessToken } from '../user/utils';
@@ -84,11 +84,46 @@ export const useApi = ({ method = 'GET', loadingInitially = false } = {}) => {
       setLoading(true);
       setResponse(null);
       setData(null);
-      await sendRequest(path, extraFetchOptions);
-      setLoading(false);
+      return await sendRequest(path, extraFetchOptions);
     },
     [sendRequest]
   );
+
+  const sendAsJson = useCallback(
+    async (
+      path = '',
+      obj = {},
+      { headers, ...restOptions } = { headers: {} }
+    ) => {
+      console.log(path, obj);
+      return await fetchFromApi(path, {
+        headers: { 'content-type': 'application/json', ...headers },
+        body: JSON.stringify(obj),
+        ...restOptions,
+      });
+    },
+    [fetchFromApi]
+  );
+
+  const sendFormData = useCallback(
+    async (path = '', { formRef, formData } = {}, extraFetchOptions = {}) => {
+      if (!formRef && !formData) {
+        return;
+      }
+
+      return await fetchFromApi(path, {
+        body: formRef ? new FormData(formRef.current) : formData,
+        ...extraFetchOptions,
+      });
+    },
+    [fetchFromApi]
+  );
+
+  useEffect(() => {
+    if (data && isLoading) {
+      setLoading(false);
+    }
+  }, [data, isLoading]);
 
   return {
     isLoading,
@@ -96,5 +131,7 @@ export const useApi = ({ method = 'GET', loadingInitially = false } = {}) => {
     data,
     response,
     fetchFromApi,
+    sendAsJson,
+    sendFormData,
   };
 };

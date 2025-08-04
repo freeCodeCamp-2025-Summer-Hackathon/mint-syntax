@@ -15,7 +15,7 @@ const UserAddPage = () => {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
-  const { data, isLoading, response, fetchFromApi } = useApi({
+  const { data, isLoading, response, sendFormData } = useApi({
     method: 'POST',
   });
 
@@ -68,7 +68,7 @@ const UserAddPage = () => {
     formData.append('password', password);
     formData.append('is_admin', isNewAdmin);
 
-    await fetchFromApi('/users/add', { body: formData });
+    await sendFormData('/users/add', { formData });
   };
 
   if (isLoading) {

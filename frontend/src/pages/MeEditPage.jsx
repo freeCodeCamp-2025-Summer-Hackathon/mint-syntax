@@ -48,9 +48,11 @@ const PasswordIcon = () => {
 };
 
 const MeEditPage = () => {
-  const { isLoading, error, data, response, fetchFromApi } = useApi({
-    loadingInitially: true,
-  });
+  const { isLoading, error, data, response, fetchFromApi, sendAsJson } = useApi(
+    {
+      loadingInitially: true,
+    }
+  );
   const { isLogged } = useUser();
   const [formSent, setFormSent] = useState(false);
   const [headerUserName, setHeaderUserName] = useState('');
@@ -78,13 +80,13 @@ const MeEditPage = () => {
   const onSubmit = async formData => {
     setFormSent(true);
     try {
-      await fetchFromApi(`/me`, {
-        method: 'PATCH',
-        headers: {
-          'content-type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+      await sendAsJson(
+        `/me`,
+        { formData },
+        {
+          method: 'PATCH',
+        }
+      );
     } catch (e) {
       console.log('error!', e);
     }

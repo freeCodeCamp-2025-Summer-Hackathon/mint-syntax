@@ -30,7 +30,7 @@ const UserEditPage = () => {
     data: updateResponse,
     error: updateError,
     isLoading: isUpdating,
-    fetchFromApi: updateUser,
+    sendAsJson: updateUser,
   } = useApi({ method: 'PATCH' });
 
   useEffect(() => {
@@ -134,10 +134,7 @@ const UserEditPage = () => {
         dataToUpdate.new_password = newPassword.trim();
       }
 
-      updateUser(`/users/${id}`, {
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(dataToUpdate),
-      });
+      updateUser(`/users/${id}`, dataToUpdate);
     }
   };
 

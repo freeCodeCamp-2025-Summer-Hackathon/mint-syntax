@@ -58,7 +58,7 @@ export function RegisterForm({ redirect_to = '/' }) {
   const { isLogged } = useUser();
   const navigate = useNavigate();
 
-  const { error, response, data, fetchFromApi } = useApi({ method: 'POST' });
+  const { error, response, data, sendFormData } = useApi({ method: 'POST' });
 
   useEffect(() => {
     if (data && !error) {
@@ -77,10 +77,7 @@ export function RegisterForm({ redirect_to = '/' }) {
 
   const onSubmit = async () => {
     try {
-      await fetchFromApi('/users', {
-        method: 'POST',
-        body: new FormData(formRef.current),
-      });
+      await sendFormData('/users', { formRef });
     } catch (e) {
       console.log('error!', e);
     }

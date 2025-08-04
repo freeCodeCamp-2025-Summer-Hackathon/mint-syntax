@@ -35,17 +35,14 @@ const Button = ({
   const { isLogged } = useUser();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const { data, error, fetchFromApi } = useApi({ method: 'PUT' });
+  const { data, error, sendAsJson } = useApi({ method: 'PUT' });
 
   const onVote = async event => {
     event.preventDefault();
     setLoading(true);
     setSuccess(false);
     try {
-      await fetchFromApi(fetchAddr, {
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ idea_id: ideaId }),
-      });
+      await sendAsJson(fetchAddr, { idea_id: ideaId });
     } catch (e) {
       console.error(e);
     }
