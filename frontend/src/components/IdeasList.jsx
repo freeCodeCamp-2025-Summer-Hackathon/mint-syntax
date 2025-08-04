@@ -57,10 +57,11 @@ const IdeasList = ({
       <Pagination
         {...{
           numberOfPages: totalPages,
-          fetchFromApi,
-          getApiUrl,
           getPageUrl,
           initialPage: page,
+          fetchPage: async page => {
+            await fetchFromApi(getApiUrl(page));
+          },
         }}
       />
     ),

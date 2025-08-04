@@ -80,9 +80,10 @@ const UsersPage = ({ count = 20 }) => {
               <Pagination
                 numberOfPages={totalPages}
                 initialPage={currentPage}
-                fetchFromApi={fetchFromApi}
-                getApiUrl={getApiUrl}
                 getPageUrl={getPageUrl}
+                fetchPage={async page => {
+                  await fetchFromApi(getApiUrl(page));
+                }}
               />
             </div>
           )}

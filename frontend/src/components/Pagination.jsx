@@ -3,19 +3,17 @@ import { useState } from 'react';
 export const Pagination = ({
   numberOfPages,
   initialPage,
-  fetchFromApi,
-  getApiUrl,
   getPageUrl,
+  fetchPage,
 }) => {
   const [currentPage, setCurPage] = useState(initialPage);
   const pages = [...Array(numberOfPages).keys()];
 
   const Href = ({ pageNo, text }) => {
-    const apiUrl = getApiUrl(pageNo);
     const pageUrl = getPageUrl(pageNo);
     const onClick = async e => {
       e.preventDefault();
-      await fetchFromApi(apiUrl);
+      await fetchPage(pageNo);
       setCurPage(pageNo);
       window.history.pushState(null, '', pageUrl);
     };
