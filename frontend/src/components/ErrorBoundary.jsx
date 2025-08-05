@@ -31,7 +31,8 @@ class ErrorBoundary extends React.Component {
         <div className='error-boundary-fallback'>
           <h1>Something went wrong.</h1>
           <p>
-            We're sorry for the inconvenience. Please try refreshing the page.
+            We&apos;re sorry for the inconvenience. Please try refreshing the
+            page.
           </p>
           {import.meta.env.DEV && this.state.error && (
             <details style={{ whiteSpace: 'pre-wrap' }}>

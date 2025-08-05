@@ -100,7 +100,7 @@ export function LoginForm({ redirect_to = '/', dialogRef }) {
         </div>
         {errors.username?.type === 'required' && (
           <p role='alert' className='text-error'>
-            The field "Username" is required.
+            The field &quot;Username&quot; is required.
           </p>
         )}
 
@@ -122,7 +122,7 @@ export function LoginForm({ redirect_to = '/', dialogRef }) {
         </div>
         {errors.password?.type === 'required' && (
           <p role='alert' className='text-error'>
-            The field "Password" is required.
+            The field &quot;Password&quot; is required.
           </p>
         )}
 

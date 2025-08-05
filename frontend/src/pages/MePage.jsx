@@ -30,7 +30,7 @@ const MePage = () => {
           <>`${error}`</>
         ) : (
           <>
-            <h1 className='section-heading'>{data.name}'s Profile</h1>
+            <h1 className='section-heading'>{data.name}&apos;s Profile</h1>
             <p>
               <span className='font-bold'>Account Name:</span> {data.username}
               {isAdmin && <span> (Admin)</span>}

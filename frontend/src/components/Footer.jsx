@@ -4,7 +4,11 @@ const Footer = () => {
       <div className='footer-content'>
         <p>
           &copy;{' '}
-          <a href='https://www.freecodecamp.org' target='_blank'>
+          <a
+            href='https://www.freecodecamp.org'
+            target='_blank'
+            rel='noreferrer noopener'
+          >
             freeCodeCamp Summer Hackathon 2025 | mint-sytax team
           </a>
         </p>
@@ -12,6 +16,7 @@ const Footer = () => {
           <a
             href='https://github.com/freeCodeCamp-2025-Summer-Hackathon/mint-syntax'
             target='_blank'
+            rel='noreferrer noopener'
             aria-label='GitHub'
             className='social-link'
           >

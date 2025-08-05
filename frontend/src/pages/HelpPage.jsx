@@ -27,7 +27,7 @@ const HelpPage = () => {
       <div className='faq-section'>
         <h3>Frequently Asked Questions</h3>
         {faq.map(({ question, answer }) => (
-          <div className='faq-item'>
+          <div className='faq-item' key={question}>
             <h4>{question}</h4>
             <p>{answer}</p>
           </div>
@@ -37,8 +37,8 @@ const HelpPage = () => {
       <div className='contact-section'>
         <h3>Still have questions?</h3>
         <p>
-          If you can't find what you're looking for, please reach out to our
-          support team:
+          If you can&apos;t find what you&apos;re looking for, please reach out
+          to our support team:
         </p>
         <p>
           Email:{' '}

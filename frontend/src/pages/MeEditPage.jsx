@@ -105,7 +105,9 @@ const MeEditPage = () => {
         <Spinny />
       ) : (
         <>
-          <h1 className='section-heading'>Edit {headerUserName}'s Profile</h1>
+          <h1 className='section-heading'>
+            Edit {headerUserName}&apos;s Profile
+          </h1>
 
           <form
             className='w-full max-w-xl p-4 bg-base-200 rounded-lg shadow-md'
@@ -133,7 +135,7 @@ const MeEditPage = () => {
 
             {errors.username?.type === 'required' ? (
               <p role='alert' className='text-error'>
-                The field "Username" is required.
+                The field &quot;Username&quot; is required.
               </p>
             ) : (
               error &&

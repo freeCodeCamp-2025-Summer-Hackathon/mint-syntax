@@ -107,7 +107,7 @@ export function RegisterForm({ redirect_to = '/' }) {
       </div>
       {errors.username?.type === 'required' ? (
         <p role='alert' className='text-error text-xs mt-0.5'>
-          The field "Username" is required.
+          The field &quot;Username&quot; is required.
         </p>
       ) : (
         error &&
@@ -136,7 +136,7 @@ export function RegisterForm({ redirect_to = '/' }) {
       </div>
       {errors.name?.type === 'required' && (
         <p role='alert' className='text-error text-xs mt-0.5'>
-          The field "Name" is required.
+          The field &quot;Name&quot; is required.
         </p>
       )}
 
@@ -158,7 +158,7 @@ export function RegisterForm({ redirect_to = '/' }) {
       </div>
       {errors.password?.type === 'required' ? (
         <p role='alert' className='text-error text-xs mt-0.5'>
-          The field "Password" is required.
+          The field &quot;Password&quot; is required.
         </p>
       ) : (
         errors.password?.type === 'minLength' && (
@@ -190,7 +190,7 @@ export function RegisterForm({ redirect_to = '/' }) {
       </div>
       {errors.repeatPassword?.type === 'required' ? (
         <p role='alert' className='text-error text-xs mt-0.5'>
-          The field "Repeat Password" is required.
+          The field &quot;Repeat Password&quot; is required.
         </p>
       ) : (
         errors.repeatPassword?.type === 'validate' && (
