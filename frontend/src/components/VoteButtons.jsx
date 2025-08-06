@@ -5,8 +5,9 @@ import { useEffect, useState } from 'react';
 import Spinny from './Spinny';
 import { SuccessIcon } from './Icons/SuccessIcon';
 import { useUser } from '../hooks/useUser';
+import { ActionButton } from './Buttons';
 
-const Button = ({
+const VoteButton = ({
   ideaId,
   fetchAddr,
   buttonProps: { className, ...restButtonProps } = {},
@@ -62,7 +63,7 @@ const Button = ({
         'data-tip': 'Already voted!',
       })}
     >
-      <button
+      <ActionButton
         onClick={onVote}
         className={buttonClass}
         {...((loading || !isLogged || alreadyVoted) && { disabled: true })}
@@ -75,7 +76,7 @@ const Button = ({
         ) : (
           buttonContents
         )}
-      </button>
+      </ActionButton>
     </div>
   );
 };
@@ -88,7 +89,7 @@ export const DownvoteButton = ({
   alreadyVoted,
   ...restProps
 }) => (
-  <Button
+  <VoteButton
     {...{
       buttonProps: {
         ...buttonProps,
@@ -115,7 +116,7 @@ export const UpvoteButton = ({
   alreadyVoted = false,
   ...restProps
 }) => (
-  <Button
+  <VoteButton
     {...{
       buttonProps: {
         ...buttonProps,

@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { PasswordIcon } from '../components/Icons/PasswordIcon';
 import { UserIcon } from '../components/Icons/UserIcon';
 import Spinny from '../components/Spinny';
+import { SubmitButton } from '../components/Buttons';
 
 const MeEditPage = () => {
   const { isLoading, error, data, response, fetchFromApi, sendAsJson } = useApi(
@@ -216,13 +217,12 @@ const MeEditPage = () => {
               >
                 Back to Profile
               </Link>
-              <button
-                className='my-1 animated-button !text-base !px-5 !py-2 !bg-gray-500 hover:!bg-gray-600'
-                type='submit'
-                {...(isSubmitting && { disabled: 'disabled' })}
+              <SubmitButton
+                additionalClasses='!bg-gray-500 hover:!bg-gray-600'
+                disabled={isSubmitting}
               >
                 Save Changes
-              </button>
+              </SubmitButton>
             </div>
           </form>
         </>

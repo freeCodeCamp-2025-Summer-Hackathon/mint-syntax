@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router';
 import { useUser } from '../hooks/useUser';
 import { useApi } from '../hooks/useApi';
 import Spinny from '../components/Spinny';
+import { SubmitButton } from '../components/Buttons';
 
 const UserPage = () => {
   const { id } = useParams();
@@ -141,13 +142,13 @@ const UserPage = () => {
           >
             View All Ideas
           </Link>
-          <button
+          <SubmitButton
             onClick={handleToggleStatusClick}
             disabled={isUpdating}
             className={confirmButtonClass}
           >
             {isUpdating ? 'Updating Status...' : `${modalAction} Account`}
-          </button>
+          </SubmitButton>
         </div>
       </div>
 
@@ -163,20 +164,20 @@ const UserPage = () => {
             <p className='text-error mb-4'>Error: {updateError.message}</p>
           )}
           <div className='modal-action'>
-            <button
-              className='animated-button !text-base !px-5 !py-2 mr-2'
+            <SubmitButton
+              additionalClasses='mr-2'
               onClick={closeDeactivateModal}
               disabled={isUpdating}
             >
               Cancel
-            </button>
-            <button
+            </SubmitButton>
+            <SubmitButton
               className={confirmButtonClass}
               onClick={confirmToggleStatus}
               disabled={isUpdating}
             >
               {isUpdating ? 'Confirming...' : `Confirm ${modalAction}`}
-            </button>
+            </SubmitButton>
           </div>
         </div>
         <form

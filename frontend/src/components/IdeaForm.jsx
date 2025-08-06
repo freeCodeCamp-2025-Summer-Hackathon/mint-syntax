@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import Spinny from './Spinny';
 import { SuccessIcon } from './Icons/SuccessIcon';
 import { useUser } from '../hooks/useUser';
+import { SubmitButton } from './Buttons';
 
 export const IdeaForm = ({
   api,
@@ -109,13 +110,20 @@ export const IdeaForm = ({
             <option value='other'>Other</option>
           </select>
         </div> */}
-        <button
-          type='submit'
-          className='animated-button golden'
-          {...(isSubmitDisabled && { disabled: true })}
-        >
-          {success ? <SuccessIcon /> : loading ? <Spinny /> : <>{buttonText}</>}
-        </button>
+        <div className='flex justify-center'>
+          <SubmitButton
+            additionalClasses='!text-xl golden'
+            disabled={isSubmitDisabled}
+          >
+            {success ? (
+              <SuccessIcon />
+            ) : loading ? (
+              <Spinny />
+            ) : (
+              <>{buttonText}</>
+            )}
+          </SubmitButton>
+        </div>
         {submitError && (
           <p role='alert' className='text-error'>
             Error: {submitError}

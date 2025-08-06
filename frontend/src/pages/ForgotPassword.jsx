@@ -1,4 +1,5 @@
 import { Link } from 'react-router';
+import { SubmitButton } from '../components/Buttons';
 
 export default function ForgotPassword() {
   return (
@@ -28,9 +29,7 @@ export default function ForgotPassword() {
             </div>
 
             <div className='flex justify-center mt-2'>
-              <button type='submit' className='my-1 animated-button'>
-                Send reset link
-              </button>
+              <SubmitButton>Send reset link</SubmitButton>
             </div>
           </form>
 

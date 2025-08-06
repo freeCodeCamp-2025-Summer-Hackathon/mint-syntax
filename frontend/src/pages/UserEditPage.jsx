@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router';
 import { useUser } from '../hooks/useUser';
 import { useApi } from '../hooks/useApi';
 import Spinny from '../components/Spinny';
+import { ActionButton, SubmitButton } from '../components/Buttons';
 
 const UserEditPage = () => {
   const { id } = useParams();
@@ -322,22 +323,16 @@ const UserEditPage = () => {
               <p className='text-error mt-2'>Error: {updateError.message}</p>
             )}
             <div className='flex justify-end gap-4 mt-4'>
-              <button
-                type='button'
+              <ActionButton
                 onClick={cancelUpdate}
-                className='animated-button !text-base !px-5 !py-2 !bg-gray-500 hover:!bg-gray-600'
+                additionalClasses='!bg-gray-500 hover:!bg-gray-600'
                 disabled={isUpdating}
               >
                 Cancel
-              </button>
-              <button
-                type='button'
-                onClick={confirmUpdate}
-                className='animated-button !text-base !px-5 !py-2'
-                disabled={isUpdating}
-              >
+              </ActionButton>
+              <ActionButton onClick={confirmUpdate} disabled={isUpdating}>
                 {isUpdating ? 'Confirming...' : 'Confirm Save'}
-              </button>
+              </ActionButton>
             </div>
           </div>
         )}
@@ -349,13 +344,12 @@ const UserEditPage = () => {
           >
             Back to User Profile
           </Link>
-          <button
-            type='submit'
-            className='animated-button !text-base !px-5 !py-2'
+          <SubmitButton
+            additionalClasses='!text-base !px-5 !py-2'
             disabled={isUpdating || showInlineConfirm || !hasChanges}
           >
             Save Changes
-          </button>
+          </SubmitButton>
         </div>
       </form>
     </div>

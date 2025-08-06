@@ -5,6 +5,7 @@ import { PasswordIcon } from './Icons/PasswordIcon';
 import { UserIcon } from './Icons/UserIcon';
 import { useApi } from '../hooks/useApi';
 import { useUser } from '../hooks/useUser';
+import { SubmitButton } from './Buttons';
 
 export function RegisterForm({ redirect_to = '/' }) {
   const formRef = useRef();
@@ -167,12 +168,7 @@ export function RegisterForm({ redirect_to = '/' }) {
       )}
 
       <div className='flex justify-center'>
-        <button
-          className='my-1 animated-button'
-          {...(isSubmitting && { disabled: 'disabled' })}
-        >
-          Register
-        </button>
+        <SubmitButton disabled={isSubmitting}>Register</SubmitButton>
       </div>
     </form>
   );

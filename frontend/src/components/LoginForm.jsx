@@ -5,6 +5,7 @@ import { UserIcon } from './Icons/UserIcon';
 import { PasswordIcon } from './Icons/PasswordIcon';
 import { useApi } from '../hooks/useApi';
 import { useUser } from '../hooks/useUser';
+import { SubmitButton } from './Buttons';
 
 export function LoginForm({ redirect_to = '/', dialogRef }) {
   const formRef = useRef();
@@ -102,13 +103,10 @@ export function LoginForm({ redirect_to = '/', dialogRef }) {
         )}
 
         <div className='flex justify-center'>
-          <button
-            className='my-1 animated-button'
-            {...((isSubmitting || !isValid) && { disabled: 'disabled' })}
-          >
+          <SubmitButton disabled={isSubmitting || !isValid}>
             {isSubmitting && <span className='loading loading-spinner'></span>}
             Login
-          </button>
+          </SubmitButton>
         </div>
       </form>
 

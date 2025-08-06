@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router';
 import { useUser } from '../hooks/useUser';
 import { useApi } from '../hooks/useApi';
 import Spinny from '../components/Spinny';
+import { SubmitButton } from '../components/Buttons';
 
 const UserAddPage = () => {
   const navigate = useNavigate();
@@ -194,13 +195,12 @@ const UserAddPage = () => {
           </div>
         </div>
 
-        <button
-          type='submit'
-          className='animated-button mt-4 !text-base !px-5 !py-2'
+        <SubmitButton
+          additionalClasses='mt-4 !text-base !px-5 !py-2'
           disabled={isLoading}
         >
           {isLoading ? 'Adding User...' : 'Add User'}
-        </button>
+        </SubmitButton>
       </form>
     </div>
   );

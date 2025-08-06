@@ -5,6 +5,7 @@ import LoginForm from './LoginForm';
 import ScrollToHashElement from './ScrollToHashElement';
 import IdeaForgeLogo from '../assets/Idea-Forge-logo.svg';
 import { ChevronIcon } from './Icons/ChevronIcon';
+import { ActionButton } from './Buttons';
 
 const Header = () => {
   const dialogRef = useRef();
@@ -58,13 +59,13 @@ const Header = () => {
           {isLogged ? (
             <>
               <div className='dropdown'>
-                <button
+                <ActionButton
                   tabIndex={0}
                   className='auth-button logged-in-button active'
                 >
                   User: {userState.name}
                   <ChevronIcon />
-                </button>
+                </ActionButton>
                 <ul
                   tabIndex={0}
                   className='menu dropdown-content dropdown-main-brand-green'
