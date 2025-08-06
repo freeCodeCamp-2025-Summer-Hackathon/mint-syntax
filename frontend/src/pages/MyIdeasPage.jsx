@@ -11,6 +11,7 @@ export const MyIdeasPage = ({ headerText = 'My Ideas' }) => {
         page: page - 1,
         paginate: true,
         headerText,
+        noIdeasText: "You don't have any ideas added.",
       }}
     />
   );

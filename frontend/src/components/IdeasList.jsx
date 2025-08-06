@@ -8,6 +8,7 @@ import { Link } from 'react-router';
 const IdeasList = ({
   base = '/ideas/',
   headerText = 'Vote on Current Ideas',
+  noIdeasText = "There's no ideas!",
   count,
   sort = null,
   page = 0,
@@ -78,13 +79,18 @@ const IdeasList = ({
           <div className='spinner-wrapper-container'>
             <Spinny />
           </div>
+        ) : entries.length === 0 ? (
+          <div>
+            <p>{noIdeasText}</p>
+            <Link to='/ideas/add' className='animated-button'>
+              Add idea
+            </Link>
+          </div>
         ) : (
           <ul className='idea-list'>
-            {entries.length === 0
-              ? "There's no ideas, add yours!"
-              : entries.map(entry => (
-                  <IdeaListItem key={entry.id} {...entry} />
-                ))}
+            {entries.map(entry => (
+              <IdeaListItem key={entry.id} {...entry} />
+            ))}
           </ul>
         )}
         {paginate && showPages && entries.length > 0 && <>{pagination}</>}
