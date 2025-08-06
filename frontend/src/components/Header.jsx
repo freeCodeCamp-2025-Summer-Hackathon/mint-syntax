@@ -28,6 +28,22 @@ const Chevron = () => {
 const Header = () => {
   const dialogRef = useRef();
   const { isLogged, logout, userState, isAdmin } = useUser();
+
+  const adminLinks = isAdmin
+    ? [
+        { to: '/users', text: 'Manage Users' },
+        { to: '/users/add', text: 'Add User' },
+      ]
+    : [];
+
+  const links = [
+    ...adminLinks,
+    { to: '/me', text: 'My Profile' },
+    { to: '/me/ideas', text: 'My Ideas' },
+    { to: '/me/edit', text: 'Edit Profile' },
+    { to: '/logout', text: 'Logout', onClick: logout },
+  ];
+
   return (
     <header className='header-style'>
       <ScrollToHashElement />
@@ -72,59 +88,17 @@ const Header = () => {
                   tabIndex={0}
                   className='menu dropdown-content dropdown-main-brand-green'
                 >
-                  {isAdmin && (
-                    <>
-                      <li className='group'>
-                        <Link
-                          to='/users'
-                          className='block !text-base !px-6 !py-2 hover:bg-white hover:text-gray-800 hover:font-bold transition-colors duration-200'
-                        >
-                          Manage Users
-                        </Link>
-                      </li>
-                      <li className='group'>
-                        <Link
-                          to='/users/add'
-                          className='block !text-base !px-6 !py-2 hover:bg-white hover:text-gray-800 hover:font-bold transition-colors duration-200'
-                        >
-                          Add user
-                        </Link>
-                      </li>
-                    </>
-                  )}
-                  <li className='group'>
-                    <Link
-                      to='/me'
-                      className='block !text-base !px-5 !py-2 hover:bg-white hover:text-gray-800 hover:font-bold transition-colors duration-200'
-                    >
-                      My profile
-                    </Link>
-                  </li>
-                  <li className='group'>
-                    <Link
-                      to='/me/ideas'
-                      className='block !text-base !px-5 !py-2 hover:bg-white hover:text-gray-800 hover:font-bold transition-colors duration-200'
-                    >
-                      My Ideas
-                    </Link>
-                  </li>
-                  <li className='group'>
-                    <Link
-                      to='/me/edit'
-                      className='block !text-base !px-5 !py-2 hover:bg-white hover:text-gray-800 hover:font-bold transition-colors duration-200'
-                    >
-                      Edit profile
-                    </Link>
-                  </li>
-                  <li className='group'>
-                    <Link
-                      onClick={logout}
-                      to='/logout'
-                      className='block !text-base !px-5 !py-2 hover:bg-white hover:text-gray-800 hover:font-bold transition-colors duration-200'
-                    >
-                      Logout
-                    </Link>
-                  </li>
+                  {links.map(({ to, text, ...otherProps }) => (
+                    <li className='group' key={to}>
+                      <Link
+                        to={to}
+                        className='block !text-base !px-5 !py-2 hover:bg-white hover:text-gray-800 hover:font-bold transition-colors duration-200'
+                        {...otherProps}
+                      >
+                        {text}
+                      </Link>
+                    </li>
+                  ))}
                 </ul>
               </div>
             </>
