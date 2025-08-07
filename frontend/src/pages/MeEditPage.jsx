@@ -1,12 +1,13 @@
 import { useUser } from '../hooks/useUser';
 import { Link } from 'react-router';
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { useApi } from '../hooks/useApi';
 import { useForm } from 'react-hook-form';
 import { PasswordIcon } from '../components/Icons/PasswordIcon';
 import { UserIcon } from '../components/Icons/UserIcon';
 import Spinny from '../components/Spinny';
 import { SubmitButton } from '../components/Buttons';
+import { FormGroup } from '../components/FormGroup';
 
 const MeEditPage = () => {
   const { isLoading, error, data, response, fetchFromApi, sendAsJson } = useApi(
@@ -27,6 +28,7 @@ const MeEditPage = () => {
     handleSubmit,
     register,
     getValues,
+    setError,
   } = useForm();
 
   useEffect(() => {
@@ -35,8 +37,19 @@ const MeEditPage = () => {
     }
     if (error) {
       console.log('Error:', error);
+      if (response.status === 409) {
+        setError('username', {
+          type: 'unique',
+          message: 'This username is already in use.',
+        });
+      } else if (response.status === 403) {
+        setError('old_password', {
+          type: 'validate',
+          message: 'Old password is invalid',
+        });
+      }
     }
-  }, [response, data, error]);
+  }, [response, data, error, setError]);
 
   const onSubmit = async formData => {
     setFormSent(true);
@@ -52,6 +65,57 @@ const MeEditPage = () => {
       console.log('error!', e);
     }
   };
+
+  const fields = [
+    {
+      id: 'name',
+      label: 'Name',
+      required: true,
+      type: 'text',
+      Icon: UserIcon,
+      defaultValue: data?.name,
+    },
+    {
+      id: 'new_password',
+      label: 'New Password',
+      type: 'password',
+      Icon: PasswordIcon,
+      options: {
+        minLength: {
+          value: 8,
+          message: 'Passwords needs to be at least 8 characters long.',
+        },
+      },
+    },
+    {
+      id: 'repeat_password',
+      label: 'Repeat New Password',
+      type: 'password',
+      Icon: PasswordIcon,
+      placeholder: 'Repeat Password',
+      options: {
+        validate: value =>
+          getValues('new_password') === value ||
+          'Both passwords need to match.',
+      },
+    },
+    {
+      id: 'old_password',
+      label: 'Old Password (confirm password change)',
+      type: 'password',
+      placeholder: 'Old Password',
+      Icon: PasswordIcon,
+      options: {
+        minLength: {
+          value: 8,
+          message: 'Passwords needs to be at least 8 characters long.',
+        },
+        required:
+          !!getValues('new_password') &&
+          'Old password needs to be provided when changing passwords.',
+      },
+    },
+  ];
 
   return (
     <div className='section-card min-h-[60vh] flex flex-col items-center'>
@@ -74,129 +138,41 @@ const MeEditPage = () => {
             className='w-full max-w-xl p-4 bg-base-200 rounded-lg shadow-md'
             onSubmit={handleSubmit(onSubmit)}
           >
-            <div className='form-group'>
-              <label
-                htmlFor='name'
-                className='block text-lg font-medium text-gray-700 mb-2'
-              >
-                Name:
-              </label>
-
-              <label className='input input-sm'>
-                <UserIcon />
-                <input
-                  id='name'
-                  {...register('name', { required: true })}
-                  type='Text'
-                  defaultValue={data.name}
-                  className='input-validator'
-                />
-              </label>
-            </div>
-
-            {errors.username?.type === 'required' ? (
-              <p role='alert' className='text-error'>
-                The field &quot;Username&quot; is required.
-              </p>
-            ) : (
-              error &&
-              response.status === 409 && (
-                <p role='alert' className='text-error'>
-                  This username is already in use.
-                </p>
-              )
-            )}
-
-            <div className='form-group'>
-              <label
-                htmlFor='new-password'
-                className='block text-lg font-medium text-gray-700 mb-2'
-              >
-                New Password:
-              </label>
-              <label className='input input-sm'>
-                <PasswordIcon />
-                <input
-                  id='new-password'
-                  {...register('new_password', {
-                    minLength: 8,
-                  })}
-                  type='Password'
-                  placeholder='New Password'
-                  className='input-validator'
-                  aria-invalid={!!errors.new_password}
-                />
-              </label>
-            </div>
-            {errors.new_password?.type === 'validate' &&
-              errors.new_password?.type === 'minLength' && (
-                <p role='alert' className='text-error'>
-                  Passwords needs to be at least 8 characters long.
-                </p>
-              )}
-
-            <div className='form-group'>
-              <label
-                htmlFor='repeat-password'
-                className='block text-lg font-medium text-gray-700 mb-2'
-              >
-                Repeat New Password:
-              </label>
-              <label className='input input-sm'>
-                <PasswordIcon />
-                <input
-                  id='repeat-password'
-                  {...register('repeat_password', {
-                    validate: value => getValues('new_password') === value,
-                  })}
-                  type='password'
-                  placeholder='Repeat Password'
-                  title='Must match the password entered in the previous input field'
-                  aria-invalid={!!errors.repeat_password}
-                />
-              </label>
-            </div>
-            {errors.repeat_password?.type === 'validate' && (
-              <p role='alert' className='text-error'>
-                Both passwords need to match.
-              </p>
-            )}
-
-            <div className='form-group'>
-              <label
-                htmlFor='old-password'
-                className='block text-lg font-medium text-gray-700 mb-2'
-              >
-                Old Password (confirm password change):
-              </label>
-              <label className='input input-sm'>
-                <PasswordIcon />
-                <input
-                  id='old-password'
-                  {...register('old_password', {
-                    minLength: 8,
-                  })}
-                  type='Password'
-                  placeholder='Old Password'
-                  className='input-validator'
-                  aria-invalid={!!errors.old_password}
-                />
-              </label>
-            </div>
-            {errors.old_password?.type === 'minLength' ? (
-              <p role='alert' className='text-error'>
-                Passwords needs to be at least 8 characters long.
-              </p>
-            ) : errors.new_password?.type === 'validate' ? (
-              <p role='alert' className='text-error'>
-                Old password needs to pe provided when changing passwords.
-              </p>
-            ) : (
-              error &&
-              response.status === 403 && (
-                <p role='alert' className='text-error'>
-                  Old password is invalid.
-                </p>
+            {fields.map(
+              ({
+                id,
+                label,
+                type,
+                Icon,
+                required = false,
+                placeholder = '',
+                defaultValue = '',
+                options = {},
+              }) => (
+                <Fragment key={id}>
+                  <FormGroup labelText={label} htmlFor={id} required={required}>
+                    <Icon />
+                    <input
+                      id={id}
+                      {...register(id, {
+                        ...(required && {
+                          required: `The field "${label} is required`,
+                        }),
+                        ...options,
+                      })}
+                      type={type}
+                      defaultValue={defaultValue}
+                      placeholder={placeholder || label}
+                      className='input-validator'
+                      aria-invalid={!!errors[id]}
+                    />
+                  </FormGroup>
+                  {errors[id] && (
+                    <p role='alert' className='text-error'>
+                      {errors[id]?.message}
+                    </p>
+                  )}
+                </Fragment>
               )
             )}
 

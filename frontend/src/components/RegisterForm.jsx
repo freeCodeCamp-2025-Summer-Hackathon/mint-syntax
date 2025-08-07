@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { Fragment, useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 import { PasswordIcon } from './Icons/PasswordIcon';
@@ -6,6 +6,7 @@ import { UserIcon } from './Icons/UserIcon';
 import { useApi } from '../hooks/useApi';
 import { useUser } from '../hooks/useUser';
 import { SubmitButton } from './Buttons';
+import { FormGroup } from './FormGroup';
 
 export function RegisterForm({ redirect_to = '/' }) {
   const formRef = useRef();
@@ -14,6 +15,7 @@ export function RegisterForm({ redirect_to = '/' }) {
     handleSubmit,
     register,
     getValues,
+    setError,
   } = useForm({ mode: 'onTouched' });
 
   const { isLogged } = useUser();
@@ -27,8 +29,14 @@ export function RegisterForm({ redirect_to = '/' }) {
     }
     if (error) {
       console.log('Error:', error);
+      if (response.status === 409) {
+        setError('username', {
+          type: 'unique',
+          message: 'This username is already in use.',
+        });
+      }
     }
-  }, [response, data, error, navigate]);
+  }, [response, data, error, navigate, setError]);
 
   useEffect(() => {
     if (isLogged && redirect_to) {
@@ -44,120 +52,77 @@ export function RegisterForm({ redirect_to = '/' }) {
     }
   };
 
+  const fields = [
+    {
+      id: 'username',
+      label: 'Username',
+      type: 'text',
+      Icon: UserIcon,
+    },
+    {
+      id: 'name',
+      label: 'Name',
+      type: 'text',
+      Icon: UserIcon,
+    },
+    {
+      id: 'password',
+      label: 'Password',
+      type: 'password',
+      Icon: PasswordIcon,
+      options: {
+        minLength: {
+          value: 8,
+          message: 'The password needs to be at least 8 characters long.',
+        },
+      },
+    },
+    {
+      id: 'repeatPassword',
+      label: 'Repeat Password',
+      placeholder: 'Password',
+      type: 'password',
+      Icon: PasswordIcon,
+      options: {
+        validate: {
+          matches: value =>
+            getValues('password') === value || 'Both passwords need to match',
+        },
+      },
+    },
+  ];
+
   return (
     <form
       ref={formRef}
       onSubmit={handleSubmit(onSubmit)}
       className='w-full max-w-md p-4 bg-white'
     >
-      <div className='form-group'>
-        <label htmlFor='username' className='form-label'>
-          Username: <span className='text-red-500'>*</span>
-        </label>
-        <label className='input input-sm'>
-          <UserIcon />
-          <input
-            id='username'
-            {...register('username', { required: true })}
-            type='text'
-            placeholder='Username'
-            className='input-validator'
-            aria-invalid={!!errors.username}
-          />
-        </label>
-      </div>
-      {errors.username?.type === 'required' ? (
-        <p role='alert' className='text-error text-xs mt-0.5'>
-          The field &quot;Username&quot; is required.
-        </p>
-      ) : (
-        error &&
-        response.status === 409 && (
-          <p role='alert' className='text-error text-xs mt-0.5'>
-            This username is already in use.
-          </p>
-        )
-      )}
-
-      <div className='form-group'>
-        <label htmlFor='name' className='form-label'>
-          Name: <span className='text-red-500'>*</span>
-        </label>
-        <label className='input input-sm'>
-          <UserIcon />
-          <input
-            id='name'
-            {...register('name', { required: true })}
-            type='text'
-            placeholder='Name'
-            className='input-validator'
-            aria-invalid={!!errors.name}
-          />
-        </label>
-      </div>
-      {errors.name?.type === 'required' && (
-        <p role='alert' className='text-error text-xs mt-0.5'>
-          The field &quot;Name&quot; is required.
-        </p>
-      )}
-
-      <div className='form-group'>
-        <label htmlFor='password' className='form-label'>
-          Password: <span className='text-red-500'>*</span>
-        </label>
-        <label className='input input-sm'>
-          <PasswordIcon />
-          <input
-            id='password'
-            {...register('password', { required: true, minLength: 8 })}
-            type='password'
-            placeholder='Password'
-            className='input-validator'
-            aria-invalid={!!errors.password}
-          />
-        </label>
-      </div>
-      {errors.password?.type === 'required' ? (
-        <p role='alert' className='text-error text-xs mt-0.5'>
-          The field &quot;Password&quot; is required.
-        </p>
-      ) : (
-        errors.password?.type === 'minLength' && (
-          <p role='alert' className='text-error text-xs mt-0.5'>
-            The password needs to be at least 8 characters long.
-          </p>
-        )
-      )}
-
-      <div className='form-group'>
-        <label htmlFor='repeatPassword' className='form-label'>
-          Repeat Password: <span className='text-red-500'>*</span>
-        </label>
-        <label className='input input-sm'>
-          <PasswordIcon />
-          <input
-            id='repeatPassword'
-            {...register('repeatPassword', {
-              required: true,
-              validate: value => getValues('password') === value,
-            })}
-            type='password'
-            placeholder='Password'
-            title='Must match the password entered in the previous input field'
-            className='input-validator'
-            aria-invalid={!!errors.repeatPassword}
-          />
-        </label>
-      </div>
-      {errors.repeatPassword?.type === 'required' ? (
-        <p role='alert' className='text-error text-xs mt-0.5'>
-          The field &quot;Repeat Password&quot; is required.
-        </p>
-      ) : (
-        errors.repeatPassword?.type === 'validate' && (
-          <p role='alert' className='text-error text-xs mt-0.5'>
-            Both passwords need to match.
-          </p>
+      {fields.map(
+        ({ id, label, type, Icon, placeholder = '', options = {} }) => (
+          <Fragment key={id}>
+            <FormGroup htmlFor={id} labelText={label} required={true}>
+              <Icon />
+              <input
+                id={id}
+                {...register(id, {
+                  required: {
+                    value: `The field "${label}" is required.`,
+                  },
+                  ...options,
+                })}
+                type={type}
+                placeholder={placeholder || label}
+                className='input-validator'
+                aria-invalid={!!errors[id]}
+              />
+            </FormGroup>
+            {errors[id] && (
+              <p role='alert' className='text-error text-xs mt-0.5'>
+                {errors[id]?.message}
+              </p>
+            )}
+          </Fragment>
         )
       )}
 

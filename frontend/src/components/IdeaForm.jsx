@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useForm } from 'react-hook-form';
 
@@ -6,6 +6,7 @@ import Spinny from './Spinny';
 import { SuccessIcon } from './Icons/SuccessIcon';
 import { useUser } from '../hooks/useUser';
 import { SubmitButton } from './Buttons';
+import { FormGroup } from './FormGroup';
 
 export const IdeaForm = ({
   api,
@@ -53,46 +54,51 @@ export const IdeaForm = ({
     [disableSubmit, loading, success, isDirty, isLogged]
   );
 
+  const fields = [
+    {
+      id: 'name',
+      label: 'Idea Title',
+      element: (
+        <input
+          {...register('name', { required: 'Idea Title is required' })}
+          type='text'
+          className='form-input'
+          placeholder='e.g., Dark Mode for IdeaForge'
+        />
+      ),
+    },
+    {
+      id: 'description',
+      label: 'Idea Description',
+      element: (
+        <textarea
+          {...register('description', {
+            required: 'Idea Description is required',
+          })}
+          className='form-textarea'
+          placeholder='Provide a detailed description of your idea, its benefits, and how it could be implemented.'
+          rows='6'
+        ></textarea>
+      ),
+    },
+  ];
+
   return (
     <>
       <h2 className='idea-form-sub-heading'>{headerText}</h2>
       <form className='idea-form' onSubmit={handleSubmit(wrappedSubmit)}>
-        <div className='form-group'>
-          <label htmlFor='idea-title' className='form-label'>
-            Idea Title: <span className='text-red-500'>*</span>
-          </label>
-          <input
-            {...register('name', { required: 'Idea Title is required' })}
-            type='text'
-            className='form-input'
-            placeholder='e.g., Dark Mode for IdeaForge'
-            required
-          />
-          {errors?.name && (
-            <p role='alert' className='text-error'>
-              {errors.name.message}
-            </p>
-          )}
-        </div>
-        <div className='form-group'>
-          <label htmlFor='idea-description' className='form-label'>
-            Idea Description: <span className='text-red-500'>*</span>
-          </label>
-          <textarea
-            {...register('description', {
-              required: 'Idea Description is required',
-            })}
-            className='form-textarea'
-            placeholder='Provide a detailed description of your idea, its benefits, and how it could be implemented.'
-            rows='6'
-            required
-          ></textarea>
-          {errors?.description && (
-            <p role='alert' className='text-error'>
-              {errors.description.message}
-            </p>
-          )}
-        </div>
+        {fields.map(({ id, label, element }) => (
+          <Fragment key={id}>
+            <FormGroup key={id} htmlFor={id} labelText={label} required={true}>
+              {element}
+            </FormGroup>
+            {errors[id] && (
+              <p role='alert' className='text-error'>
+                {errors[id]?.message}
+              </p>
+            )}
+          </Fragment>
+        ))}
         {/* <div className='form-group'>
           <label htmlFor='idea-category' className='form-label'>
             Category:

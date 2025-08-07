@@ -1,5 +1,6 @@
 import { Link } from 'react-router';
 import { SubmitButton } from '../components/Buttons';
+import { FormGroup } from '../components/FormGroup';
 
 export default function ForgotPassword() {
   return (
@@ -13,10 +14,7 @@ export default function ForgotPassword() {
           </p>
 
           <form>
-            <div className='form-group'>
-              <label htmlFor='email' className='form-label'>
-                Email address: <span className='text-red-500'>*</span>
-              </label>
+            <FormGroup htmlFor='email' labelText='Email address' required>
               <label className='input input-sm'>
                 <input
                   id='email'
@@ -26,7 +24,7 @@ export default function ForgotPassword() {
                   required
                 />
               </label>
-            </div>
+            </FormGroup>
 
             <div className='flex justify-center mt-2'>
               <SubmitButton>Send reset link</SubmitButton>

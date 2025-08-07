@@ -4,6 +4,7 @@ import { useUser } from '../hooks/useUser';
 import { useApi } from '../hooks/useApi';
 import Spinny from '../components/Spinny';
 import { SubmitButton } from '../components/Buttons';
+import { FormGroup } from '../components/FormGroup';
 
 const UserAddPage = () => {
   const navigate = useNavigate();
@@ -87,6 +88,41 @@ const UserAddPage = () => {
     );
   }
 
+  const fields = [
+    {
+      id: 'username',
+      label: 'Username',
+      type: 'text',
+      value: username,
+      onChange: setUsername,
+      required: true,
+    },
+    {
+      id: 'name',
+      label: 'Name',
+      type: 'text',
+      value: name,
+      onChange: setName,
+      required: true,
+    },
+    {
+      id: 'password',
+      label: 'Password',
+      type: 'password',
+      value: password,
+      onChange: setPassword,
+      required: true,
+    },
+    {
+      id: 'repeatpassword',
+      label: 'Repeat Password',
+      type: 'password',
+      value: repeatPassword,
+      onChange: setRepeatPassword,
+      required: true,
+    },
+  ];
+
   return (
     <div className='section-card flex flex-col items-center min-h-[60vh]'>
       <h1 className='section-heading'>Add New User</h1>
@@ -97,103 +133,56 @@ const UserAddPage = () => {
         {error && <p className='text-error text-center mb-4'>{error}</p>}
         {message && <p className='text-success text-center mb-4'>{message}</p>}
 
-        <div className='mb-4'>
-          <label
-            htmlFor='username'
-            className='block text-lg font-medium text-gray-700 mb-2'
-          >
-            Username: <span className='text-red-500'>*</span>
-          </label>
-          <input
-            type='text'
-            id='username'
-            className='w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-300 bg-white text-gray-800'
-            value={username}
-            onChange={e => setUsername(e.target.value)}
-            required
-          />
-        </div>
+        {fields.map(
+          ({ id, label, type, onChange, value, required = false }) => (
+            <FormGroup
+              key={id}
+              htmlFor={id}
+              labelText={label}
+              required={required}
+            >
+              <input
+                type={type}
+                id={id}
+                className='w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-300 bg-white text-gray-800'
+                value={value}
+                onChange={e => onChange(e.target.value)}
+                required={required}
+              />
+            </FormGroup>
+          )
+        )}
 
-        <div className='mb-4'>
-          <label
-            htmlFor='name'
-            className='block text-lg font-medium text-gray-700 mb-2'
-          >
-            Name:
-          </label>
-          <input
-            type='text'
-            id='name'
-            className='w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-300 bg-white text-gray-800'
-            value={name}
-            onChange={e => setName(e.target.value)}
-            required
-          />
-        </div>
-
-        <div className='mb-4'>
-          <label
-            htmlFor='password'
-            className='block text-lg font-medium text-gray-700 mb-2'
-          >
-            Password:
-          </label>
-          <input
-            type='password'
-            id='password'
-            className='w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-300 bg-white text-gray-800'
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            required
-          />
-        </div>
-
-        <div className='mb-4'>
-          <label
-            htmlFor='repeatPassword'
-            className='block text-lg font-medium text-gray-700 mb-2'
-          >
-            Repeat Password:
-          </label>
-          <input
-            type='password'
-            id='repeatPassword'
-            className='w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-300 bg-white text-gray-800'
-            value={repeatPassword}
-            onChange={e => setRepeatPassword(e.target.value)}
-            required
-          />
-        </div>
-
-        <div className='mb-4'>
-          <label className='block text-lg font-medium text-gray-700 mb-2'>
-            User Role:
-          </label>
+        <FormGroup htmlFor='is_admin' labelText='Admin Status'>
           <div className='flex gap-4'>
-            <label className='flex items-center'>
-              <input
-                type='radio'
-                name='is_admin'
-                value='false'
-                checked={!isNewAdmin}
-                onChange={() => setIsNewAdmin(false)}
-                className='radio radio-primary'
-              />
-              <span className='ml-2 text-lg'>User</span>
-            </label>
-            <label className='flex items-center'>
-              <input
-                type='radio'
-                name='is_admin'
-                value='true'
-                checked={isNewAdmin}
-                onChange={() => setIsNewAdmin(true)}
-                className='radio radio-primary'
-              />
-              <span className='ml-2 text-lg'>Admin</span>
-            </label>
+            {[
+              {
+                label: 'User',
+                value: 'false',
+                checked: !isNewAdmin,
+                onChange: () => setIsNewAdmin(false),
+              },
+              {
+                label: 'Admin',
+                value: 'true',
+                checked: isNewAdmin,
+                onChange: () => setIsNewAdmin(true),
+              },
+            ].map(({ label, value, checked, onChange }) => (
+              <label className='flex items-center' key={label}>
+                <input
+                  type='radio'
+                  name='is_admin'
+                  value={value}
+                  checked={checked}
+                  onChange={onChange}
+                  className='radio radio-primary'
+                />
+                <span className='ml-2 text-lg'>{label}</span>
+              </label>
+            ))}
           </div>
-        </div>
+        </FormGroup>
 
         <SubmitButton
           additionalClasses='mt-4 !text-base !px-5 !py-2'

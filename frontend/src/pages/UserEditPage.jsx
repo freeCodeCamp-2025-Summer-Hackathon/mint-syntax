@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router';
 import { useUser } from '../hooks/useUser';
 import { useApi } from '../hooks/useApi';
 import Spinny from '../components/Spinny';
 import { ActionButton, SubmitButton } from '../components/Buttons';
+import { FormGroup } from '../components/FormGroup';
 
 const UserEditPage = () => {
   const { id } = useParams();
@@ -79,20 +80,20 @@ const UserEditPage = () => {
   }, [updateResponse, updateError, navigate, id, formData]);
 
   const handleChange = e => {
-    const { name, value, type } = e.target;
-    if (name === 'newPassword') {
+    const { id, value, type } = e.target;
+    if (id === 'newPassword') {
       setNewPassword(value);
-    } else if (name === 'repeatNewPassword') {
+    } else if (id === 'repeatNewPassword') {
       setRepeatNewPassword(value);
     } else {
       setFormData(prevData => ({
         ...prevData,
-        [name]: type === 'radio' ? value === 'true' : value,
+        [id]: type === 'radio' ? value === 'true' : value,
       }));
     }
     setFormErrors(prevErrors => ({
       ...prevErrors,
-      [name]: undefined,
+      [id]: undefined,
       newPassword: undefined,
       repeatNewPassword: undefined,
     }));
@@ -184,6 +185,36 @@ const UserEditPage = () => {
     );
   }
 
+  const fields = [
+    {
+      id: 'username',
+      label: 'Username',
+      type: 'text',
+      value: formData.username,
+      readOnly: true,
+      disabled: true,
+    },
+    {
+      id: 'name',
+      label: 'Name',
+      type: 'text',
+      value: formData.name,
+      required: true,
+    },
+    {
+      id: 'newPassword',
+      label: 'New Password',
+      type: 'password',
+      value: newPassword,
+    },
+    {
+      id: 'repeatNewPassword',
+      label: 'Repeat New Password',
+      type: 'password',
+      value: repeatNewPassword,
+    },
+  ];
+
   return (
     <div className='section-card flex flex-col items-center min-h-[60vh]'>
       <h1 className='section-heading'>
@@ -193,124 +224,51 @@ const UserEditPage = () => {
         onSubmit={handleSubmit}
         className='w-full max-w-xl p-4 bg-base-200 rounded-lg shadow-md'
       >
-        <div className='mb-4'>
-          <label
-            htmlFor='username'
-            className='block text-lg font-medium text-gray-700 mb-2'
-          >
-            Username:
-          </label>
-          <input
-            type='text'
-            id='username'
-            name='username'
-            value={formData.username}
-            onChange={handleChange}
-            className='input input-bordered w-full p-2 rounded-md focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-300 hover:border-yellow-500'
-            disabled={isUpdating}
-            readOnly
-          />
-          {formErrors.username && (
-            <p className='text-error text-sm mt-1'>{formErrors.username}</p>
-          )}
-        </div>
+        {fields.map(({ id, label, type, value, required = false, ...rest }) => (
+          <Fragment key={id}>
+            <FormGroup
+              key={id}
+              htmlFor={id}
+              labelText={label}
+              required={required}
+            >
+              <input
+                type={type}
+                id={id}
+                value={value}
+                onChange={handleChange}
+                className='input input-bordered w-full p-2 rounded-md focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-300 hover:border-yellow-500'
+                disabled={isUpdating}
+                {...rest}
+              />
+            </FormGroup>
+            {formErrors[id] && (
+              <p className='text-error text-sm mt-1'>{formErrors[id]}</p>
+            )}
+          </Fragment>
+        ))}
 
-        <div className='mb-4'>
-          <label
-            htmlFor='name'
-            className='block text-lg font-medium text-gray-700 mb-2'
-          >
-            Name:
-          </label>
-          <input
-            type='text'
-            id='name'
-            name='name'
-            value={formData.name}
-            onChange={handleChange}
-            className='input input-bordered w-full p-2 rounded-md focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-300 hover:border-yellow-500'
-            disabled={isUpdating}
-          />
-          {formErrors.name && (
-            <p className='text-error text-sm mt-1'>{formErrors.name}</p>
-          )}
-        </div>
-
-        <div className='mb-4'>
-          <label
-            htmlFor='newPassword'
-            className='block text-lg font-medium text-gray-700 mb-2'
-          >
-            New Password: (optional)
-          </label>
-          <input
-            type='password'
-            id='newPassword'
-            name='newPassword'
-            value={newPassword}
-            onChange={handleChange}
-            className='input input-bordered w-full p-2 rounded-md focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-300 hover:border-yellow-500'
-            disabled={isUpdating}
-          />
-          {formErrors.newPassword && (
-            <p className='text-error text-sm mt-1'>{formErrors.newPassword}</p>
-          )}
-        </div>
-
-        <div className='mb-4'>
-          <label
-            htmlFor='repeatNewPassword'
-            className='block text-lg font-medium text-gray-700 mb-2'
-          >
-            Repeat New Password:
-          </label>
-          <input
-            type='password'
-            id='repeatNewPassword'
-            name='repeatNewPassword'
-            value={repeatNewPassword}
-            onChange={handleChange}
-            className='input input-bordered w-full p-2 rounded-md focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-300 hover:border-yellow-500'
-            disabled={isUpdating}
-          />
-          {formErrors.repeatNewPassword && (
-            <p className='text-error text-sm mt-1'>
-              {formErrors.repeatNewPassword}
-            </p>
-          )}
-        </div>
-
-        <div className='mb-4'>
-          <label className='block text-lg font-medium text-gray-700 mb-2'>
-            Admin Status:
-          </label>
+        <FormGroup htmlFor='is_admin' labelText='Admin Status'>
           <div className='flex items-center space-x-4'>
-            <label className='inline-flex items-center'>
-              <input
-                type='radio'
-                name='is_admin'
-                value='true'
-                checked={formData.is_admin === true}
-                onChange={handleChange}
-                className='radio radio-primary'
-                disabled={isUpdating}
-              />
-              <span className='ml-2 text-gray-700'>Yes</span>
-            </label>
-            <label className='inline-flex items-center'>
-              <input
-                type='radio'
-                name='is_admin'
-                value='false'
-                checked={formData.is_admin === false}
-                onChange={handleChange}
-                className='radio radio-primary'
-                disabled={isUpdating}
-              />
-              <span className='ml-2 text-gray-700'>No</span>
-            </label>
+            {[
+              { text: 'Yes', value: 'true', checked: !!formData.is_admin },
+              { text: 'No', value: 'false', checked: !formData.is_admin },
+            ].map(({ text, value, checked }) => (
+              <label key={text} className='inline-flex items-center'>
+                <input
+                  type='radio'
+                  id='is_admin'
+                  value={value}
+                  checked={checked}
+                  onChange={handleChange}
+                  className='radio radio-primary'
+                  disabled={isUpdating}
+                />
+                <span className='ml-2 text-gray-700'>{text}</span>
+              </label>
+            ))}
           </div>
-        </div>
+        </FormGroup>
 
         {showInlineConfirm && (
           <div

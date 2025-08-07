@@ -6,6 +6,7 @@ import { PasswordIcon } from './Icons/PasswordIcon';
 import { useApi } from '../hooks/useApi';
 import { useUser } from '../hooks/useUser';
 import { SubmitButton } from './Buttons';
+import { FormGroup } from './FormGroup';
 
 export function LoginForm({ redirect_to = '/', dialogRef }) {
   const formRef = useRef();
@@ -44,52 +45,46 @@ export function LoginForm({ redirect_to = '/', dialogRef }) {
     }
   };
 
+  const fields = [
+    {
+      id: 'username',
+      label: 'Username',
+      type: 'text',
+      Icon: UserIcon,
+    },
+    {
+      id: 'password',
+      label: 'Password',
+      type: 'password',
+      Icon: PasswordIcon,
+    },
+  ];
+
   return (
     <>
       <form ref={formRef} onSubmit={handleSubmit(onSubmit)}>
-        <div className='form-group'>
-          <label htmlFor='username' className='form-label'>
-            Username: <span className='text-red-500'>*</span>
-          </label>
-          <label className='input input-sm'>
-            <UserIcon />
-            <input
-              id='username'
-              {...register('username', { required: true })}
-              type='text'
-              placeholder='Username'
-              className='input-validator'
-              aria-invalid={!!errors.username}
-            />
-          </label>
-        </div>
-        {errors.username?.type === 'required' && (
-          <p role='alert' className='text-error'>
-            The field &quot;Username&quot; is required.
-          </p>
-        )}
-
-        <div className='form-group'>
-          <label htmlFor='password' className='form-label'>
-            Password: <span className='text-red-500'>*</span>
-          </label>
-          <label className='input input-sm'>
-            <PasswordIcon />
-            <input
-              id='password'
-              {...register('password', { required: true })}
-              type='password'
-              placeholder='Password'
-              className='input-validator'
-              aria-invalid={!!errors.password}
-            />
-          </label>
-        </div>
-        {errors.password?.type === 'required' && (
-          <p role='alert' className='text-error'>
-            The field &quot;Password&quot; is required.
-          </p>
-        )}
+        {fields.map(({ id, label, type, Icon }) => (
+          <>
+            <FormGroup htmlFor={id} labelText={label} required={true}>
+              <Icon />
+              <input
+                id={id}
+                {...register(id, {
+                  required: `The field "${label}" is required.`,
+                })}
+                type={type}
+                placeholder={label}
+                className='input-validator'
+                aria-invalid={!!errors[id]}
+              />
+            </FormGroup>
+            {errors[id] && (
+              <p role='alert' className='text-error'>
+                {errors[id]?.message}
+              </p>
+            )}
+          </>
+        ))}
 
         {errors?.root?.responseError && (
           <p role='alert' className='text-error text-center'>
