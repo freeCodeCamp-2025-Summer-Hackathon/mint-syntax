@@ -1,5 +1,3 @@
-import React from 'react';
-
 const TeamMemberCard = ({ github_uri, name }) => {
   const baseButtonStyles =
     'w-full block py-3 px-6 rounded-xl font-bold transition-all duration-300 ease-in-out text-center';
