@@ -41,13 +41,9 @@ const MeEditPage = () => {
   const onSubmit = async formData => {
     setFormSent(true);
     try {
-      await sendAsJson(
-        `/me`,
-        { formData },
-        {
-          method: 'PATCH',
-        }
-      );
+      await sendAsJson(`/me`, formData, {
+        method: 'PATCH',
+      });
     } catch (e) {
       console.log('error!', e);
     }

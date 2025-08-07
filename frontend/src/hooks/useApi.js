@@ -95,7 +95,6 @@ export const useApi = ({ method = 'GET', loadingInitially = false } = {}) => {
       obj = {},
       { headers, ...restOptions } = { headers: {} }
     ) => {
-      console.log(path, obj);
       return await fetchFromApi(path, {
         headers: { 'content-type': 'application/json', ...headers },
         body: JSON.stringify(obj),
