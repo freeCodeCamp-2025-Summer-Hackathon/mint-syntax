@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Routes, Route } from 'react-router';
 import { Helmet } from '@dr.pogodin/react-helmet';
 import Header from './components/Header';
