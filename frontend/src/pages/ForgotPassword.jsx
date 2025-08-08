@@ -15,15 +15,13 @@ export default function ForgotPassword() {
 
           <form>
             <FormGroup htmlFor='email' labelText='Email address' required>
-              <label className='input input-sm'>
-                <input
-                  id='email'
-                  type='email'
-                  placeholder='you@example.com'
-                  className='input-validator'
-                  required
-                />
-              </label>
+              <input
+                id='email'
+                type='email'
+                placeholder='you@example.com'
+                className='input-validator'
+                required
+              />
             </FormGroup>
 
             <div className='flex justify-center mt-2'>

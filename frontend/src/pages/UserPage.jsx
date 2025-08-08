@@ -180,11 +180,7 @@ const UserPage = () => {
             </SubmitButton>
           </div>
         </div>
-        <form
-          method='dialog'
-          className='modal-backdrop'
-          onClick={closeDeactivateModal}
-        >
+        <form method='dialog' className='modal-backdrop'>
           <button>close</button>
         </form>
       </dialog>

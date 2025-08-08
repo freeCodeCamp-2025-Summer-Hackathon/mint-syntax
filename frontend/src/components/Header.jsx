@@ -66,10 +66,7 @@ const Header = () => {
                   User: {userState.name}
                   <ChevronIcon />
                 </ActionButton>
-                <ul
-                  tabIndex={0}
-                  className='menu dropdown-content dropdown-main-brand-green'
-                >
+                <ul className='menu dropdown-content dropdown-main-brand-green'>
                   {links.map(({ to, text, ...otherProps }) => (
                     <li className='group' key={to}>
                       <Link

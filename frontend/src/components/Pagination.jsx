@@ -51,9 +51,9 @@ export const Pagination = ({
         currentPage !== pageNo ? (
           <Href key={pageNo} pageNo={pageNo} text={pageNo + 1} />
         ) : (
-          <a className='nav-link active' key={pageNo}>
+          <span className='nav-link active' key={pageNo}>
             {pageNo + 1}
-          </a>
+          </span>
         )
       )}
       <NavigateToNextPage currentPage={currentPage} />

@@ -47,9 +47,7 @@ const HelpPage = () => {
           </a>
         </p>
         <p>
-          <a href='#' className='animated-button help-button'>
-            Contact Support
-          </a>
+          <span className='animated-button help-button'>Contact Support</span>
         </p>
       </div>
     </section>

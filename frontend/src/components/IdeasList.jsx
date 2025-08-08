@@ -71,7 +71,7 @@ const IdeasList = ({
 
   return (
     <section className='idea-form-section'>
-      <div className='section-card' tabIndex='0'>
+      <div className='section-card'>
         <h3 className='section-heading'>{headerText}</h3>
         {error ? (
           `${error}`
