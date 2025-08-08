@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { Fragment, useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, Link } from 'react-router';
 import { UserIcon } from './Icons/UserIcon';
@@ -64,7 +64,7 @@ export function LoginForm({ redirect_to = '/', dialogRef }) {
     <>
       <form ref={formRef} onSubmit={handleSubmit(onSubmit)}>
         {fields.map(({ id, label, type, Icon }) => (
-          <>
+          <Fragment key={id}>
             <FormGroup htmlFor={id} labelText={label} required={true}>
               <Icon />
               <input
@@ -83,7 +83,7 @@ export function LoginForm({ redirect_to = '/', dialogRef }) {
                 {errors[id]?.message}
               </p>
             )}
-          </>
+          </Fragment>
         ))}
 
         {errors?.root?.responseError && (

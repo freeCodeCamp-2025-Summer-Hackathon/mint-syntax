@@ -30,6 +30,7 @@ export default defineConfig([
     rules: {
       'no-unused-vars': ['error', { varsIgnorePattern: '^[_]' }],
       'react/prop-types': 0,
+      'react/jsx-key': [2, { checkFragmentShorthand: true }],
     },
   },
 ]);
