@@ -2,7 +2,7 @@ from datetime import UTC, datetime, timedelta
 from typing import Annotated, Literal
 
 import jwt
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Response, status
 from fastapi.security import OAuth2PasswordBearer
 from jwt.exceptions import InvalidTokenError
 from passlib.context import CryptContext
@@ -40,6 +40,13 @@ async def authenticate_user(db, username, plain_password) -> User | Literal[Fals
 config = get_settings()
 
 
+def create_tokens(user_id: str):
+    data = {"sub": user_id}
+    access_token = create_access_token(data)
+    (refresh_token, token_expiration) = create_refresh_token(data)
+    return access_token, refresh_token, token_expiration
+
+
 def create_access_token(
     data: dict, expires_delta: timedelta = ACCESS_TOKEN_EXPIRE_MINUTES
 ):
@@ -55,6 +62,17 @@ def create_refresh_token(
     data: dict, expires_delta: timedelta = REFRESH_TOKEN_EXPIRE_MINUTES
 ):
     return create_access_token(data, expires_delta), expires_delta
+
+
+def set_refresh_token_cookie(
+    response: Response, refresh_token: str, token_expiration: timedelta
+):
+    response.set_cookie(
+        "refresh_token",
+        refresh_token,
+        httponly=True,
+        expires=int(token_expiration.total_seconds()),
+    )
 
 
 credentials_exception = HTTPException(

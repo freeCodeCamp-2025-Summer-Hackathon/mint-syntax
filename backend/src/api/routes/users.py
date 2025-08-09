@@ -1,11 +1,15 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Form, HTTPException
+from fastapi import APIRouter, Form, HTTPException, Response
 from odmantic import ObjectId
 from odmantic.exceptions import DuplicateKeyError
 
 from src.api.dependencies import AdminUser
-from src.auth import get_password_hash
+from src.auth import (
+    create_tokens,
+    get_password_hash,
+    set_refresh_token_cookie,
+)
 from src.dependencies import Db
 from src.models import (
     AdminUserCreate,
@@ -13,6 +17,8 @@ from src.models import (
     Idea,
     IdeaPublic,
     IdeasPublic,
+    LoginData,
+    Token,
     User,
     UserMe,
     UserPublic,
@@ -44,9 +50,18 @@ async def add_user(db: Db, data: Annotated[AdminUserCreate | UserRegister, Form(
     return user
 
 
-@router.post("/", response_model=UserPublic)
-async def register(db: Db, register_data: Annotated[UserRegister, Form()]):
-    return await add_user(db, register_data)
+@router.post("/", response_model=LoginData)
+async def register(
+    db: Db, register_data: Annotated[UserRegister, Form()], response: Response
+):
+    user = await add_user(db, register_data)
+    (access_token, refresh_token, token_expiration) = create_tokens(str(user.id))
+    set_refresh_token_cookie(response, refresh_token, token_expiration)
+
+    return LoginData(
+        user_data=UserMe(**user.model_dump()),
+        token=Token(access_token=access_token, token_type="bearer"),
+    )
 
 
 @router.post("/add", response_model=UserPublic, dependencies=[AdminUser])

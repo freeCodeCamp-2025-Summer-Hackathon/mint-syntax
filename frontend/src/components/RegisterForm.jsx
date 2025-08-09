@@ -18,14 +18,14 @@ export function RegisterForm({ redirect_to = '/' }) {
     setError,
   } = useForm({ mode: 'onTouched' });
 
-  const { isLogged } = useUser();
+  const { isLogged, login } = useUser();
   const navigate = useNavigate();
 
   const { error, response, data, sendFormData } = useApi({ method: 'POST' });
 
   useEffect(() => {
     if (data && !error) {
-      navigate('/login');
+      login(data);
     }
     if (error) {
       console.log('Error:', error);
@@ -36,7 +36,7 @@ export function RegisterForm({ redirect_to = '/' }) {
         });
       }
     }
-  }, [response, data, error, navigate, setError]);
+  }, [data, error, login, navigate, response, setError]);
 
   useEffect(() => {
     if (isLogged && redirect_to) {
