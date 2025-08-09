@@ -5,6 +5,7 @@ import { useApi } from '../hooks/useApi';
 import Spinny from '../components/Spinny';
 import { SubmitButton } from '../components/Buttons';
 import { FormGroup } from '../components/FormGroup';
+import { DisplayIfError, ErrorElement } from '../components/Errors';
 
 const UserAddPage = () => {
   const navigate = useNavigate();
@@ -35,7 +36,7 @@ const UserAddPage = () => {
     if (response && data) {
       if (response.ok) {
         setMessage('User created successfully!');
-        setError('');
+        setError(null);
         setUsername('');
         setName('');
         setPassword('');
@@ -43,7 +44,7 @@ const UserAddPage = () => {
         setIsNewAdmin(false);
         setTimeout(() => navigate('/users'), 2000);
       } else {
-        setError(data.message || 'Failed to create user.');
+        setError({ message: data.message || 'Failed to create user.' });
         setMessage('');
       }
     }
@@ -51,16 +52,16 @@ const UserAddPage = () => {
 
   const handleSubmit = async e => {
     e.preventDefault();
-    setError('');
+    setError(null);
     setMessage('');
 
     if (password !== repeatPassword) {
-      setError('Passwords do not match.');
+      setError({ message: 'Passwords do not match.' });
       return;
     }
 
     if (!username || !name || !password) {
-      setError('Please fill in all required fields.');
+      setError({ message: 'Please fill in all required fields.' });
       return;
     }
 
@@ -80,7 +81,9 @@ const UserAddPage = () => {
   if (!isAdmin) {
     return (
       <div className='section-card flex flex-col items-center justify-center min-h-[60vh]'>
-        <h1 className='section-heading text-error'>Access Denied</h1>
+        <ErrorElement Element='h1' className='section-heading'>
+          Access Denied
+        </ErrorElement>
         <p className='text-lg text-gray-600 mb-8'>
           You do not have permission to access this page.
         </p>
@@ -130,7 +133,7 @@ const UserAddPage = () => {
         onSubmit={handleSubmit}
         className='w-full max-w-md p-4 bg-base-200 rounded-lg shadow-md'
       >
-        {error && <p className='text-error text-center mb-4'>{error}</p>}
+        <DisplayIfError error={error} center additionalClasses='mb-4' />
         {message && <p className='text-success text-center mb-4'>{message}</p>}
 
         {fields.map(

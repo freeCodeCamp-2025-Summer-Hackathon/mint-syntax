@@ -5,6 +5,7 @@ import { useApi } from '../../hooks/useApi';
 import Spinny from '../../components/Spinny';
 import { useUser } from '../../hooks/useUser';
 import { DownvoteButton, UpvoteButton } from '../../components/VoteButtons';
+import { ErrorElement } from '../../components/Errors';
 
 export const IdeaPage = () => {
   const { ideaId } = useParams();
@@ -81,7 +82,7 @@ export const IdeaPage = () => {
     <Spinny />
   ) : error ? (
     <div className='section-card flex flex-col items-center justify-center min-h-[60vh]'>
-      <p className='text-error'>{error}</p>
+      <ErrorElement>Error: {error}</ErrorElement>
     </div>
   ) : (
     <section className='section-card'>

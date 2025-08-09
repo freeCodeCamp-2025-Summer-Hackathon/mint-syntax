@@ -4,6 +4,7 @@ import { useUser } from '../hooks/useUser';
 import { useApi } from '../hooks/useApi';
 import Spinny from '../components/Spinny';
 import { SubmitButton } from '../components/Buttons';
+import { DisplayIfError, ErrorElement } from '../components/Errors';
 
 const UserPage = () => {
   const { id } = useParams();
@@ -93,7 +94,9 @@ const UserPage = () => {
   if (fetchUserError || !userData) {
     return (
       <div className='section-card flex flex-col items-center justify-center min-h-[60vh]'>
-        <h1 className='section-heading text-error'>Error</h1>
+        <ErrorElement Element='h1' className='section-heading'>
+          Error
+        </ErrorElement>
         <p className='text-lg text-gray-600 mb-8'>
           {fetchUserError?.message ||
             'Could not load user data or user not found.'}
@@ -160,9 +163,7 @@ const UserPage = () => {
         <div className='modal-box'>
           <h3 className='font-bold text-lg'>{modalTitle}</h3>
           <p className='py-4'>{`${modalAction} ${userData.name}'s account?`}</p>
-          {updateError && (
-            <p className='text-error mb-4'>Error: {updateError.message}</p>
-          )}
+          <DisplayIfError error={updateError} additionalClasses='mb-4' />
           <div className='modal-action'>
             <SubmitButton
               additionalClasses='mr-2'

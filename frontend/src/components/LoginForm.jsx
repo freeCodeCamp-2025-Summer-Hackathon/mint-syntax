@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, Link } from 'react-router';
 import { UserIcon } from './Icons/UserIcon';
@@ -7,6 +7,7 @@ import { useApi } from '../hooks/useApi';
 import { useUser } from '../hooks/useUser';
 import { SubmitButton } from './Buttons';
 import { FormGroup } from './FormGroup';
+import { DisplayIfError, ErrorElement } from './Errors';
 
 export function LoginForm({ redirect_to = '/', dialogRef }) {
   const formRef = useRef();
@@ -64,37 +65,30 @@ export function LoginForm({ redirect_to = '/', dialogRef }) {
     <>
       <form ref={formRef} onSubmit={handleSubmit(onSubmit)}>
         {fields.map(({ id, label, type, Icon }) => (
-          <Fragment key={id}>
-            <FormGroup htmlFor={id} labelText={label} required={true}>
-              <Icon />
-              <input
-                id={id}
-                {...register(id, {
-                  required: `The field "${label}" is required.`,
-                })}
-                type={type}
-                placeholder={label}
-                className='input-validator'
-                aria-invalid={!!errors[id]}
-              />
-            </FormGroup>
-            {errors[id] && (
-              <p role='alert' className='text-error'>
-                {errors[id]?.message}
-              </p>
-            )}
-          </Fragment>
+          <FormGroup
+            key={id}
+            htmlFor={id}
+            labelText={label}
+            required={true}
+            errors={errors}
+          >
+            <Icon />
+            <input
+              id={id}
+              {...register(id, {
+                required: `The field "${label}" is required.`,
+              })}
+              type={type}
+              placeholder={label}
+              className='input-validator'
+              aria-invalid={!!errors[id]}
+            />
+          </FormGroup>
         ))}
 
-        {errors?.root?.responseError && (
-          <p role='alert' className='text-error text-center'>
-            {errors.root.responseError.message}
-          </p>
-        )}
+        <DisplayIfError error={errors?.root?.responseError} center />
         {error && !errors.root?.responseError && (
-          <p role='alert' className='text-error text-center'>
-            Error, try again later.
-          </p>
+          <ErrorElement center>Error, try again later.</ErrorElement>
         )}
 
         <div className='flex justify-center'>

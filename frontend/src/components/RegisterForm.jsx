@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 import { PasswordIcon } from './Icons/PasswordIcon';
@@ -7,6 +7,7 @@ import { useApi } from '../hooks/useApi';
 import { useUser } from '../hooks/useUser';
 import { SubmitButton } from './Buttons';
 import { FormGroup } from './FormGroup';
+import { ErrorElement } from './Errors';
 
 export function RegisterForm({ redirect_to = '/' }) {
   const formRef = useRef();
@@ -100,36 +101,35 @@ export function RegisterForm({ redirect_to = '/' }) {
     >
       {fields.map(
         ({ id, label, type, Icon, placeholder = '', options = {} }) => (
-          <Fragment key={id}>
-            <FormGroup htmlFor={id} labelText={label} required={true}>
-              <Icon />
-              <input
-                id={id}
-                {...register(id, {
-                  required: {
-                    value: `The field "${label}" is required.`,
-                  },
-                  ...options,
-                })}
-                type={type}
-                placeholder={placeholder || label}
-                className='input-validator'
-                aria-invalid={!!errors[id]}
-              />
-            </FormGroup>
-            {errors[id] && (
-              <p role='alert' className='text-error text-xs mt-0.5'>
-                {errors[id]?.message}
-              </p>
-            )}
-          </Fragment>
+          <FormGroup
+            key={id}
+            htmlFor={id}
+            labelText={label}
+            required={true}
+            errors={errors}
+            errorProps={{ additionalClasses: 'text-xs mt-0.5' }}
+          >
+            <Icon />
+            <input
+              id={id}
+              {...register(id, {
+                required: `The field "${label}" is required.`,
+
+                ...options,
+              })}
+              type={type}
+              placeholder={placeholder || label}
+              className='input-validator'
+              aria-invalid={!!errors[id]}
+            />
+          </FormGroup>
         )
       )}
 
       {error && response.status !== 409 && (
-        <div role='alert' className='text-error text-center text-xs mt-0.5'>
+        <ErrorElement Element='div' additionalClasses='text-xs mt-0.5' center>
           Something went wrong, please try again later.
-        </div>
+        </ErrorElement>
       )}
 
       <div className='flex justify-center'>

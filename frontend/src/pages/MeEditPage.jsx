@@ -1,6 +1,6 @@
 import { useUser } from '../hooks/useUser';
 import { Link } from 'react-router';
-import { Fragment, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useApi } from '../hooks/useApi';
 import { useForm } from 'react-hook-form';
 import { PasswordIcon } from '../components/Icons/PasswordIcon';
@@ -8,6 +8,7 @@ import { UserIcon } from '../components/Icons/UserIcon';
 import Spinny from '../components/Spinny';
 import { SubmitButton } from '../components/Buttons';
 import { FormGroup } from '../components/FormGroup';
+import { ErrorElement } from '../components/Errors';
 
 const MeEditPage = () => {
   const { isLoading, error, data, response, fetchFromApi, sendAsJson } = useApi(
@@ -117,7 +118,9 @@ const MeEditPage = () => {
     <div className='section-card min-h-[60vh] flex flex-col items-center'>
       {!isLogged ? (
         <>
-          <h1 className='section-heading'>No access</h1>
+          <ErrorElement Element='h1' className='section-heading'>
+            No access
+          </ErrorElement>
           <p className='text-lg text-gray-600 mb-8 self-center'>
             You have to be logged in to see this page!
           </p>
@@ -145,37 +148,36 @@ const MeEditPage = () => {
                 defaultValue = '',
                 options = {},
               }) => (
-                <Fragment key={id}>
-                  <FormGroup labelText={label} htmlFor={id} required={required}>
-                    <Icon />
-                    <input
-                      id={id}
-                      {...register(id, {
-                        ...(required && {
-                          required: `The field "${label} is required`,
-                        }),
-                        ...options,
-                      })}
-                      type={type}
-                      defaultValue={defaultValue}
-                      placeholder={placeholder || label}
-                      className='input-validator'
-                      aria-invalid={!!errors[id]}
-                    />
-                  </FormGroup>
-                  {errors[id] && (
-                    <p role='alert' className='text-error'>
-                      {errors[id]?.message}
-                    </p>
-                  )}
-                </Fragment>
+                <FormGroup
+                  key={id}
+                  labelText={label}
+                  htmlFor={id}
+                  required={required}
+                  errors={errors}
+                >
+                  <Icon />
+                  <input
+                    id={id}
+                    {...register(id, {
+                      ...(required && {
+                        required: `The field "${label} is required`,
+                      }),
+                      ...options,
+                    })}
+                    type={type}
+                    defaultValue={defaultValue}
+                    placeholder={placeholder || label}
+                    className='input-validator'
+                    aria-invalid={!!errors[id]}
+                  />
+                </FormGroup>
               )
             )}
 
             {error && response.status !== 403 && (
-              <div className='text-error text-center'>
+              <ErrorElement Element='div' center>
                 Something went wrong, please try again later.
-              </div>
+              </ErrorElement>
             )}
 
             {response.status === 200 && formSent && (

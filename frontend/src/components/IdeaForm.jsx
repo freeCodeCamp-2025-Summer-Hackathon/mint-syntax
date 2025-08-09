@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useForm } from 'react-hook-form';
 
@@ -7,6 +7,7 @@ import { SuccessIcon } from './Icons/SuccessIcon';
 import { useUser } from '../hooks/useUser';
 import { SubmitButton } from './Buttons';
 import { FormGroup } from './FormGroup';
+import { DisplayIfError } from './Errors';
 
 export const IdeaForm = ({
   api,
@@ -16,7 +17,7 @@ export const IdeaForm = ({
   initialData,
   onSubmit,
 }) => {
-  const [submitError, setSubmitError] = useState();
+  const [submitError, setSubmitError] = useState(null);
   const { isLogged } = useUser();
   const [loading, setLoading] = useState();
   const [success, setSuccess] = useState();
@@ -39,7 +40,7 @@ export const IdeaForm = ({
       navigate(`/ideas/${data.id}`);
     }
     if (error) {
-      setSubmitError(error.message);
+      setSubmitError({ message: error.message });
       setLoading(false);
     }
   }, [data, navigate, error, setSubmitError]);
@@ -88,16 +89,15 @@ export const IdeaForm = ({
       <h2 className='idea-form-sub-heading'>{headerText}</h2>
       <form className='idea-form' onSubmit={handleSubmit(wrappedSubmit)}>
         {fields.map(({ id, label, element }) => (
-          <Fragment key={id}>
-            <FormGroup key={id} htmlFor={id} labelText={label} required={true}>
-              {element}
-            </FormGroup>
-            {errors[id] && (
-              <p role='alert' className='text-error'>
-                {errors[id]?.message}
-              </p>
-            )}
-          </Fragment>
+          <FormGroup
+            key={id}
+            htmlFor={id}
+            labelText={label}
+            required={true}
+            errors={errors}
+          >
+            {element}
+          </FormGroup>
         ))}
         {/* <div className='form-group'>
           <label htmlFor='idea-category' className='form-label'>
@@ -130,11 +130,7 @@ export const IdeaForm = ({
             )}
           </SubmitButton>
         </div>
-        {submitError && (
-          <p role='alert' className='text-error'>
-            Error: {submitError}
-          </p>
-        )}
+        <DisplayIfError error={submitError} />
       </form>
     </>
   );

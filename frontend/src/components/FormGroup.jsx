@@ -1,7 +1,11 @@
+import { DisplayIfError } from './Errors';
+
 export const FormGroup = ({
   labelText,
   htmlFor,
   required = false,
+  errors = null,
+  errorProps = {},
   children,
 }) => {
   return (
@@ -14,6 +18,7 @@ export const FormGroup = ({
       ) : (
         <label className='input input-sm'>{children}</label>
       )}
+      <DisplayIfError field={htmlFor} errors={errors} {...errorProps} />
     </div>
   );
 };

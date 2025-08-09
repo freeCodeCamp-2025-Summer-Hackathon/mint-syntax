@@ -1,10 +1,11 @@
-import { Fragment, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router';
 import { useUser } from '../hooks/useUser';
 import { useApi } from '../hooks/useApi';
 import Spinny from '../components/Spinny';
 import { ActionButton, SubmitButton } from '../components/Buttons';
 import { FormGroup } from '../components/FormGroup';
+import { DisplayIfError, ErrorElement } from '../components/Errors';
 
 const UserEditPage = () => {
   const { id } = useParams();
@@ -103,18 +104,19 @@ const UserEditPage = () => {
   const validateForm = () => {
     const errors = {};
     if (!formData.username.trim()) {
-      errors.username = 'Username is required.';
+      errors.username.message = 'Username is required.';
     }
     if (!formData.name.trim()) {
-      errors.name = 'Name is required.';
+      errors.name.message = 'Name is required.';
     }
 
     if (newPassword.trim()) {
       if (newPassword.length < 8) {
-        errors.newPassword = 'Password must be at least 8 characters long.';
+        errors.newPassword.message =
+          'Password must be at least 8 characters long.';
       }
       if (newPassword !== repeatNewPassword) {
-        errors.repeatNewPassword = 'Passwords do not match.';
+        errors.repeatNewPassword.message = 'Passwords do not match.';
       }
     }
 
@@ -157,7 +159,9 @@ const UserEditPage = () => {
   if (fetchError && !fetchedUserData) {
     return (
       <div className='section-card flex flex-col items-center justify-center min-h-[60vh]'>
-        <h1 className='section-heading text-error'>Error</h1>
+        <ErrorElement Element='h1' className='section-heading'>
+          Error
+        </ErrorElement>
         <p className='text-lg text-gray-600 mb-8'>
           {fetchError?.message || 'Could not load user data for editing.'}
         </p>
@@ -225,27 +229,24 @@ const UserEditPage = () => {
         className='w-full max-w-xl p-4 bg-base-200 rounded-lg shadow-md'
       >
         {fields.map(({ id, label, type, value, required = false, ...rest }) => (
-          <Fragment key={id}>
-            <FormGroup
-              key={id}
-              htmlFor={id}
-              labelText={label}
-              required={required}
-            >
-              <input
-                type={type}
-                id={id}
-                value={value}
-                onChange={handleChange}
-                className='input input-bordered w-full p-2 rounded-md focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-300 hover:border-yellow-500'
-                disabled={isUpdating}
-                {...rest}
-              />
-            </FormGroup>
-            {formErrors[id] && (
-              <p className='text-error text-sm mt-1'>{formErrors[id]}</p>
-            )}
-          </Fragment>
+          <FormGroup
+            key={id}
+            htmlFor={id}
+            labelText={label}
+            required={required}
+            errors={formErrors}
+            errorProps={{ additionalClasses: 'text-sm mt-1' }}
+          >
+            <input
+              type={type}
+              id={id}
+              value={value}
+              onChange={handleChange}
+              className='input input-bordered w-full p-2 rounded-md focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-300 hover:border-yellow-500'
+              disabled={isUpdating}
+              {...rest}
+            />
+          </FormGroup>
         ))}
 
         <FormGroup htmlFor='is_admin' labelText='Admin Status'>
@@ -277,9 +278,7 @@ const UserEditPage = () => {
           >
             <p className='font-bold'>Confirm Update</p>
             <p>Are you sure you want to save these changes?</p>
-            {updateError && (
-              <p className='text-error mt-2'>Error: {updateError.message}</p>
-            )}
+            <DisplayIfError error={updateError} additionalClasses='mt-2' />
             <div className='flex justify-end gap-4 mt-4'>
               <ActionButton
                 onClick={cancelUpdate}
