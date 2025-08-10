@@ -76,7 +76,7 @@ const IdeasList = ({
         {error ? (
           `${error}`
         ) : isLoading && entries.length === 0 ? (
-          <div className='spinner-wrapper-container'>
+          <div className='flex items-center justify-center min-h-[100px]'>
             <Spinny />
           </div>
         ) : entries.length === 0 ? (
