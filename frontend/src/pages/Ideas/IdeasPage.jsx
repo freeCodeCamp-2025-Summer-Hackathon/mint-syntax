@@ -1,10 +1,18 @@
 import { useParams } from 'react-router';
 import IdeasList from '../../components/IdeasList';
+import { Page } from '../../components/Pagination';
 
 export const IdeasPage = ({ headerText = 'All Ideas' }) => {
-  const { page = 1 } = useParams('page');
+  const { page: pageOneBased = 1 } = useParams('page');
   return (
-    <IdeasList {...{ count: 20, page: page - 1, paginate: true, headerText }} />
+    <IdeasList
+      {...{
+        count: 20,
+        page: Page.fromOneBased(parseInt(pageOneBased)),
+        paginate: true,
+        headerText,
+      }}
+    />
   );
 };
 

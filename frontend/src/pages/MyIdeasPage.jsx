@@ -1,5 +1,6 @@
 import { useParams } from 'react-router';
 import IdeasList from '../components/IdeasList';
+import { Page } from '../components/Pagination';
 
 export const MyIdeasPage = ({ headerText = 'My Ideas' }) => {
   const { page = 1 } = useParams('page');
@@ -8,7 +9,7 @@ export const MyIdeasPage = ({ headerText = 'My Ideas' }) => {
       {...{
         base: '/me/ideas/',
         count: 20,
-        page: page - 1,
+        page: Page.fromOneBased(parseInt(page)),
         paginate: true,
         headerText,
         noIdeasText: "You don't have any ideas added.",

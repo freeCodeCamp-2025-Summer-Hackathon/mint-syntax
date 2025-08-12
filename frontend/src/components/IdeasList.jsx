@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { IdeaListItem } from './IdeaListItem';
 import { useApi } from '../hooks/useApi';
-import { Pagination } from './Pagination';
+import { Page, Pagination } from './Pagination';
 import Spinny from './Spinny';
 import { Link } from 'react-router';
 
@@ -11,7 +11,7 @@ const IdeasList = ({
   noIdeasText = "There's no ideas!",
   count,
   sort = null,
-  page = 0,
+  page = Page.fromZeroBased(0),
   paginate = false,
   showExploreButton = false,
 }) => {
@@ -23,19 +23,23 @@ const IdeasList = ({
   });
 
   const getApiUrl = useCallback(
-    (page = 0) => {
+    (page = Page.fromZeroBased(0)) => {
       const sorting = sort ? `&sort=${sort}` : '';
-      const skip = page > 0 ? `&skip=${page * count}` : '';
+      const skip = page.number > 0 ? `&skip=${page.number * count}` : '';
       return `${base}?limit=${count}${sorting}${skip}`;
     },
     [count, sort, base]
   );
 
-  const getPageUrl = useCallback(page => `${base}page/${page + 1}`, [base]);
+  const getPageUrl = useCallback(
+    page => `${base}page/${page.displayNumber}`,
+    [base]
+  );
 
+  const fetchUrl = getApiUrl(page);
   useEffect(() => {
-    fetchFromApi(getApiUrl(page));
-  }, [fetchFromApi, getApiUrl, page]);
+    fetchFromApi(fetchUrl);
+  }, [fetchFromApi, fetchUrl]);
 
   useEffect(() => {
     if (data?.data?.length > 0) {

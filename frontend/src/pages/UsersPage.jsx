@@ -3,14 +3,14 @@ import { useParams, useNavigate } from 'react-router';
 import { useUser } from '../hooks/useUser';
 import { useApi } from '../hooks/useApi';
 import Spinny from '../components/Spinny';
-import { Pagination } from '../components/Pagination';
+import { Page, Pagination } from '../components/Pagination';
 import { Link } from 'react-router';
 
 const UsersPage = ({ count = 20 }) => {
   const { isLogged, isAdmin } = useUser();
   const navigate = useNavigate();
   const { page = 1 } = useParams();
-  const currentPage = parseInt(page, 10) - 1;
+  const currentPage = Page.fromOneBased(parseInt(page));
 
   const [users, setUsers] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
@@ -18,15 +18,19 @@ const UsersPage = ({ count = 20 }) => {
   const { data, error, isLoading, fetchFromApi } = useApi();
 
   const getApiUrl = useCallback(
-    (pageNo = 0) => {
-      const skip = pageNo > 0 ? `&skip=${pageNo * count}` : '';
+    (page = Page.fromZeroBased(0)) => {
+      const skip = page.number > 0 ? `&skip=${page.number * count}` : '';
       return `/users/?limit=${count}${skip}`;
     },
     [count]
   );
 
-  const getPageUrl = useCallback(pageNo => `/users/page/${pageNo + 1}`, []);
+  const getPageUrl = useCallback(
+    page => `/users/page/${page.displayNumber}`,
+    []
+  );
 
+  const fetchUrl = getApiUrl(currentPage);
   useEffect(() => {
     if (!isLogged) {
       navigate('/login');
@@ -37,8 +41,8 @@ const UsersPage = ({ count = 20 }) => {
       return;
     }
 
-    fetchFromApi(getApiUrl(currentPage));
-  }, [isLogged, isAdmin, navigate, currentPage, fetchFromApi, getApiUrl]);
+    fetchFromApi(fetchUrl);
+  }, [isLogged, isAdmin, navigate, fetchFromApi, fetchUrl]);
 
   useEffect(() => {
     if (data && !error) {
