@@ -19,7 +19,7 @@ const UserPage = () => {
     error: fetchUserError,
     isLoading: isUserLoading,
     fetchFromApi: fetchUser,
-  } = useApi();
+  } = useApi({ loadingInitially: true });
 
   const {
     data: updateUserData,
