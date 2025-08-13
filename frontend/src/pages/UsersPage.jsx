@@ -1,21 +1,20 @@
 import { useEffect, useState, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router';
-import { useUser } from '../hooks/useUser';
+import { useParams } from 'react-router';
 import { useApi } from '../hooks/useApi';
 import Spinny from '../components/Spinny';
 import { Page, Pagination } from '../components/Pagination';
 import { Link } from 'react-router';
 
 const UsersPage = ({ count = 20 }) => {
-  const { isLogged, isAdmin } = useUser();
-  const navigate = useNavigate();
   const { page = 1 } = useParams();
   const currentPage = Page.fromOneBased(parseInt(page));
 
   const [users, setUsers] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
 
-  const { data, error, isLoading, fetchFromApi } = useApi();
+  const { data, error, isLoading, fetchFromApi } = useApi({
+    loadingInitially: true,
+  });
 
   const getApiUrl = useCallback(
     (page = Page.fromZeroBased(0)) => {
@@ -32,17 +31,8 @@ const UsersPage = ({ count = 20 }) => {
 
   const fetchUrl = getApiUrl(currentPage);
   useEffect(() => {
-    if (!isLogged) {
-      navigate('/login');
-      return;
-    }
-    if (!isAdmin) {
-      navigate('/');
-      return;
-    }
-
     fetchFromApi(fetchUrl);
-  }, [isLogged, isAdmin, navigate, fetchFromApi, fetchUrl]);
+  }, [fetchFromApi, fetchUrl]);
 
   useEffect(() => {
     if (data && !error) {
@@ -55,11 +45,9 @@ const UsersPage = ({ count = 20 }) => {
     }
   }, [data, error, count]);
 
-  if (isLoading && users.length === 0) {
-    return <Spinny />;
-  }
-
-  return (
+  return isLoading && users.length === 0 ? (
+    <Spinny />
+  ) : (
     <div className='section-card flex flex-col items-center min-h-[60vh]'>
       <h1 className='section-heading'>All Users</h1>
       {users.length > 0 ? (

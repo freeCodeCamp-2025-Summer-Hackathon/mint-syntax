@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { useParams, useNavigate, Link } from 'react-router';
-import { useUser } from '../hooks/useUser';
+import { useParams, Link } from 'react-router';
 import { useApi } from '../hooks/useApi';
 import Spinny from '../components/Spinny';
 import { SubmitButton } from '../components/Buttons';
@@ -8,8 +7,6 @@ import { DisplayIfError, ErrorElement } from '../components/Errors';
 
 const UserPage = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
-  const { isLogged, isAdmin } = useUser();
   const [userData, setUserData] = useState(null);
   const [showDeactivateModal, setShowDeactivateModal] = useState(false);
   const deactivateModalRef = useRef(null);
@@ -29,19 +26,10 @@ const UserPage = () => {
   } = useApi({ method: 'PATCH' });
 
   useEffect(() => {
-    if (!isLogged) {
-      navigate('/login');
-      return;
-    }
-    if (!isAdmin) {
-      navigate('/');
-      return;
-    }
-
     if (id) {
       fetchUser(`/users/${id}`);
     }
-  }, [id, isLogged, isAdmin, navigate, fetchUser]);
+  }, [id, fetchUser]);
 
   useEffect(() => {
     if (fetchUserData && !fetchUserError) {
@@ -64,7 +52,7 @@ const UserPage = () => {
     if (updateError) {
       console.error('Error updating user status:', updateError);
     }
-  }, [updateUserData, updateError, navigate]);
+  }, [updateUserData, updateError]);
 
   const handleToggleStatusClick = () => {
     setShowDeactivateModal(true);

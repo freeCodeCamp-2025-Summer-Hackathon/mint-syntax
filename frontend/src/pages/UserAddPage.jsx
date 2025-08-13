@@ -1,15 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
-import { useUser } from '../hooks/useUser';
 import { useApi } from '../hooks/useApi';
 import Spinny from '../components/Spinny';
 import { SubmitButton } from '../components/Buttons';
 import { FormGroup } from '../components/FormGroup';
-import { DisplayIfError, ErrorElement } from '../components/Errors';
+import { DisplayIfError } from '../components/Errors';
 
 const UserAddPage = () => {
   const navigate = useNavigate();
-  const { isLogged, isAdmin } = useUser();
   const [username, setUsername] = useState('');
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
@@ -21,16 +19,6 @@ const UserAddPage = () => {
   const { data, isLoading, response, sendFormData } = useApi({
     method: 'POST',
   });
-
-  useEffect(() => {
-    if (!isLogged) {
-      navigate('/login');
-      return;
-    }
-    if (!isAdmin) {
-      navigate('/');
-    }
-  }, [isLogged, isAdmin, navigate]);
 
   useEffect(() => {
     if (response && data) {
@@ -76,19 +64,6 @@ const UserAddPage = () => {
 
   if (isLoading) {
     return <Spinny />;
-  }
-
-  if (!isAdmin) {
-    return (
-      <div className='section-card flex flex-col items-center justify-center min-h-[60vh]'>
-        <ErrorElement Element='h1' className='section-heading'>
-          Access Denied
-        </ErrorElement>
-        <p className='text-lg text-gray-600 mb-8'>
-          You do not have permission to access this page.
-        </p>
-      </div>
-    );
   }
 
   const fields = [

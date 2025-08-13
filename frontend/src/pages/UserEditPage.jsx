@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router';
-import { useUser } from '../hooks/useUser';
 import { useApi } from '../hooks/useApi';
 import Spinny from '../components/Spinny';
 import { ActionButton, SubmitButton } from '../components/Buttons';
@@ -10,7 +9,6 @@ import { DisplayIfError, ErrorElement } from '../components/Errors';
 const UserEditPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { isLogged, isAdmin } = useUser();
   const [formData, setFormData] = useState({
     username: '',
     name: '',
@@ -37,19 +35,10 @@ const UserEditPage = () => {
   } = useApi({ method: 'PATCH' });
 
   useEffect(() => {
-    if (!isLogged) {
-      navigate('/login');
-      return;
-    }
-    if (!isAdmin) {
-      navigate('/');
-      return;
-    }
-
     if (id) {
       fetchUser(`/users/${id}`);
     }
-  }, [id, isLogged, isAdmin, navigate, fetchUser]);
+  }, [id, fetchUser]);
 
   useEffect(() => {
     if (fetchedUserData && !fetchError) {

@@ -1,4 +1,3 @@
-import { useUser } from '../hooks/useUser';
 import { Link } from 'react-router';
 import { useEffect, useState } from 'react';
 import { useApi } from '../hooks/useApi';
@@ -16,7 +15,6 @@ const MeEditPage = () => {
       loadingInitially: true,
     }
   );
-  const { isLogged } = useUser();
   const [formSent, setFormSent] = useState(false);
   const [headerUserName, setHeaderUserName] = useState('');
 
@@ -116,16 +114,7 @@ const MeEditPage = () => {
 
   return (
     <div className='section-card min-h-[60vh] flex flex-col items-center'>
-      {!isLogged ? (
-        <>
-          <ErrorElement Element='h1' className='section-heading'>
-            No access
-          </ErrorElement>
-          <p className='text-lg text-gray-600 mb-8 self-center'>
-            You have to be logged in to see this page!
-          </p>
-        </>
-      ) : isLoading ? (
+      {isLoading ? (
         <Spinny />
       ) : (
         <>

@@ -8,7 +8,7 @@ const MePage = () => {
   const { isLoading, error, data, fetchFromApi } = useApi({
     loadingInitially: true,
   });
-  const { isAdmin, isLogged } = useUser();
+  const { isAdmin } = useUser();
 
   useEffect(() => {
     fetchFromApi(`/me`);
@@ -17,14 +17,7 @@ const MePage = () => {
   return (
     <div className='section-card min-h-[60vh] flex'>
       <div className='card bg-base-100 p-4 w-full text-gray-600 mb-8'>
-        {!isLogged ? (
-          <>
-            <h1 className='section-heading'>No access</h1>
-            <p className='text-lg text-gray-600 mb-8 self-center'>
-              You have to be logged in to see this page!
-            </p>
-          </>
-        ) : isLoading ? (
+        {isLoading ? (
           <Spinny />
         ) : error ? (
           <>`${error}`</>

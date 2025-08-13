@@ -18,6 +18,8 @@ import MyIdeasPage from './pages/MyIdeasPage';
 import LogoutPage from './pages/LogoutPage';
 import SearchPage from './pages/SearchPage';
 import UserIdeasPage from './pages/UserIdeasPage';
+import { EnsureAdmin } from './components/EnsureAdmin';
+import { EnsureLogin } from './components/EnsureLogin';
 
 import { IdeaAddPage, IdeaEditPage, IdeaPage, IdeasPage } from './pages/Ideas';
 import './styles.css';
@@ -25,6 +27,7 @@ import './styles.css';
 import ErrorBoundary from './components/ErrorBoundary.jsx';
 import NotFound from './pages/NotFound.jsx';
 
+import { wrapWith } from './utils/wrapWith';
 import { devLog } from './utils/devLogger.jsx';
 import { DevOnly } from './components/DevOnly';
 
@@ -54,25 +57,40 @@ function App() {
             <Route path='forgot-password' element={<ForgotPassword />} />
             <Route path='register' element={<RegisterPage />} />
             <Route path='users'>
-              <Route index element={<UsersPage />} />
-              <Route path=':id' element={<UserPage />} />
-              <Route path=':id/edit' element={<UserEditPage />} />
-              <Route path=':id/ideas' element={<UserIdeasPage />} />
-              <Route path='page/:page' element={<UsersPage />} />
-              <Route path='add' element={<UserAddPage />} />
+              <Route index element={wrapWith(UsersPage, EnsureAdmin)} />
+              <Route path=':id' element={wrapWith(UserPage, EnsureAdmin)} />
+              <Route
+                path=':id/edit'
+                element={wrapWith(UserEditPage, EnsureAdmin)}
+              />
+              <Route
+                path=':id/ideas'
+                element={wrapWith(UserIdeasPage, EnsureAdmin)}
+              />
+              <Route
+                path='page/:page'
+                element={wrapWith(UsersPage, EnsureAdmin)}
+              />
+              <Route path='add' element={wrapWith(UserAddPage, EnsureAdmin)} />
             </Route>
             <Route path='me'>
-              <Route index element={<MePage />} />
-              <Route path='edit' element={<MeEditPage />} />
-              <Route path='ideas' element={<MyIdeasPage />}>
-                <Route path='page/:page' element={<MyIdeasPage />} />
+              <Route index element={wrapWith(MePage, EnsureLogin)} />
+              <Route path='edit' element={wrapWith(MeEditPage, EnsureLogin)} />
+              <Route path='ideas' element={wrapWith(MyIdeasPage, EnsureLogin)}>
+                <Route
+                  path='page/:page'
+                  element={wrapWith(MyIdeasPage, EnsureLogin)}
+                />
               </Route>
             </Route>
             <Route path='logout' element={<LogoutPage />} />
             <Route path='ideas'>
               <Route index element={<IdeasPage headerText='All Ideas' />} />
               <Route path=':ideaId' element={<IdeaPage />} />
-              <Route path=':ideaId/edit' element={<IdeaEditPage />} />
+              <Route
+                path=':ideaId/edit'
+                element={wrapWith(IdeaEditPage, EnsureLogin)}
+              />
               <Route path='add' element={<IdeaAddPage />} />
               <Route
                 path='page/:page'

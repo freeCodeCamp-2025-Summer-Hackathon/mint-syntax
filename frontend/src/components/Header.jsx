@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { Link } from 'react-router';
+import { Link, useLocation, useNavigate } from 'react-router';
 import { useUser } from '../hooks/useUser';
 import LoginForm from './LoginForm';
 import ScrollToHashElement from './ScrollToHashElement';
@@ -10,6 +10,8 @@ import { ActionButton } from './Buttons';
 const Header = () => {
   const dialogRef = useRef();
   const { isLogged, logout, userState, isAdmin } = useUser();
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
 
   const adminLinks = isAdmin
     ? [
@@ -23,7 +25,18 @@ const Header = () => {
     { to: '/me', text: 'My Profile' },
     { to: '/me/ideas', text: 'My Ideas' },
     { to: '/me/edit', text: 'Edit Profile' },
-    { to: '/logout', text: 'Logout', onClick: logout },
+    {
+      to: '/logout',
+      text: 'Logout',
+      onClick: e => {
+        e.preventDefault();
+        if (pathname === '/logout') {
+          logout();
+        } else {
+          navigate('/logout', { state: { logOut: true } });
+        }
+      },
+    },
   ];
 
   return (
