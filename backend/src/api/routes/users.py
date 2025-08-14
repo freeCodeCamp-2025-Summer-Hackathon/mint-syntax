@@ -90,7 +90,7 @@ async def get_user(db: Db, id: ObjectId):
     return user
 
 
-@router.get("/{id}/ideas", response_model=IdeasPublic, dependencies=[AdminUser])
+@router.get("/{id}/ideas/", response_model=IdeasPublic, dependencies=[AdminUser])
 async def get_user_ideas(db: Db, id: ObjectId, skip: int = 0, limit: int = 20):
     ideas = await db.find(
         Idea, Idea.creator_id == id, skip=skip, limit=limit, sort=Idea.name
