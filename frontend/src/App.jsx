@@ -66,11 +66,12 @@ function App() {
               <Route
                 path=':id/ideas'
                 element={wrapWith(UserIdeasPage, EnsureAdmin)}
-              />
-              <Route
-                path='page/:page'
-                element={wrapWith(UsersPage, EnsureAdmin)}
-              />
+              >
+                <Route
+                  path='page/:page'
+                  element={wrapWith(UsersPage, EnsureAdmin)}
+                />
+              </Route>
               <Route path='add' element={wrapWith(UserAddPage, EnsureAdmin)} />
             </Route>
             <Route path='me'>
