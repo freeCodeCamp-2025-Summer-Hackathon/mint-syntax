@@ -82,7 +82,7 @@ async def list_users(db: Db, skip: int = 0, limit: int = 20):
     )
 
 
-@router.get("/{id}", response_model=User, dependencies=[AdminUser])
+@router.get("/{id}", response_model=UserMe, dependencies=[AdminUser])
 async def get_user(db: Db, id: ObjectId):
     user = await db.find_one(User, User.id == id)
     if user is None:
