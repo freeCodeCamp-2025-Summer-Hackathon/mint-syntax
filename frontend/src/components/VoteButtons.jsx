@@ -15,6 +15,7 @@ const VoteButton = ({
   onSuccess,
   onError,
   alreadyVoted,
+  votedRingColor,
 }) => {
   const { isLogged } = useUser();
   const [loading, setLoading] = useState(false);
@@ -34,7 +35,7 @@ const VoteButton = ({
 
   const buttonClass =
     (className ? className : '') +
-    (alreadyVoted ? ' !ring-2 !ring-green-500' : '');
+    (alreadyVoted ? ` !ring-2 ${votedRingColor}` : '');
 
   useEffect(() => {
     if (success) {
@@ -103,6 +104,7 @@ export const DownvoteButton = ({
       onSuccess,
       onError,
       alreadyVoted,
+      votedRingColor: 'ring-red-500',
       ...restProps,
     }}
   />
@@ -130,6 +132,7 @@ export const UpvoteButton = ({
       onSuccess,
       onError,
       alreadyVoted,
+      votedRingColor: 'ring-green-500',
       ...restProps,
     }}
   />
