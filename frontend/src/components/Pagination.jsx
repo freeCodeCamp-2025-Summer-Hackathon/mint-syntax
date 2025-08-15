@@ -56,7 +56,7 @@ export const Pagination = ({
 
   const NavigateToPrevPage = ({ currentPage }) => (
     <Href
-      {...(currentPage.number > 0 && {
+      {...(currentPage.displayNumber > 1 && {
         page: Page.fromZeroBased(currentPage.number - 1),
       })}
     >
@@ -66,7 +66,7 @@ export const Pagination = ({
 
   const NavigateToNextPage = ({ currentPage }) => (
     <Href
-      {...(currentPage.number < numberOfPages && {
+      {...(currentPage.displayNumber < numberOfPages && {
         page: Page.fromZeroBased(currentPage.number + 1),
       })}
     >
