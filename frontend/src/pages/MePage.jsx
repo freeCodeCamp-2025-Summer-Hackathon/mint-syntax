@@ -29,11 +29,12 @@ const MePage = () => {
               {isAdmin && <span> (Admin)</span>}
             </p>
             <p>
-              <span className='font-bold'>Upvotes:</span> {data.upvotes.length}
+              <span className='font-bold'>Upvotes:</span>{' '}
+              <Link to='/me/upvotes'>{data.upvotes.length}</Link>
             </p>
             <p>
               <span className='font-bold'>Downvotes:</span>{' '}
-              {data.downvotes.length}
+              <Link to='/me/downvotes'>{data.downvotes.length}</Link>
             </p>
             <div className='flex flex-col sm:flex-row justify-center gap-4 mt-6'>
               <Link

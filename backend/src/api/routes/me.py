@@ -1,6 +1,7 @@
-from typing import Annotated
+from typing import Annotated, Literal
 
 from fastapi import APIRouter, HTTPException
+from odmantic import query
 
 from src.api.dependencies import LoggedInUser
 from src.auth import User, get_password_hash, verify_password
@@ -42,4 +43,38 @@ async def get_ideas(
     count = await db.count(Idea, Idea.creator_id == current_user.id)
     return IdeasPublic(
         data=[IdeaPublic(**idea.model_dump()) for idea in ideas], count=count
+    )
+
+
+async def get_voted_ideas(
+    db: Db,
+    current_user: Annotated[User, LoggedInUser],
+    skip: int,
+    limit: int,
+    which: Literal["downvotes", "upvotes"],
+):
+    votes = set(getattr(current_user, which))
+    ideas = await db.find(
+        Idea, query.in_(Idea.id, votes), limit=limit, skip=skip, sort=Idea.name
+    )
+    return IdeasPublic(
+        data=[IdeaPublic(**idea.model_dump()) for idea in ideas], count=len(votes)
+    )
+
+
+@router.get("/upvotes/", response_model=IdeasPublic)
+async def get_upvotes(
+    db: Db, current_user: Annotated[User, LoggedInUser], skip: int = 0, limit: int = 20
+):
+    return await get_voted_ideas(
+        db, current_user, limit=limit, skip=skip, which="upvotes"
+    )
+
+
+@router.get("/downvotes/", response_model=IdeasPublic)
+async def get_downvotes(
+    db: Db, current_user: Annotated[User, LoggedInUser], skip: int = 0, limit: int = 20
+):
+    return await get_voted_ideas(
+        db, current_user, limit=limit, skip=skip, which="downvotes"
     )

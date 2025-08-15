@@ -20,6 +20,7 @@ import SearchPage from './pages/SearchPage';
 import UserIdeasPage from './pages/UserIdeasPage';
 import { EnsureAdmin } from './components/EnsureAdmin';
 import { EnsureLogin } from './components/EnsureLogin';
+import VotesList from './components/VotesList.jsx';
 
 import { IdeaAddPage, IdeaEditPage, IdeaPage, IdeasPage } from './pages/Ideas';
 import './styles.css';
@@ -81,6 +82,30 @@ function App() {
                 <Route
                   path='page/:page'
                   element={wrapWith(MyIdeasPage, EnsureLogin)}
+                />
+              </Route>
+              <Route
+                path='upvotes'
+                element={wrapWith(VotesList, EnsureLogin, { which: 'upvotes' })}
+              >
+                <Route
+                  path='page/:page'
+                  element={wrapWith(VotesList, EnsureLogin, {
+                    which: 'upvotes',
+                  })}
+                />
+              </Route>
+              <Route
+                path='downvotes'
+                element={wrapWith(VotesList, EnsureLogin, {
+                  which: 'downvotes',
+                })}
+              >
+                <Route
+                  path='page/:page'
+                  element={wrapWith(VotesList, EnsureLogin, {
+                    which: 'downvotes',
+                  })}
                 />
               </Route>
             </Route>

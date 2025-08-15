@@ -1,5 +1,5 @@
-export const wrapWith = (Element, Wrapper) => (
+export const wrapWith = (Element, Wrapper, elementProps = {}) => (
   <Wrapper>
-    <Element />
+    <Element {...elementProps} />
   </Wrapper>
 );
