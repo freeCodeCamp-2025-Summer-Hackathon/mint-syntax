@@ -8,7 +8,7 @@ const LandingPage = () => {
       <IdeasList
         count='3'
         sort='trending'
-        headerText='Vote on Current Ideas'
+        header='Vote on Current Ideas'
         showExploreButton={true}
       />
       <IdeaSubmissionForm />

@@ -88,6 +88,10 @@ class IdeasPublic(BaseModel):
     count: int
 
 
+class AdminUserIdeas(IdeasPublic):
+    username: str
+
+
 class IdeaCreate(BaseModel):
     name: NonEmptyMax255CharsString
     description: NonEmptyString

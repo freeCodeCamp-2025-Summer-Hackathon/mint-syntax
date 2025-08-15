@@ -14,9 +14,9 @@ from src.dependencies import Db
 from src.models import (
     AdminUserCreate,
     AdminUserEditPatch,
+    AdminUserIdeas,
     Idea,
     IdeaPublic,
-    IdeasPublic,
     LoginData,
     Token,
     User,
@@ -90,16 +90,21 @@ async def get_user(db: Db, id: ObjectId):
     return user
 
 
-@router.get("/{id}/ideas/", response_model=IdeasPublic, dependencies=[AdminUser])
+@router.get("/{id}/ideas/", response_model=AdminUserIdeas, dependencies=[AdminUser])
 async def get_user_ideas(db: Db, id: ObjectId, skip: int = 0, limit: int = 20):
+    user = await db.find_one(User, User.id == id)
+    if user is None:
+        raise HTTPException(404)
+
     ideas = await db.find(
         Idea, Idea.creator_id == id, skip=skip, limit=limit, sort=Idea.name
     )
     count = await db.count(Idea, Idea.creator_id == id)
 
-    return IdeasPublic(
+    return AdminUserIdeas(
         data=[IdeaPublic(**idea.model_dump()) for idea in ideas],
         count=count,
+        username=user.username,
     )
 
 

@@ -7,8 +7,9 @@ import { Link } from 'react-router';
 
 const IdeasList = ({
   base = '/ideas/',
-  headerText = 'Vote on Current Ideas',
+  header = 'Vote on Current Ideas',
   noIdeasText = "There's no ideas!",
+  addNewButton = true,
   count,
   sort = null,
   page = Page.fromZeroBased(0),
@@ -16,6 +17,7 @@ const IdeasList = ({
   showExploreButton = false,
 }) => {
   const [showPages, setShowPages] = useState(false);
+  const [headerText, setHeaderText] = useState(null);
   const [totalPages, setTotalPages] = useState(0);
   const [entries, setEntries] = useState([]);
   const { isLoading, error, data, fetchFromApi } = useApi({
@@ -42,10 +44,13 @@ const IdeasList = ({
   }, [fetchFromApi, fetchUrl]);
 
   useEffect(() => {
+    if (data?.data) {
+      setHeaderText(typeof header === 'string' ? header : header(data));
+    }
     if (data?.data?.length > 0) {
       setEntries(data?.data);
     }
-  }, [data]);
+  }, [data, header]);
 
   useEffect(() => {
     if (data?.count > 0) {
@@ -76,7 +81,12 @@ const IdeasList = ({
   return (
     <section className='idea-form-section'>
       <div className='section-card'>
-        <h3 className='section-heading'>{headerText}</h3>
+        {!error &&
+          (headerText ? (
+            <h3 className='section-heading'>{headerText}</h3>
+          ) : (
+            <Spinny />
+          ))}
         {error ? (
           `${error}`
         ) : isLoading && entries.length === 0 ? (
@@ -86,9 +96,11 @@ const IdeasList = ({
         ) : entries.length === 0 ? (
           <div>
             <p>{noIdeasText}</p>
-            <Link to='/ideas/add' className='animated-button'>
-              Add idea
-            </Link>
+            {addNewButton && (
+              <Link to='/ideas/add' className='animated-button'>
+                Add idea
+              </Link>
+            )}
           </div>
         ) : (
           <ul className='idea-list'>

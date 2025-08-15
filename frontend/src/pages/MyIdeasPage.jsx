@@ -11,7 +11,7 @@ export const MyIdeasPage = ({ headerText = 'My Ideas' }) => {
         count: 20,
         page: Page.fromOneBased(parseInt(page)),
         paginate: true,
-        headerText,
+        header: headerText,
         noIdeasText: "You don't have any ideas added.",
       }}
     />

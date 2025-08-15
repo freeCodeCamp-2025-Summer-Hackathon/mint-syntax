@@ -10,7 +10,7 @@ export const IdeasPage = ({ headerText = 'All Ideas' }) => {
         count: 20,
         page: Page.fromOneBased(parseInt(pageOneBased)),
         paginate: true,
-        headerText,
+        header: headerText,
       }}
     />
   );

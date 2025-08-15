@@ -1,18 +1,22 @@
 import { useParams } from 'react-router';
+import IdeasList from '../components/IdeasList';
+import { Page } from '../components/Pagination';
 
 const UserIdeasPage = () => {
-  const { id } = useParams();
+  const { id, page = 1 } = useParams();
 
   return (
-    <div className='section-card flex flex-col items-center justify-center min-h-[60vh]'>
-      <h1 className='section-heading'>Ideas by User: {id}</h1>
-      <p className='text-lg text-gray-600 mb-8'>
-        This page will list all ideas submitted by user with ID: {id}.
-      </p>
-      <p className='text-sm text-gray-500'>
-        (Functionality to fetch and display user ideas should be added here.)
-      </p>
-    </div>
+    <IdeasList
+      {...{
+        base: `/users/${id}/ideas/`,
+        count: 20,
+        page: Page.fromOneBased(parseInt(page)),
+        paginate: true,
+        header: data => `Ideas from ${data?.username}`,
+        noIdeasText: 'No ideas added.',
+        addNewButton: false,
+      }}
+    />
   );
 };
 
