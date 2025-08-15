@@ -93,7 +93,7 @@ const IdeasList = ({
           <div className='flex items-center justify-center min-h-[100px]'>
             <Spinny />
           </div>
-        ) : entries.length === 0 ? (
+        ) : entries.length === 0 && page.displayNumber == 1 ? (
           <div>
             <p>{noIdeasText}</p>
             {addNewButton && (
@@ -109,7 +109,9 @@ const IdeasList = ({
             ))}
           </ul>
         )}
-        {paginate && showPages && entries.length > 0 && <>{pagination}</>}
+        {paginate &&
+          showPages &&
+          (entries.length > 0 || page.displayNumber > 1) && <>{pagination}</>}
 
         {showExploreButton && (
           <div style={{ textAlign: 'center', marginTop: 'var(--spacing-md)' }}>
