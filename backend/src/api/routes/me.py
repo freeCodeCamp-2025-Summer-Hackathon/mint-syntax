@@ -37,7 +37,7 @@ async def get_ideas(
     db: Db, current_user: Annotated[User, LoggedInUser], skip: int = 0, limit: int = 20
 ):
     ideas = await db.find(
-        Idea, Idea.creator_id == current_user.id, limit=limit, skip=skip
+        Idea, Idea.creator_id == current_user.id, limit=limit, skip=skip, sort=Idea.name
     )
     count = await db.count(Idea, Idea.creator_id == current_user.id)
     return IdeasPublic(
