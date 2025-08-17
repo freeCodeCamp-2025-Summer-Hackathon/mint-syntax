@@ -1,12 +1,12 @@
-from typing import Annotated, Literal
+from typing import Annotated
 
 from fastapi import APIRouter, HTTPException
-from odmantic import query
 
 from src.api.dependencies import LoggedInUser
+from src.api.ideas import get_user_ideas, get_voted_ideas
 from src.auth import User, get_password_hash, verify_password
 from src.dependencies import Db
-from src.models import Idea, IdeaPublic, IdeasPublic, UserEditPatch, UserMe
+from src.models import IdeasPublic, UserEditPatch, UserMe
 
 router = APIRouter(prefix="/me")
 
@@ -37,29 +37,7 @@ async def patch_me(
 async def get_ideas(
     db: Db, current_user: Annotated[User, LoggedInUser], skip: int = 0, limit: int = 20
 ):
-    ideas = await db.find(
-        Idea, Idea.creator_id == current_user.id, limit=limit, skip=skip, sort=Idea.name
-    )
-    count = await db.count(Idea, Idea.creator_id == current_user.id)
-    return IdeasPublic(
-        data=[IdeaPublic(**idea.model_dump()) for idea in ideas], count=count
-    )
-
-
-async def get_voted_ideas(
-    db: Db,
-    current_user: Annotated[User, LoggedInUser],
-    skip: int,
-    limit: int,
-    which: Literal["downvotes", "upvotes"],
-):
-    votes = set(getattr(current_user, which))
-    ideas = await db.find(
-        Idea, query.in_(Idea.id, votes), limit=limit, skip=skip, sort=Idea.name
-    )
-    return IdeasPublic(
-        data=[IdeaPublic(**idea.model_dump()) for idea in ideas], count=len(votes)
-    )
+    return await get_user_ideas(db, current_user, skip=skip, limit=limit)
 
 
 @router.get("/upvotes/", response_model=IdeasPublic)
