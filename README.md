@@ -16,6 +16,29 @@
 
 # Mint-Syntax: 2025 Summer Hackathon
 
+## 📍 Table of Contents
+- [Project](#-project)
+- [Team](#-team)
+- [Development](#️-development)
+  - [Prerequisites](#prerequisites)
+    - [Frontend](#frontend)
+    - [Backend](#backend)
+  - [Setup](#setup)
+    - [Copy .env file](#copy-env-file)
+    - [Frontend](#frontend-1)
+    - [Backend](#backend-1)
+    - [Enabling pre-commit checks for frontend and backend](#enabling-pre-commit-checks-for-frontend-and-backend)
+    - [Database](#database)
+      - [Local Database Deployment (MongoDB Community)](#local-database-deployment-mongodb-community)
+      - [Cloud Database Deployment (MongoDB Atlas)](#cloud-database-deployment-mongodb-atlas)
+  - [Development](#development)
+    - [Frontend Client](#frontend-client)
+    - [Backend Server](#backend-server)
+    - [Running commands from the root folder](#running-commands-from-the-root-folder)
+    - [Running Seed Script](#running-seed-script)
+
+---
+
 ## 📌 Project
 > **IdeaForge** — A collaborative brainstorming board where users can submit, vote, and iterate on ideas together.
 
