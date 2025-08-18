@@ -6,6 +6,7 @@ from odmantic.exceptions import DuplicateKeyError
 
 from src.api.dependencies import AdminUser
 from src.api.ideas import get_user_ideas
+from src.api.util import find_one_or_404
 from src.auth import (
     create_tokens,
     get_password_hash,
@@ -26,6 +27,10 @@ from src.models import (
 )
 
 router = APIRouter(prefix="/users")
+
+
+async def user_or_404(db: Db, id: ObjectId, error_text="User not found"):
+    return await find_one_or_404(db, User, id, error_text)
 
 
 async def add_user(db: Db, data: Annotated[AdminUserCreate | UserRegister, Form()]):
@@ -83,18 +88,12 @@ async def list_users(db: Db, skip: int = 0, limit: int = 20):
 
 @router.get("/{id}", response_model=UserMe, dependencies=[AdminUser])
 async def get_user(db: Db, id: ObjectId):
-    user = await db.find_one(User, User.id == id)
-    if user is None:
-        raise HTTPException(404)
-    return user
+    return await user_or_404(db, id)
 
 
 @router.get("/{id}/ideas/", response_model=AdminUserIdeas, dependencies=[AdminUser])
 async def get_ideas(db: Db, id: ObjectId, skip: int = 0, limit: int = 20):
-    user = await db.find_one(User, User.id == id)
-    if user is None:
-        raise HTTPException(404)
-
+    user = await user_or_404(db, id)
     ideas = await get_user_ideas(db, user, skip=skip, limit=limit)
 
     return AdminUserIdeas(
@@ -106,9 +105,7 @@ async def get_ideas(db: Db, id: ObjectId, skip: int = 0, limit: int = 20):
 
 @router.patch("/{id}", response_model=UserMe, dependencies=[AdminUser])
 async def update_user(db: Db, id: ObjectId, update_data: AdminUserEditPatch):
-    user = await db.find_one(User, User.id == id)
-    if user is None:
-        raise HTTPException(404)
+    user = await user_or_404(db, id)
     if update_data.new_password is not None:
         update_data.hashed_password = get_password_hash(update_data.new_password)
     user.model_update(update_data, exclude={"old_password, new_password"})
