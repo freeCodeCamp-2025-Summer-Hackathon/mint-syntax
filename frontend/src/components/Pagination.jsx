@@ -31,11 +31,8 @@ export const Pagination = ({
 
   useEffect(() => {
     const newPage = Page.fromOneBased(parseInt(paramPageOneBased));
-
-    if (activePage.number !== newPage.number) {
-      setActivePage(newPage);
-      fetchPage(newPage);
-    }
+    setActivePage(newPage);
+    fetchPage(newPage);
   }, [paramPageOneBased, fetchPage]);
 
   const Href = ({ page = null, active = false, children }) => {
