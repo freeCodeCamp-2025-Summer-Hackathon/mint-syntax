@@ -27,12 +27,15 @@ export const Pagination = ({
 }) => {
   const [activePage, setActivePage] = useState(initialPage);
   const pages = [...Array(numberOfPages).keys()].map(Page.fromZeroBased);
-  const { page: paramPageOneBased = 1 } = useParams();
+  const { page: paramPageOneBased = '1' } = useParams();
 
   useEffect(() => {
-    const newActivePage = Page.fromOneBased(parseInt(paramPageOneBased));
-    setActivePage(newActivePage);
-    fetchPage(newActivePage);
+    const newPage = Page.fromOneBased(parseInt(paramPageOneBased));
+
+    if (activePage.number !== newPage.number) {
+      setActivePage(newPage);
+      fetchPage(newPage);
+    }
   }, [paramPageOneBased, fetchPage]);
 
   const Href = ({ page = null, active = false, children }) => {
