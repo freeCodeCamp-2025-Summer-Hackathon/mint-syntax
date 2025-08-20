@@ -25,9 +25,10 @@ const IdeasList = ({
   });
 
   const getApiUrl = useCallback(
-    (page = Page.fromZeroBased(0)) => {
+    pageToFetch => {
       const sorting = sort ? `&sort=${sort}` : '';
-      const skip = page.number > 0 ? `&skip=${page.number * count}` : '';
+      const skip =
+        pageToFetch.number > 0 ? `&skip=${pageToFetch.number * count}` : '';
       return `${base}?limit=${count}${sorting}${skip}`;
     },
     [count, sort, base]
@@ -38,10 +39,14 @@ const IdeasList = ({
     [base]
   );
 
-  const fetchUrl = getApiUrl(page);
   useEffect(() => {
+    const skip = page.number > 0 ? `&skip=${page.number * count}` : '';
+    const sorting = sort ? `&sort=${sort}` : '';
+
+    const fetchUrl = `${base}?limit=${count}${sorting}${skip}`;
+
     fetchFromApi(fetchUrl);
-  }, [fetchFromApi, fetchUrl]);
+  }, [fetchFromApi, base, count, sort, page]);
 
   useEffect(() => {
     if (data?.data) {
@@ -69,8 +74,8 @@ const IdeasList = ({
           numberOfPages: totalPages,
           getPageUrl,
           initialPage: page,
-          fetchPage: async page => {
-            await fetchFromApi(getApiUrl(page));
+          fetchPage: async paginationPage => {
+            await fetchFromApi(getApiUrl(paginationPage));
           },
         }}
       />
