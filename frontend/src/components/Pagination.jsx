@@ -36,7 +36,7 @@ export const Pagination = ({
       setActivePage(newPage);
       fetchPage(newPage);
     }
-  }, [paramPageOneBased, fetchPage]);
+  }, [paramPageOneBased, fetchPage, activePage.number]);
 
   const Href = ({ page = null, active = false, children }) => {
     if (page === null || active) {
