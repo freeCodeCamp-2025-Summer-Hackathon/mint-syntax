@@ -24,6 +24,10 @@ def verify_password(plain_password, hashed_password):
     return password_context.verify(plain_password, hashed_password)
 
 
+def verify_and_update_password(plain_password, hashed_password):
+    return password_context.verify_and_update(plain_password, hashed_password)
+
+
 def get_password_hash(plain_password):
     return password_context.hash(plain_password)
 
@@ -32,8 +36,14 @@ async def authenticate_user(db, username, plain_password) -> User | Literal[Fals
     user = await db.find_one(User, User.username == username)
     if not user:
         return False
-    if not verify_password(plain_password, user.hashed_password):
+    valid, require_rehash = verify_and_update_password(
+        plain_password, user.hashed_password
+    )
+    if not valid:
         return False
+    if require_rehash:
+        user.hashed_password = get_password_hash(plain_password)
+        await db.save(user)
     return user
 
 
