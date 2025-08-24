@@ -82,10 +82,7 @@ credentials_exception = HTTPException(
 )
 
 
-async def refresh_access_token(
-    db: Db,
-    token: Annotated[str, Depends(oauth2_scheme)],
-):
+def decode_jwt(token: Annotated[str, Depends(oauth2_scheme)]):
     try:
         decoded_jwt = jwt.decode(token, config.secret_key, algorithms=[ALGORITHM])
         id = decoded_jwt.get("sub")
@@ -93,12 +90,16 @@ async def refresh_access_token(
             raise credentials_exception
 
         token_data = TokenData(id=id)
+        return token_data
     except InvalidTokenError as err:
         raise credentials_exception from err
 
-    user = await db.find_one(User, User.id == token_data.id)
-    if user is None:
-        raise credentials_exception
+
+async def refresh_access_token(
+    db: Db,
+    refresh_token: Annotated[str, Depends(oauth2_scheme)],
+):
+    user = await get_current_user(db, refresh_token)
     access_token = create_access_token(data={"sub": str(user.id)})
     return {"access_token": access_token, "token_type": "bearer"}
 
@@ -107,15 +108,7 @@ async def get_current_user(
     db: Db,
     token: Annotated[str, Depends(oauth2_scheme)],
 ):
-    try:
-        decoded_jwt = jwt.decode(token, config.secret_key, algorithms=[ALGORITHM])
-        id = decoded_jwt.get("sub")
-        if id is None:
-            raise credentials_exception
-
-        token_data = TokenData(id=id)
-    except InvalidTokenError as err:
-        raise credentials_exception from err
+    token_data = decode_jwt(token)
 
     user = await db.find_one(User, User.id == token_data.id)
     if user is None:
