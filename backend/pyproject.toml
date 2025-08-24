@@ -10,7 +10,7 @@ dependencies = [
     "fastapi[standard]>=0.115.14",
     "motor>=3.7.1",
     "odmantic>=1.0.2",
-    "passlib[bcrypt]>=1.7.4",
+    "passlib[argon2,bcrypt]>=1.7.4",
     "pydantic-settings>=2.10.1",
     "pyjwt>=2.10.1",
 ]

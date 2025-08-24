@@ -15,7 +15,7 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = timedelta(minutes=30)
 REFRESH_TOKEN_EXPIRE_MINUTES = timedelta(minutes=60 * 24 * 7)
 
-password_context = CryptContext(schemes=["bcrypt"], deprecated=["auto"])
+password_context = CryptContext(schemes=["argon2", "bcrypt"], deprecated=["auto"])
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth", refreshUrl="refresh")
 
