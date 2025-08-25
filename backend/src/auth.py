@@ -36,13 +36,13 @@ async def authenticate_user(db, username, plain_password) -> User | Literal[Fals
     user = await db.find_one(User, User.username == username)
     if not user:
         return False
-    valid, require_rehash = verify_and_update_password(
+    is_valid, maybe_new_hash = verify_and_update_password(
         plain_password, user.hashed_password
     )
-    if not valid:
+    if not is_valid:
         return False
-    if require_rehash:
-        user.hashed_password = get_password_hash(plain_password)
+    if maybe_new_hash:
+        user.hashed_password = maybe_new_hash
         await db.save(user)
     return user
 
