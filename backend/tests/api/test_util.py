@@ -1,77 +1,11 @@
-from unittest import mock
-
 import pytest
 from fastapi import HTTPException
-from odmantic import ObjectId, query
+from odmantic import ObjectId
 
 from src.api.util import find_one_or_404
 from src.models import Idea, User
 
-data = {
-    User: {
-        "user1": {
-            "id": ObjectId(),
-            "data": {
-                "username": "user",
-                "name": "name of user",
-                "is_active": True,
-                "is_admin": False,
-                "upvotes": [ObjectId() for _ in range(5)],
-                "downvotes": [ObjectId() for _ in range(3)],
-            },
-        },
-        "user2": {
-            "id": ObjectId(),
-            "data": {
-                "username": "adminUser",
-                "name": "True Admin",
-                "is_active": True,
-                "is_admin": True,
-                "upvotes": [],
-                "downvotes": [],
-            },
-        },
-    },
-    Idea: {
-        "idea1": {
-            "id": ObjectId(),
-            "data": {
-                "name": "Sample idea",
-                "description": "Description of the sample idea, not very long.",
-                "upvoted_by": [ObjectId() for _ in range(10)],
-                "downvoted_by": [ObjectId() for _ in range(2)],
-                "creator_id": ObjectId(),
-            },
-        },
-        "idea2": {
-            "id": ObjectId(),
-            "data": {
-                "name": "Different idea",
-                "description": "Different description of the different idea, a bit longer, but still not very long.",  # noqa: E501
-                "upvoted_by": [ObjectId() for _ in range(10)],
-                "downvoted_by": [ObjectId() for _ in range(2)],
-                "creator_id": ObjectId(),
-            },
-        },
-    },
-}
-
-
-async def fake_find_one(model, q: query.QueryExpression):
-    collection = data.get(model)
-    if not collection:
-        return None
-    for item in collection.values():
-        if q == (model.id == item["id"]):
-            return item["data"]
-    return None
-
-
-@pytest.fixture
-def db():
-    fake_db = mock.AsyncMock()
-    fake_db.find_one = fake_find_one
-    return fake_db
+from ..data_sample import ideas, users
 
 
 @pytest.mark.anyio
@@ -80,23 +14,23 @@ def db():
     [
         [
             Idea,
-            data[Idea]["idea1"]["id"],
-            data[Idea]["idea1"]["data"],
+            ideas["idea1"].id,
+            ideas["idea1"],
         ],
         [
             Idea,
-            data[Idea]["idea2"]["id"],
-            data[Idea]["idea2"]["data"],
+            ideas["idea2"].id,
+            ideas["idea2"],
         ],
         [
             User,
-            data[User]["user1"]["id"],
-            data[User]["user1"]["data"],
+            users["user1"].id,
+            users["user1"],
         ],
         [
             User,
-            data[User]["user2"]["id"],
-            data[User]["user2"]["data"],
+            users["user2"].id,
+            users["user2"],
         ],
     ],
 )
@@ -110,9 +44,9 @@ async def test_find_one_or_404_valid_ids(db, model, id, expected):
     ["model", "id"],
     [
         [Idea, ObjectId()],
-        [Idea, data[User]["user1"]["id"]],
+        [Idea, users["user1"].id],
         [User, ObjectId()],
-        [User, data[Idea]["idea1"]["id"]],
+        [User, ideas["idea1"].id],
     ],
 )
 async def test_find_one_or_404_invalid_ids(db, model, id):
