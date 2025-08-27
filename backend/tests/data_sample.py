@@ -14,7 +14,7 @@ user1 = User.model_validate(
         "hashed_password": get_password_hash("password"),
     }
 )
-user2 = User.model_validate(
+user_admin = User.model_validate(
     {
         "username": "adminUser",
         "name": "True Admin",
@@ -25,7 +25,7 @@ user2 = User.model_validate(
         "hashed_password": get_password_hash("2password"),
     }
 )
-user3 = User.model_validate(
+user_disabled = User.model_validate(
     {
         "username": "disabled",
         "name": "Disabled user",
@@ -34,6 +34,19 @@ user3 = User.model_validate(
         "upvotes": [],
         "downvotes": [],
         "hashed_password": get_password_hash("3password"),
+    }
+)
+user_outdated_hash = User.model_validate(
+    {
+        "username": "old_one",
+        "name": "user with bcrypt hash",
+        "is_active": False,
+        "is_admin": False,
+        "upvotes": [],
+        "downvotes": [],
+        "hashed_password": (
+            "$2b$12$jbIAg8E9QU5cx2F0KisxhuhhJnqAMIAWHmKxIcjDHQbOKkVYKPYk6"
+        ),
     }
 )
 
@@ -52,7 +65,7 @@ idea2 = Idea.model_validate(
         "description": "Different description of the different idea, a bit longer, but still not very long.",  # noqa: E501
         "upvoted_by": [ObjectId() for _ in range(10)],
         "downvoted_by": [ObjectId() for _ in range(2)],
-        "creator_id": user2.id,
+        "creator_id": user_admin.id,
     }
 )
 
@@ -63,8 +76,9 @@ ideas = {
 
 users = {
     "user1": user1,
-    "user2": user2,
-    "user3": user3,
+    "user2": user_admin,
+    "user3": user_disabled,
+    "user4": user_outdated_hash,
 }
 
 data: dict = {User: users, Idea: ideas}

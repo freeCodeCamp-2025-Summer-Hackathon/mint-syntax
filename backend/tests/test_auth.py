@@ -1,8 +1,12 @@
 from types import NoneType
+from unittest import mock
 
 import pytest
 
-from src.auth import verify_and_update_password, verify_password
+from src.auth import authenticate_user, verify_and_update_password, verify_password
+from src.models import User
+
+from .data_sample import user1, user_admin, user_outdated_hash
 
 bcrypt_password_hash = "$2b$12$vogVV6RUAZPAb6NVZDNGn.PD2wpIXqAHTtsORL3M13xKEp6dPxv3O"
 bcrypt_different_password_hash = (
@@ -114,3 +118,61 @@ def test_verify_and_update_password(
     )
     assert is_valid is expected
     assert isinstance(maybe_new_hash, expected_rehash_type)
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    ["user", "plain_password", "expected"],
+    [
+        pytest.param(
+            user1.username,
+            "password",
+            user1,
+            id="returns user when credentials are correct",
+        ),
+        pytest.param(
+            user_admin.username,
+            "2password",
+            user_admin,
+            id="returns different user when credentials are correct",
+        ),
+        pytest.param(
+            "no-such-username",
+            "",
+            False,
+            id="returns False when user doesn't exist",
+        ),
+        pytest.param(
+            "",
+            "",
+            False,
+            id="returns False when user is empty string",
+        ),
+        pytest.param(
+            user1.username,
+            "not correct password",
+            False,
+            id="returns False when password is not correct",
+        ),
+    ],
+)
+async def test_authenticate_user(db, user, plain_password, expected):
+    assert await authenticate_user(db, user, plain_password) == expected
+
+
+@pytest.mark.anyio
+async def test_authenticate_user_updates_outdated_bcrypt_hash_when_password_is_correct(
+    db,
+):
+    initial_hash = user_outdated_hash.hashed_password
+    result = await authenticate_user(
+        db, user_outdated_hash.username, "different_password"
+    )
+
+    assert isinstance(result, User)
+    assert result.hashed_password != initial_hash
+    assert any(
+        mock.call.save(user_outdated_hash) == one_call for one_call in db.method_calls
+    )
+
+    user_outdated_hash.hashed_password = initial_hash
