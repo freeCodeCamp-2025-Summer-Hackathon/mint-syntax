@@ -41,5 +41,4 @@ async def fake_find_one(model, q: query.QueryExpression):
 def db():
     fake_db = mock.AsyncMock()
     fake_db.find_one = fake_find_one
-    fake_db.save = mock.AsyncMock()
     return fake_db
