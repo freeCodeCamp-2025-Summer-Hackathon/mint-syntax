@@ -1,6 +1,5 @@
 from datetime import UTC, datetime, timedelta
 from types import NoneType
-from unittest import mock
 
 import jwt
 import pytest
@@ -202,9 +201,7 @@ async def test_authenticate_user_updates_outdated_bcrypt_hash_when_password_is_c
 
     assert isinstance(result, User)
     assert result.hashed_password != initial_hash
-    assert any(
-        mock.call.save(user_outdated_hash) == one_call for one_call in db.method_calls
-    )
+    db.save.assert_called_once_with(user_outdated_hash)
 
     user_outdated_hash.hashed_password = initial_hash
 
