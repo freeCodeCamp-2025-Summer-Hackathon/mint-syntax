@@ -4,6 +4,7 @@ from unittest import mock
 
 import jwt
 import pytest
+from fastapi import HTTPException
 
 from src.auth import (
     ACCESS_TOKEN_DELTA,
@@ -13,11 +14,12 @@ from src.auth import (
     config,
     create_access_token,
     create_tokens,
+    decode_token,
     set_refresh_token_cookie,
     verify_and_update_password,
     verify_password,
 )
-from src.models import User
+from src.models import TokenData, User
 
 from .data_sample import user1, user_admin, user_outdated_hash
 
@@ -46,12 +48,28 @@ def jwt_secret_key():
 
 
 @pytest.fixture
-def jwt_fixtures(jwt_secret_key):
+def jwt_fixtures():
     return {
-        "test_jwt_secret_key": jwt_secret_key,
         "sample": {"sample": "data"},
         "sample_refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGFlZjdkODhiYjM3ZDhmZGQ3ZmE1ODYiLCJleHAiOjE3NTY5MDE5Nzd9.axRRkdmGkFEbXpe1bV1YRi6AQwChvAW8AUSu8NdQ7So",  # noqa: E501
+        "credential_exception": {
+            "status_code": 401,
+            "headers": {"WWW-Authenticate": "Bearer"},
+        },
     }
+
+
+@pytest.fixture()
+def sample_user_token(request, jwt_secret_key):
+    user_id = str(request.param)
+    return (
+        user_id,
+        jwt.encode(
+            {"sub": user_id, "exp": now_plus_delta(timedelta(minutes=5))},
+            jwt_secret_key,
+            algorithm=JWT_ALGORITHM,
+        ),
+    )
 
 
 @pytest.fixture
@@ -321,3 +339,92 @@ def test_set_refresh_token_cookie_calls_set_cookie_method(jwt_fixtures):
         httponly=True,
         expires=cookie_expiration,
     )
+
+
+@pytest.mark.parametrize(
+    "sample_user_token", [user1.id, user_admin.id, user_outdated_hash.id], indirect=True
+)
+def test_decode_token_returns_decoded_data_with_user_id(
+    patch_secret_key, sample_user_token
+):
+    user_id, token = sample_user_token
+
+    patch_secret_key()
+    decoded = decode_token(token)
+
+    assert isinstance(decoded, TokenData)
+    assert str(decoded.id) == user_id
+
+
+@pytest.mark.parametrize(
+    "token",
+    [
+        pytest.param("not a token", id="not a token"),
+        pytest.param(
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGFlZjdkODhiYjM3ZDhmZGQ3ZmE1ODYiLCJleHAiOjE3NTY5MDE5Nzd9",
+            id="cutoff token",
+        ),
+    ],
+)
+def test_decode_token_raises_when_token_is_invalid(
+    patch_secret_key, jwt_fixtures, token
+):
+    patch_secret_key()
+
+    with pytest.raises(HTTPException) as exception:
+        decode_token(token)
+
+    expected = jwt_fixtures["credential_exception"]
+    assert exception.value.status_code == expected["status_code"]
+    assert exception.value.headers == expected["headers"]
+
+
+@pytest.mark.parametrize(
+    ["payload", "other_args"],
+    [
+        pytest.param(
+            {},
+            {
+                "key": "random-different-key",
+            },
+            id="encoded with different secret key",
+        ),
+        pytest.param(
+            {},
+            {
+                "payload": {
+                    "exp": now_plus_delta(timedelta(minutes=5)),
+                }
+            },
+            id="token doesn't have sub claim",
+        ),
+        pytest.param(
+            {
+                "sub": str(user1.id),
+                "exp": now_plus_delta(timedelta(seconds=-1)),
+            },
+            {},
+            id="token is expired",
+        ),
+    ],
+)
+def test_decode_token_raises_when_token_data_is_invalid(
+    patch_secret_key, jwt_fixtures, payload, other_args, jwt_secret_key
+):
+    encode_args = {
+        "payload": {"sub": str(user1.id), "exp": now_plus_delta(timedelta(minutes=5))},
+        "key": jwt_secret_key,
+        "algorithm": JWT_ALGORITHM,
+    }
+    encode_args["payload"].update(payload)
+    encode_args.update(other_args)
+
+    token = jwt.encode(**encode_args)
+
+    patch_secret_key()
+    with pytest.raises(HTTPException) as exception:
+        decode_token(token)
+
+    expected = jwt_fixtures["credential_exception"]
+    assert exception.value.status_code == expected["status_code"]
+    assert exception.value.headers == expected["headers"]
