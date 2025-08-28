@@ -36,6 +36,10 @@ argon2_different_password_hash = (
 )
 
 
+def now_plus_delta(delta: timedelta = timedelta()):
+    return datetime.now(UTC) + delta
+
+
 @pytest.fixture
 def jwt_fixtures():
     return {
@@ -263,7 +267,7 @@ def test_create_access_token_creates_token_expiring_at_specified_time(
     token = create_access_token({}, expires_delta=expiration_delta)
 
     decoded = jwt.decode(token, secret_key, algorithms=[JWT_ALGORITHM])
-    expected = (datetime.now(UTC) + expiration_delta).timestamp()
+    expected = now_plus_delta(expiration_delta).timestamp()
 
     tolerancy_in_secs = 5
     assert decoded["exp"] == pytest.approx(expected, abs=tolerancy_in_secs)
@@ -292,9 +296,7 @@ def test_create_tokens_returns_two_tokens_and_refresh_token_expiration(
     assert decoded_access_token["exp"] < decoded_refresh_token["exp"]
     assert isinstance(refresh_token_expiration_delta, timedelta)
 
-    expiration_timestamp = (
-        datetime.now(UTC) + refresh_token_expiration_delta
-    ).timestamp()
+    expiration_timestamp = now_plus_delta(refresh_token_expiration_delta).timestamp()
     tolerancy_in_secs = 5
     assert decoded_refresh_token["exp"] == pytest.approx(
         expiration_timestamp, abs=tolerancy_in_secs
