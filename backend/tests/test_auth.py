@@ -41,17 +41,22 @@ def now_plus_delta(delta: timedelta = timedelta()):
 
 
 @pytest.fixture
-def jwt_fixtures():
+def jwt_secret_key():
+    return "test-secret-key"
+
+
+@pytest.fixture
+def jwt_fixtures(jwt_secret_key):
     return {
-        "test_jwt_secret_key": "test-secret-key",
+        "test_jwt_secret_key": jwt_secret_key,
         "sample": {"sample": "data"},
         "sample_refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGFlZjdkODhiYjM3ZDhmZGQ3ZmE1ODYiLCJleHAiOjE3NTY5MDE5Nzd9.axRRkdmGkFEbXpe1bV1YRi6AQwChvAW8AUSu8NdQ7So",  # noqa: E501
     }
 
 
 @pytest.fixture
-def patch_secret_key(monkeypatch, jwt_fixtures):
-    def patch(secret_key=jwt_fixtures["test_jwt_secret_key"]):
+def patch_secret_key(monkeypatch, jwt_secret_key):
+    def patch(secret_key=jwt_secret_key):
         monkeypatch.setattr(config, "secret_key", secret_key)
         return secret_key
 
