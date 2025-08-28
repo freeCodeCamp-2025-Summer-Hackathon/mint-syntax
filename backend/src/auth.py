@@ -11,9 +11,9 @@ from src.config import get_settings
 from src.dependencies import Db
 from src.models import TokenData, User
 
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = timedelta(minutes=30)
-REFRESH_TOKEN_EXPIRE_MINUTES = timedelta(minutes=60 * 24 * 7)
+JWT_ALGORITHM = "HS256"
+ACCESS_TOKEN_DELTA = timedelta(minutes=30)
+REFRESH_TOKEN_DELTA = timedelta(minutes=60 * 24 * 7)
 
 password_context = CryptContext(schemes=["argon2", "bcrypt"], deprecated=["auto"])
 
@@ -57,20 +57,16 @@ def create_tokens(user_id: str):
     return access_token, refresh_token, token_expiration
 
 
-def create_access_token(
-    data: dict, expires_delta: timedelta = ACCESS_TOKEN_EXPIRE_MINUTES
-):
+def create_access_token(data: dict, expires_delta: timedelta = ACCESS_TOKEN_DELTA):
     to_encode = data.copy()
     expire = datetime.now(UTC) + expires_delta
     to_encode["exp"] = expire
 
-    encoded_jwt = jwt.encode(to_encode, config.secret_key, algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, config.secret_key, algorithm=JWT_ALGORITHM)
     return encoded_jwt
 
 
-def create_refresh_token(
-    data: dict, expires_delta: timedelta = REFRESH_TOKEN_EXPIRE_MINUTES
-):
+def create_refresh_token(data: dict, expires_delta: timedelta = REFRESH_TOKEN_DELTA):
     return create_access_token(data, expires_delta), expires_delta
 
 
@@ -94,7 +90,7 @@ credentials_exception = HTTPException(
 
 def decode_jwt(token: Annotated[str, Depends(oauth2_scheme)]):
     try:
-        decoded_jwt = jwt.decode(token, config.secret_key, algorithms=[ALGORITHM])
+        decoded_jwt = jwt.decode(token, config.secret_key, algorithms=[JWT_ALGORITHM])
         id = decoded_jwt.get("sub")
         if id is None:
             raise credentials_exception
