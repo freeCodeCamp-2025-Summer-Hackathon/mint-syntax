@@ -88,7 +88,7 @@ credentials_exception = HTTPException(
 )
 
 
-def decode_jwt(token: Annotated[str, Depends(oauth2_scheme)]):
+def decode_token(token: Annotated[str, Depends(oauth2_scheme)]):
     try:
         decoded_jwt = jwt.decode(token, config.secret_key, algorithms=[JWT_ALGORITHM])
         id = decoded_jwt.get("sub")
@@ -114,7 +114,7 @@ async def get_current_user(
     db: Db,
     token: Annotated[str, Depends(oauth2_scheme)],
 ):
-    token_data = decode_jwt(token)
+    token_data = decode_token(token)
 
     user = await db.find_one(User, User.id == token_data.id)
     if user is None:
