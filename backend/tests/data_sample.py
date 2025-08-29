@@ -36,7 +36,7 @@ user_disabled = User.model_validate(
         "hashed_password": get_password_hash("3password"),
     }
 )
-user_outdated_hash = User.model_validate(
+user_disabled_with_outdated_hash = User.model_validate(
     {
         "username": "old_one",
         "name": "user with bcrypt hash",
@@ -78,7 +78,7 @@ users = {
     "user1": user1,
     "user2": user_admin,
     "user3": user_disabled,
-    "user4": user_outdated_hash,
+    "user4": user_disabled_with_outdated_hash,
 }
 
 data: dict = {User: users, Idea: ideas}
