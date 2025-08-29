@@ -27,29 +27,17 @@ export const Pagination = ({
 }) => {
   const [activePage, setActivePage] = useState(initialPage);
   const pages = [...Array(numberOfPages).keys()].map(Page.fromZeroBased);
-  const { page: paramPageOneBased = '1' } = useParams();
+  const { page: paramPageOneBased = 1 } = useParams();
 
-  useEffect(() => {
+  window.onpopstate = () => {
     const newPage = Page.fromOneBased(parseInt(paramPageOneBased));
     setActivePage(newPage);
     fetchPage(newPage);
-  }, [paramPageOneBased, fetchPage]);
+  };
 
   useEffect(() => {
-    const handlePopState = () => {
-      const newPage = Page.fromOneBased(
-        parseInt(window.location.pathname.split('/').pop() || '1')
-      );
-      setActivePage(newPage);
-      fetchPage(newPage);
-    };
-
-    window.addEventListener('popstate', handlePopState);
-
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
-    };
-  }, [fetchPage]);
+    setActivePage(Page.fromOneBased(parseInt(paramPageOneBased)));
+  }, [paramPageOneBased]);
 
   const Href = ({ page = null, active = false, children }) => {
     if (page === null || active) {
