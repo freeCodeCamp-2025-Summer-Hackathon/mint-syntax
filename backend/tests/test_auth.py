@@ -5,6 +5,7 @@ from unittest import mock
 import jwt
 import pytest
 from fastapi import HTTPException
+from odmantic import ObjectId
 
 from src.auth import (
     ACCESS_TOKEN_DELTA,
@@ -15,6 +16,7 @@ from src.auth import (
     create_access_token,
     create_tokens,
     decode_token,
+    get_current_user,
     set_refresh_token_cookie,
     verify_and_update_password,
     verify_password,
@@ -444,3 +446,35 @@ def test_decode_token_raises_when_token_data_is_invalid(
     expected = jwt_fixtures["credential_exception"]
     assert exception.value.status_code == expected["status_code"]
     assert exception.value.headers == expected["headers"]
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    "sample_user_token",
+    (ObjectId() for _ in range(5)),
+    indirect=True,
+)
+async def test_get_current_user_raises_when_token_doesnt_contain_id_of_existing_user(
+    db, sample_user_token, jwt_fixtures
+):
+    with pytest.raises(HTTPException) as exception:
+        await get_current_user(db, sample_user_token)
+
+    expected = jwt_fixtures["credential_exception"]
+    assert exception.value.status_code == expected["status_code"]
+    assert exception.value.headers == expected["headers"]
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    ["sample_user_token", "expected"],
+    ((user.id, user) for user in users.values()),
+    indirect=["sample_user_token"],
+)
+async def test_get_current_user_returns_existing_user_for_valid_token(
+    db, patch_secret_key, sample_user_token, expected
+):
+    patch_secret_key()
+    user = await get_current_user(db, sample_user_token)
+    assert user == expected
+
