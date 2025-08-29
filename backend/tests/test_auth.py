@@ -16,6 +16,7 @@ from src.auth import (
     create_access_token,
     create_tokens,
     decode_token,
+    get_current_active_user,
     get_current_user,
     refresh_access_token,
     set_refresh_token_cookie,
@@ -27,6 +28,7 @@ from src.models import TokenData, User
 from .data_sample import (
     user1,
     user_admin,
+    user_disabled,
     user_disabled_with_outdated_hash,
     users,
 )
@@ -549,4 +551,23 @@ async def test_refresh_token_raises_when_token_data_is_invalid(
     expected = jwt_fixtures["credential_exception"]
     assert exception.value.status_code == expected["status_code"]
     assert exception.value.headers == expected["headers"]
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    "disabled_user", [user_disabled, user_disabled_with_outdated_hash]
+)
+async def test_get_current_active_user_raises_when_user_is_not_active(disabled_user):
+    with pytest.raises(HTTPException) as exception:
+        await get_current_active_user(disabled_user)
+
+    assert exception.value.status_code == 400
+    assert exception.value.detail == "Inactive user"
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize("active_user", [user1, user_admin])
+async def test_get_current_active_user_returns_user_if_user_is_active(active_user):
+    user = await get_current_active_user(active_user)
+    assert user == active_user
 
