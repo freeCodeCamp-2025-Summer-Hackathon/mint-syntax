@@ -17,6 +17,7 @@ from src.auth import (
     create_tokens,
     decode_token,
     get_current_user,
+    refresh_access_token,
     set_refresh_token_cookie,
     verify_and_update_password,
     verify_password,
@@ -477,4 +478,75 @@ async def test_get_current_user_returns_existing_user_for_valid_token(
     patch_secret_key()
     user = await get_current_user(db, sample_user_token)
     assert user == expected
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    ["sample_user_token", "user_id"],
+    [(user.id, str(user.id)) for user in users.values()],
+    indirect=["sample_user_token"],
+)
+async def test_refresh_token_returns_new_access_token_for_valid_token(
+    db, patch_secret_key, jwt_secret_key, sample_user_token, user_id
+):
+    patch_secret_key()
+    result = await refresh_access_token(db, sample_user_token)
+
+    assert "access_token" in result
+    assert "token_type" in result
+    assert result["token_type"] == "bearer"
+
+    decoded = jwt.decode(
+        result["access_token"], jwt_secret_key, algorithms=[JWT_ALGORITHM]
+    )
+    assert "sub" in decoded
+    assert str(decoded["sub"]) == user_id
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    "invalid_token",
+    INVALID_TOKENS,
+)
+async def test_refresh_token_raises_when_token_is_invalid(
+    db, patch_secret_key, jwt_fixtures, invalid_token
+):
+    patch_secret_key()
+
+    with pytest.raises(HTTPException) as exception:
+        await refresh_access_token(db, invalid_token)
+
+    expected = jwt_fixtures["credential_exception"]
+    assert exception.value.status_code == expected["status_code"]
+    assert exception.value.headers == expected["headers"]
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    ["encoded_token"],
+    INVALID_DATA_TOKENS
+    + [
+        pytest.param(
+            (
+                {
+                    "sub": str(ObjectId()),
+                    "exp": now_plus_delta(timedelta(minutes=5)),
+                },
+                {},
+            ),
+            id="no such user",
+        ),
+    ],
+    indirect=True,
+)
+async def test_refresh_token_raises_when_token_data_is_invalid(
+    db, patch_secret_key, encoded_token, jwt_fixtures
+):
+    patch_secret_key()
+    with pytest.raises(HTTPException) as exception:
+        await refresh_access_token(db, encoded_token)
+
+    expected = jwt_fixtures["credential_exception"]
+    assert exception.value.status_code == expected["status_code"]
+    assert exception.value.headers == expected["headers"]
 
