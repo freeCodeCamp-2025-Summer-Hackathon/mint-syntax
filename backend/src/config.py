@@ -1,16 +1,22 @@
 from functools import lru_cache
+from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+ENV_FILE_PATH = Path("..", ".env")
 
 
 class Settings(BaseSettings):
     api_location: str
-    secret_key: str
+    csrf_secret_key: str
     home_location: str
     mongodb_uri: str
-    csrf_secret_key: str
+    secret_key: str
 
-    model_config = SettingsConfigDict(env_file="../.env", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file=ENV_FILE_PATH,
+        extra="ignore",
+    )
 
 
 @lru_cache
