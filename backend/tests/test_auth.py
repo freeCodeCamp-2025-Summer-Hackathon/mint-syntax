@@ -5,6 +5,7 @@ from unittest import mock
 import jwt
 import pytest
 from fastapi import HTTPException
+from odmantic import ObjectId
 
 from src.auth import (
     ACCESS_TOKEN_DELTA,
@@ -15,13 +16,23 @@ from src.auth import (
     create_access_token,
     create_tokens,
     decode_token,
+    get_current_active_admin,
+    get_current_active_user,
+    get_current_user,
+    refresh_access_token,
     set_refresh_token_cookie,
     verify_and_update_password,
     verify_password,
 )
 from src.models import TokenData, User
 
-from .data_sample import user1, user_admin, user_outdated_hash
+from .data_sample import (
+    user1,
+    user_admin,
+    user_disabled,
+    user_disabled_with_outdated_hash,
+    users,
+)
 
 bcrypt_password_hash = "$2b$12$vogVV6RUAZPAb6NVZDNGn.PD2wpIXqAHTtsORL3M13xKEp6dPxv3O"
 bcrypt_different_password_hash = (
@@ -60,15 +71,12 @@ def jwt_fixtures():
 
 
 @pytest.fixture()
-def sample_user_token(request, jwt_secret_key):
+def sample_user_token(jwt_secret_key, request):
     user_id = str(request.param)
-    return (
-        user_id,
-        jwt.encode(
-            {"sub": user_id, "exp": now_plus_delta(timedelta(minutes=5))},
-            jwt_secret_key,
-            algorithm=JWT_ALGORITHM,
-        ),
+    return jwt.encode(
+        {"sub": user_id, "exp": now_plus_delta(timedelta(minutes=5))},
+        jwt_secret_key,
+        algorithm=JWT_ALGORITHM,
     )
 
 
@@ -79,6 +87,63 @@ def patch_secret_key(monkeypatch, jwt_secret_key):
         return secret_key
 
     return patch
+
+
+@pytest.fixture
+def encoded_token(jwt_secret_key, request):
+    payload, other_args = request.param
+    encode_args = {
+        "payload": {"sub": str(user1.id), "exp": now_plus_delta(timedelta(minutes=5))},
+        "key": jwt_secret_key,
+        "algorithm": JWT_ALGORITHM,
+    }
+    encode_args["payload"].update(payload)
+    encode_args.update(other_args)
+
+    return jwt.encode(**encode_args)
+
+
+INVALID_TOKENS = [
+    pytest.param("not a token", id="not a token"),
+    pytest.param(
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGFlZjdkODhiYjM3ZDhmZGQ3ZmE1ODYiLCJleHAiOjE3NTY5MDE5Nzd9",
+        id="cutoff token",
+    ),
+]
+
+
+INVALID_DATA_TOKENS = [
+    pytest.param(
+        (
+            {},
+            {
+                "key": "random-different-key",
+            },
+        ),
+        id="encoded with different secret key",
+    ),
+    pytest.param(
+        (
+            {},
+            {
+                "payload": {
+                    "exp": now_plus_delta(timedelta(minutes=5)),
+                }
+            },
+        ),
+        id="token doesn't have sub claim",
+    ),
+    pytest.param(
+        (
+            {
+                "sub": str(user1.id),
+                "exp": now_plus_delta(timedelta(seconds=-1)),
+            },
+            {},
+        ),
+        id="token is expired",
+    ),
+]
 
 
 @pytest.mark.parametrize(
@@ -222,16 +287,16 @@ async def test_authenticate_user(db, user, plain_password, expected):
 async def test_authenticate_user_updates_outdated_bcrypt_hash_when_password_is_correct(
     db,
 ):
-    initial_hash = user_outdated_hash.hashed_password
+    initial_hash = user_disabled_with_outdated_hash.hashed_password
     result = await authenticate_user(
-        db, user_outdated_hash.username, "different_password"
+        db, user_disabled_with_outdated_hash.username, "different_password"
     )
 
     assert isinstance(result, User)
     assert result.hashed_password != initial_hash
-    db.save.assert_called_once_with(user_outdated_hash)
+    db.save.assert_called_once_with(user_disabled_with_outdated_hash)
 
-    user_outdated_hash.hashed_password = initial_hash
+    user_disabled_with_outdated_hash.hashed_password = initial_hash
 
 
 def test_create_access_token_creates_different_jwt_with_different_config_secret_key(
@@ -297,7 +362,8 @@ def test_create_access_token_creates_token_expiring_at_specified_time(
 
 
 @pytest.mark.parametrize(
-    "user_id", [str(user1.id), str(user_admin.id), str(user_outdated_hash.id)]
+    "user_id",
+    [str(user1.id), str(user_admin.id), str(user_disabled_with_outdated_hash.id)],
 )
 def test_create_tokens_returns_two_tokens_and_refresh_token_expiration(
     patch_secret_key, user_id
@@ -342,89 +408,185 @@ def test_set_refresh_token_cookie_calls_set_cookie_method(jwt_fixtures):
 
 
 @pytest.mark.parametrize(
-    "sample_user_token", [user1.id, user_admin.id, user_outdated_hash.id], indirect=True
+    ["sample_user_token", "user_id"],
+    [(user.id, str(user.id)) for user in users.values()],
+    indirect=["sample_user_token"],
 )
 def test_decode_token_returns_decoded_data_with_user_id(
-    patch_secret_key, sample_user_token
+    patch_secret_key, sample_user_token, user_id
 ):
-    user_id, token = sample_user_token
-
     patch_secret_key()
-    decoded = decode_token(token)
+    decoded = decode_token(sample_user_token)
 
     assert isinstance(decoded, TokenData)
     assert str(decoded.id) == user_id
 
 
 @pytest.mark.parametrize(
-    "token",
-    [
-        pytest.param("not a token", id="not a token"),
-        pytest.param(
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGFlZjdkODhiYjM3ZDhmZGQ3ZmE1ODYiLCJleHAiOjE3NTY5MDE5Nzd9",
-            id="cutoff token",
-        ),
-    ],
+    "invalid_token",
+    INVALID_TOKENS,
 )
 def test_decode_token_raises_when_token_is_invalid(
-    patch_secret_key, jwt_fixtures, token
+    patch_secret_key, jwt_fixtures, invalid_token
 ):
     patch_secret_key()
 
     with pytest.raises(HTTPException) as exception:
-        decode_token(token)
+        decode_token(invalid_token)
 
     expected = jwt_fixtures["credential_exception"]
     assert exception.value.status_code == expected["status_code"]
     assert exception.value.headers == expected["headers"]
 
 
+@pytest.mark.parametrize("encoded_token", INVALID_DATA_TOKENS, indirect=True)
+def test_decode_token_raises_when_token_data_is_invalid(
+    patch_secret_key, jwt_fixtures, encoded_token
+):
+    patch_secret_key()
+    with pytest.raises(HTTPException) as exception:
+        decode_token(encoded_token)
+
+    expected = jwt_fixtures["credential_exception"]
+    assert exception.value.status_code == expected["status_code"]
+    assert exception.value.headers == expected["headers"]
+
+
+@pytest.mark.anyio
 @pytest.mark.parametrize(
-    ["payload", "other_args"],
-    [
+    "sample_user_token",
+    (ObjectId() for _ in range(5)),
+    indirect=True,
+)
+async def test_get_current_user_raises_when_token_doesnt_contain_id_of_existing_user(
+    db, sample_user_token, jwt_fixtures
+):
+    with pytest.raises(HTTPException) as exception:
+        await get_current_user(db, sample_user_token)
+
+    expected = jwt_fixtures["credential_exception"]
+    assert exception.value.status_code == expected["status_code"]
+    assert exception.value.headers == expected["headers"]
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    ["sample_user_token", "expected"],
+    ((user.id, user) for user in users.values()),
+    indirect=["sample_user_token"],
+)
+async def test_get_current_user_returns_existing_user_for_valid_token(
+    db, patch_secret_key, sample_user_token, expected
+):
+    patch_secret_key()
+    user = await get_current_user(db, sample_user_token)
+    assert user == expected
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    ["sample_user_token", "user_id"],
+    [(user.id, str(user.id)) for user in users.values()],
+    indirect=["sample_user_token"],
+)
+async def test_refresh_token_returns_new_access_token_for_valid_token(
+    db, patch_secret_key, jwt_secret_key, sample_user_token, user_id
+):
+    patch_secret_key()
+    result = await refresh_access_token(db, sample_user_token)
+
+    assert "access_token" in result
+    assert "token_type" in result
+    assert result["token_type"] == "bearer"
+
+    decoded = jwt.decode(
+        result["access_token"], jwt_secret_key, algorithms=[JWT_ALGORITHM]
+    )
+    assert "sub" in decoded
+    assert str(decoded["sub"]) == user_id
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    "invalid_token",
+    INVALID_TOKENS,
+)
+async def test_refresh_token_raises_when_token_is_invalid(
+    db, patch_secret_key, jwt_fixtures, invalid_token
+):
+    patch_secret_key()
+
+    with pytest.raises(HTTPException) as exception:
+        await refresh_access_token(db, invalid_token)
+
+    expected = jwt_fixtures["credential_exception"]
+    assert exception.value.status_code == expected["status_code"]
+    assert exception.value.headers == expected["headers"]
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    ["encoded_token"],
+    INVALID_DATA_TOKENS
+    + [
         pytest.param(
-            {},
-            {
-                "key": "random-different-key",
-            },
-            id="encoded with different secret key",
-        ),
-        pytest.param(
-            {},
-            {
-                "payload": {
+            (
+                {
+                    "sub": str(ObjectId()),
                     "exp": now_plus_delta(timedelta(minutes=5)),
-                }
-            },
-            id="token doesn't have sub claim",
-        ),
-        pytest.param(
-            {
-                "sub": str(user1.id),
-                "exp": now_plus_delta(timedelta(seconds=-1)),
-            },
-            {},
-            id="token is expired",
+                },
+                {},
+            ),
+            id="no such user",
         ),
     ],
+    indirect=True,
 )
-def test_decode_token_raises_when_token_data_is_invalid(
-    patch_secret_key, jwt_fixtures, payload, other_args, jwt_secret_key
+async def test_refresh_token_raises_when_token_data_is_invalid(
+    db, patch_secret_key, encoded_token, jwt_fixtures
 ):
-    encode_args = {
-        "payload": {"sub": str(user1.id), "exp": now_plus_delta(timedelta(minutes=5))},
-        "key": jwt_secret_key,
-        "algorithm": JWT_ALGORITHM,
-    }
-    encode_args["payload"].update(payload)
-    encode_args.update(other_args)
-
-    token = jwt.encode(**encode_args)
-
     patch_secret_key()
     with pytest.raises(HTTPException) as exception:
-        decode_token(token)
+        await refresh_access_token(db, encoded_token)
 
     expected = jwt_fixtures["credential_exception"]
     assert exception.value.status_code == expected["status_code"]
     assert exception.value.headers == expected["headers"]
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    "disabled_user", [user_disabled, user_disabled_with_outdated_hash]
+)
+async def test_get_current_active_user_raises_when_user_is_not_active(disabled_user):
+    with pytest.raises(HTTPException) as exception:
+        await get_current_active_user(disabled_user)
+
+    assert exception.value.status_code == 400
+    assert exception.value.detail == "Inactive user"
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize("active_user", [user1, user_admin])
+async def test_get_current_active_user_returns_user_if_user_is_active(active_user):
+    user = await get_current_active_user(active_user)
+    assert user == active_user
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    "non_admin", [user1, user_disabled, user_disabled_with_outdated_hash]
+)
+async def test_get_current_active_admin_raises_when_user_is_admin(non_admin):
+    with pytest.raises(HTTPException) as exception:
+        await get_current_active_admin(non_admin)
+
+    assert exception.value.status_code == 403
+    assert exception.value.detail == "Not enough permissions"
+
+
+@pytest.mark.anyio
+async def test_get_current_active_admin_returns_user_if_user_is_admin():
+    user = await get_current_active_admin(user_admin)
+
+    assert user == user_admin
