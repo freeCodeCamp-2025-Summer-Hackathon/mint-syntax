@@ -28,12 +28,12 @@ export const Pagination = ({
   const [activePage, setActivePage] = useState(initialPage);
   const pages = [...Array(numberOfPages).keys()].map(Page.fromZeroBased);
   const { page: paramPageOneBased = 1 } = useParams();
-
+  
   window.onpopstate = () => {
     const newPage = Page.fromOneBased(parseInt(paramPageOneBased));
     setActivePage(newPage);
     fetchPage(newPage);
-  };
+  }
 
   useEffect(() => {
     setActivePage(Page.fromOneBased(parseInt(paramPageOneBased)));
