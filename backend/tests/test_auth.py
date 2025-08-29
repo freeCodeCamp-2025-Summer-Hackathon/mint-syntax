@@ -16,6 +16,7 @@ from src.auth import (
     create_access_token,
     create_tokens,
     decode_token,
+    get_current_active_admin,
     get_current_active_user,
     get_current_user,
     refresh_access_token,
@@ -571,3 +572,21 @@ async def test_get_current_active_user_returns_user_if_user_is_active(active_use
     user = await get_current_active_user(active_user)
     assert user == active_user
 
+
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    "non_admin", [user1, user_disabled, user_disabled_with_outdated_hash]
+)
+async def test_get_current_active_admin_raises_when_user_is_admin(non_admin):
+    with pytest.raises(HTTPException) as exception:
+        await get_current_active_admin(non_admin)
+
+    assert exception.value.status_code == 403
+    assert exception.value.detail == "Not enough permissions"
+
+
+@pytest.mark.anyio
+async def test_get_current_active_admin_returns_user_if_user_is_admin():
+    user = await get_current_active_admin(user_admin)
+
+    assert user == user_admin
