@@ -117,6 +117,7 @@ async def vote(
 
     with suppress(ValueError):
         getattr(user, attributes.user_remove_from).remove(idea.id)
+    with suppress(ValueError):
         getattr(idea, attributes.idea_remove_from).remove(user.id)
 
     getattr(user, attributes.user_add_to).append(idea.id)
