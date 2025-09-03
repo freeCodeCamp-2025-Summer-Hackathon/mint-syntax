@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Form, HTTPException, Response
 from odmantic.exceptions import DuplicateKeyError
 
-from src.api.dependencies import AdminUser, UserFromPatchId
+from src.api.dependencies import AdminUser, PaginationParams, UserFromPatchId
 from src.api.ideas import get_user_ideas
 from src.auth import (
     create_tokens,
@@ -73,8 +73,8 @@ async def create_user(db: Db, create_data: Annotated[AdminUserCreate, Form()]):
     response_model=UsersAdmin,
     dependencies=[AdminUser],
 )
-async def list_users(db: Db, skip: int = 0, limit: int = 20):
-    users = await db.find(User, limit=limit, skip=skip, sort=User.name)
+async def list_users(db: Db, pagination: PaginationParams):
+    users = await db.find(User, **pagination.model_dump(), sort=User.name)
     count = await db.count(User)
     return UsersAdmin(
         users=[UserMe(**user.model_dump()) for user in users], count=count
@@ -87,8 +87,8 @@ async def get_user(user: UserFromPatch):
 
 
 @router.get("/{id}/ideas/", response_model=AdminUserIdeas, dependencies=[AdminUser])
-async def get_ideas(db: Db, user: UserFromPatch, skip: int = 0, limit: int = 20):
-    ideas = await get_user_ideas(db, user, skip=skip, limit=limit)
+async def get_ideas(db: Db, user: UserFromPatch, pagination: PaginationParams):
+    ideas = await get_user_ideas(db, user, **pagination.model_dump())
 
     return AdminUserIdeas(
         data=ideas.data,

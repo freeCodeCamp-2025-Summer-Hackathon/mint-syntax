@@ -2,7 +2,12 @@ from typing import Annotated
 
 from fastapi import APIRouter, HTTPException
 
-from src.api.dependencies import AdminUser, IdeaFromPatchId, LoggedInUser
+from src.api.dependencies import (
+    AdminUser,
+    IdeaFromPatchId,
+    LoggedInUser,
+    PaginationParams,
+)
 from src.api.ideas import count_ideas, get_ideas, vote
 from src.dependencies import Db
 from src.models import (
@@ -31,8 +36,8 @@ async def create_idea(
 
 
 @router.get("/", response_model=IdeasPublic)
-async def list_ideas(db: Db, skip: int = 0, limit: int = 20, sort: str | None = None):
-    return await get_ideas(db, skip=skip, limit=limit, sort=sort)
+async def list_ideas(db: Db, pagination: PaginationParams, sort: str | None = None):
+    return await get_ideas(db, **pagination.model_dump(), sort=sort)
 
 
 @router.get("/count")
