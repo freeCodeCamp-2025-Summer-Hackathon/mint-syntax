@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, HTTPException
 
-from src.api.dependencies import LoggedInUser
+from src.api.dependencies import LoggedInUser, PaginationParams
 from src.api.ideas import get_user_ideas, get_voted_ideas
 from src.auth import User, get_password_hash, verify_password
 from src.dependencies import Db
@@ -35,24 +35,24 @@ async def patch_me(
 
 @router.get("/ideas/", response_model=IdeasPublic)
 async def get_ideas(
-    db: Db, current_user: Annotated[User, LoggedInUser], skip: int = 0, limit: int = 20
+    db: Db, current_user: Annotated[User, LoggedInUser], pagination: PaginationParams
 ):
-    return await get_user_ideas(db, current_user, skip=skip, limit=limit)
+    return await get_user_ideas(db, current_user, **pagination.model_dump())
 
 
 @router.get("/upvotes/", response_model=IdeasPublic)
 async def get_upvotes(
-    db: Db, current_user: Annotated[User, LoggedInUser], skip: int = 0, limit: int = 20
+    db: Db, current_user: Annotated[User, LoggedInUser], pagination: PaginationParams
 ):
     return await get_voted_ideas(
-        db, current_user, limit=limit, skip=skip, which="upvotes"
+        db, current_user, **pagination.model_dump(), which="upvotes"
     )
 
 
 @router.get("/downvotes/", response_model=IdeasPublic)
 async def get_downvotes(
-    db: Db, current_user: Annotated[User, LoggedInUser], skip: int = 0, limit: int = 20
+    db: Db, current_user: Annotated[User, LoggedInUser], pagination: PaginationParams
 ):
     return await get_voted_ideas(
-        db, current_user, limit=limit, skip=skip, which="downvotes"
+        db, current_user, **pagination.model_dump(), which="downvotes"
     )
