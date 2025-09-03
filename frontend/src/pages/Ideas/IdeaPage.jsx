@@ -67,8 +67,8 @@ export const IdeaPage = () => {
         creatorId: data?.creator_id,
         name: data?.name,
         description: data?.description,
-        upvotes: data?.upvoted_by.length,
-        downvotes: data?.downvoted_by.length,
+        upvotes: data?.upvoted_by?.length,
+        downvotes: data?.downvoted_by?.length,
       });
       setLoading(false);
     }
@@ -82,7 +82,7 @@ export const IdeaPage = () => {
     <Spinny />
   ) : error ? (
     <div className='section-card flex flex-col items-center justify-center min-h-[60vh]'>
-      <ErrorElement>Error: {error}</ErrorElement>
+      <ErrorElement>Error: {error.message}</ErrorElement>
     </div>
   ) : (
     <section className='section-card'>
