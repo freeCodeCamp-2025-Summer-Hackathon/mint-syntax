@@ -4,9 +4,9 @@ from fastapi import APIRouter, HTTPException
 
 from src.api.dependencies import LoggedInUser, PaginationParams
 from src.api.ideas import get_user_ideas, get_voted_ideas
-from src.auth import User, get_password_hash, verify_password
+from src.auth import get_password_hash, verify_password
 from src.dependencies import Db
-from src.models import IdeasPublic, UserEditPatch, UserMe
+from src.models import IdeasPublic, User, UserEditPatch, UserMe
 
 router = APIRouter(prefix="/me")
 
