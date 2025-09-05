@@ -14,6 +14,7 @@ def env_variables():
         "csrf_secret_key": "csrf-secret-key",
         "home_location": "http://different.random.com:8000",
         "mongodb_uri": "mongodb://completely.different.com/name?directConnection=true",
+        "mongodb_test_uri": "mongodb://completely.very.different.com/dbname?directConnection=true",
         "secret_key": "secret-key-for-jwt",
     }
 

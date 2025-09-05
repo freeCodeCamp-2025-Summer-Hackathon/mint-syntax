@@ -5,7 +5,7 @@ from src.models import Idea, User
 
 user1 = User.model_validate(
     {
-        "username": "user",
+        "username": "test_user",
         "name": "name of user",
         "is_active": True,
         "is_admin": False,
@@ -16,7 +16,7 @@ user1 = User.model_validate(
 )
 user_admin = User.model_validate(
     {
-        "username": "adminUser",
+        "username": "test_adminUser",
         "name": "True Admin",
         "is_active": True,
         "is_admin": True,
@@ -27,7 +27,7 @@ user_admin = User.model_validate(
 )
 user_disabled = User.model_validate(
     {
-        "username": "disabled",
+        "username": "test_disabled",
         "name": "Disabled user",
         "is_active": False,
         "is_admin": False,
@@ -38,7 +38,7 @@ user_disabled = User.model_validate(
 )
 user_disabled_with_outdated_hash = User.model_validate(
     {
-        "username": "old_one",
+        "username": "test_old_one",
         "name": "user with bcrypt hash",
         "is_active": False,
         "is_admin": False,
@@ -52,7 +52,7 @@ user_disabled_with_outdated_hash = User.model_validate(
 
 idea1 = Idea.model_validate(
     {
-        "name": "Sample idea",
+        "name": "Test_Sample idea",
         "description": "Description of the sample idea, not very long.",
         "upvoted_by": [ObjectId() for _ in range(10)],
         "downvoted_by": [ObjectId() for _ in range(2)],
@@ -61,7 +61,7 @@ idea1 = Idea.model_validate(
 )
 idea2 = Idea.model_validate(
     {
-        "name": "Different idea",
+        "name": "Test_Different idea",
         "description": "Different description of the different idea, a bit longer, but still not very long.",  # noqa: E501
         "upvoted_by": [ObjectId() for _ in range(10)],
         "downvoted_by": [ObjectId() for _ in range(2)],

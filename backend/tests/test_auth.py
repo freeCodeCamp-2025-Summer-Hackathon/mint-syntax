@@ -279,22 +279,22 @@ def test_verify_and_update_password(
         ),
     ],
 )
-async def test_authenticate_user(db, user, plain_password, expected):
-    assert await authenticate_user(db, user, plain_password) == expected
+async def test_authenticate_user(fake_db, user, plain_password, expected):
+    assert await authenticate_user(fake_db, user, plain_password) == expected
 
 
 @pytest.mark.anyio
 async def test_authenticate_user_updates_outdated_bcrypt_hash_when_password_is_correct(
-    db,
+    fake_db,
 ):
     initial_hash = user_disabled_with_outdated_hash.hashed_password
     result = await authenticate_user(
-        db, user_disabled_with_outdated_hash.username, "different_password"
+        fake_db, user_disabled_with_outdated_hash.username, "different_password"
     )
 
     assert isinstance(result, User)
     assert result.hashed_password != initial_hash
-    db.save.assert_called_once_with(user_disabled_with_outdated_hash)
+    fake_db.save.assert_called_once_with(user_disabled_with_outdated_hash)
 
     user_disabled_with_outdated_hash.hashed_password = initial_hash
 
@@ -459,10 +459,10 @@ def test_decode_token_raises_when_token_data_is_invalid(
     indirect=True,
 )
 async def test_get_current_user_raises_when_token_doesnt_contain_id_of_existing_user(
-    db, sample_user_token, jwt_fixtures
+    fake_db, sample_user_token, jwt_fixtures
 ):
     with pytest.raises(HTTPException) as exception:
-        await get_current_user(db, sample_user_token)
+        await get_current_user(fake_db, sample_user_token)
 
     expected = jwt_fixtures["credential_exception"]
     assert exception.value.status_code == expected["status_code"]
@@ -476,10 +476,10 @@ async def test_get_current_user_raises_when_token_doesnt_contain_id_of_existing_
     indirect=["sample_user_token"],
 )
 async def test_get_current_user_returns_existing_user_for_valid_token(
-    db, patch_secret_key, sample_user_token, expected
+    fake_db, patch_secret_key, sample_user_token, expected
 ):
     patch_secret_key()
-    user = await get_current_user(db, sample_user_token)
+    user = await get_current_user(fake_db, sample_user_token)
     assert user == expected
 
 
@@ -490,10 +490,10 @@ async def test_get_current_user_returns_existing_user_for_valid_token(
     indirect=["sample_user_token"],
 )
 async def test_refresh_token_returns_new_access_token_for_valid_token(
-    db, patch_secret_key, jwt_secret_key, sample_user_token, user_id
+    fake_db, patch_secret_key, jwt_secret_key, sample_user_token, user_id
 ):
     patch_secret_key()
-    result = await refresh_access_token(db, sample_user_token)
+    result = await refresh_access_token(fake_db, sample_user_token)
 
     assert "access_token" in result
     assert "token_type" in result
@@ -512,12 +512,12 @@ async def test_refresh_token_returns_new_access_token_for_valid_token(
     INVALID_TOKENS,
 )
 async def test_refresh_token_raises_when_token_is_invalid(
-    db, patch_secret_key, jwt_fixtures, invalid_token
+    fake_db, patch_secret_key, jwt_fixtures, invalid_token
 ):
     patch_secret_key()
 
     with pytest.raises(HTTPException) as exception:
-        await refresh_access_token(db, invalid_token)
+        await refresh_access_token(fake_db, invalid_token)
 
     expected = jwt_fixtures["credential_exception"]
     assert exception.value.status_code == expected["status_code"]
@@ -543,11 +543,11 @@ async def test_refresh_token_raises_when_token_is_invalid(
     indirect=True,
 )
 async def test_refresh_token_raises_when_token_data_is_invalid(
-    db, patch_secret_key, encoded_token, jwt_fixtures
+    fake_db, patch_secret_key, encoded_token, jwt_fixtures
 ):
     patch_secret_key()
     with pytest.raises(HTTPException) as exception:
-        await refresh_access_token(db, encoded_token)
+        await refresh_access_token(fake_db, encoded_token)
 
     expected = jwt_fixtures["credential_exception"]
     assert exception.value.status_code == expected["status_code"]

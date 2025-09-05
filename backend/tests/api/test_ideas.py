@@ -144,13 +144,13 @@ VOTE_CALL_TEST_CASES = (
     VOTE_CASES,
 )
 async def test_vote_modifies_user_and_idea_objects(
-    db, cleanup_votes, user, idea, user_vote, setup
+    fake_db, cleanup_votes, user, idea, user_vote, setup
 ):
     with cleanup_votes(user, idea):
         setup(user, idea)
         new_vote = user_vote(idea_id=idea.id)
 
-        result = await vote(db, user, idea, new_vote)
+        result = await vote(fake_db, user, idea, new_vote)
         check_vote(user, result, new_vote)
 
 
@@ -160,17 +160,17 @@ async def test_vote_modifies_user_and_idea_objects(
     VOTE_CALL_TEST_CASES,
 )
 async def test_vote_calls_db_save(
-    db, cleanup_votes, user, idea, user_vote, setup, should_call
+    fake_db, cleanup_votes, user, idea, user_vote, setup, should_call
 ):
     with cleanup_votes(user, idea):
         setup(user, idea)
         new_vote = user_vote(idea_id=idea.id)
 
-        await vote(db, user, idea, new_vote)
+        await vote(fake_db, user, idea, new_vote)
 
         if should_call:
-            assert db.save.await_count == 2
-            db.save.assert_any_await(user)
-            db.save.assert_any_await(idea)
+            assert fake_db.save.await_count == 2
+            fake_db.save.assert_any_await(user)
+            fake_db.save.assert_any_await(idea)
         else:
-            db.save.assert_not_awaited()
+            fake_db.save.assert_not_awaited()
