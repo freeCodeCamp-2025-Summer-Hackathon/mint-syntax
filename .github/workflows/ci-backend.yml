@@ -1,4 +1,4 @@
-name: Test backend
+name: Test backend (unit test)
 
 on:
   push:
@@ -11,7 +11,7 @@ on:
 
 
 jobs:
-  test-backend:
+  test-backend-unit-test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -25,4 +25,4 @@ jobs:
       - name: Install dependencies
         run: uv sync --locked --all-extras --dev --directory ./backend
       - name: Run tests
-        run: uv run --directory ./backend pytest
+        run: uv run --directory ./backend pytest -m "not integration"
