@@ -1,11 +1,14 @@
+import random
 from contextlib import contextmanager, suppress
 
 import pytest
+from odmantic.session import AIOSession
 
-from src.api.ideas import vote
+from src.api.ideas import count_ideas, vote
 from src.models import Idea, IdeaDownvote, IdeaUpvote, User
 
 from ..data_sample import idea1, user1
+from ..util import setup_ideas, setup_users
 
 
 def setup_downvote(user: User, idea: Idea):
@@ -174,3 +177,31 @@ async def test_vote_calls_db_save(
             fake_db.save.assert_any_await(idea)
         else:
             fake_db.save.assert_not_awaited()
+
+
+@pytest.mark.integration
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    "ideas_count",
+    [0, *[random.randint(1, 15) for _ in range(9)]],
+)
+async def test_count_ideas_individual_user(real_db: AIOSession, ideas_count):
+    async with setup_users(real_db) as users:
+        [user] = users
+        async with setup_ideas(real_db, user, ideas_count):
+            result = await count_ideas(real_db, user)
+            assert result == ideas_count
+
+
+@pytest.mark.integration
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    "ideas_to_add", [0, *[random.randint(1, 15) for _ in range(9)]]
+)
+async def test_count_ideas_returns_correct_number_of_ideas_after_adding_ideas(
+    real_db: AIOSession, ideas_to_add
+):
+    initial_count = await count_ideas(real_db)
+    async with setup_ideas(real_db, user1, ideas_to_add):
+        result = await count_ideas(real_db)
+        assert result == initial_count + ideas_to_add
