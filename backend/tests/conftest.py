@@ -3,12 +3,16 @@ from collections.abc import Callable
 from unittest import mock
 
 import pytest
-from odmantic import query
+from motor.motor_asyncio import AsyncIOMotorClient
+from odmantic import AIOEngine, query
 
-from .data_sample import data
+from src.config import get_settings
+from src.models import Idea, User
+
+from .data_sample import data, ideas, users
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def anyio_backend():
     return "asyncio"
 
@@ -38,7 +42,27 @@ async def fake_find_one(model, q: query.QueryExpression):
 
 
 @pytest.fixture
-def db():
-    fake_db = mock.AsyncMock()
-    fake_db.find_one = fake_find_one
-    return fake_db
+def fake_db():
+    fake = mock.AsyncMock()
+    fake.find_one = fake_find_one
+    return fake
+
+
+@pytest.fixture(scope="session")
+async def real_db():
+    client = AsyncIOMotorClient(get_settings().mongodb_test_uri)
+    engine = AIOEngine(client=client)
+    await engine.configure_database((User, Idea))
+
+    async with engine.session() as session:
+        for user in users.values():
+            await session.save(user)
+        for idea in ideas.values():
+            await session.save(idea)
+
+        yield session
+
+        for user in users.values():
+            await session.delete(user)
+        for idea in ideas.values():
+            await session.delete(idea)

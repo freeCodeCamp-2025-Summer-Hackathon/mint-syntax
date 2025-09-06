@@ -34,8 +34,8 @@ from ..data_sample import ideas, users
         ],
     ],
 )
-async def test_find_one_or_404_valid_ids(db, model, id, expected):
-    result = await find_one_or_404(db, model, id)
+async def test_find_one_or_404_valid_ids(fake_db, model, id, expected):
+    result = await find_one_or_404(fake_db, model, id)
     assert result == expected
 
 
@@ -49,8 +49,8 @@ async def test_find_one_or_404_valid_ids(db, model, id, expected):
         [User, ideas["idea1"].id],
     ],
 )
-async def test_find_one_or_404_invalid_ids(db, model, id):
+async def test_find_one_or_404_invalid_ids(fake_db, model, id):
     with pytest.raises(HTTPException) as exception:
-        await find_one_or_404(db, model, id)
+        await find_one_or_404(fake_db, model, id)
     assert exception.value.status_code == 404
     assert exception.value.detail == "Not found"

@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     csrf_secret_key: str
     home_location: str
     mongodb_uri: str
+    mongodb_test_uri: str
     secret_key: str
 
     model_config = SettingsConfigDict(
