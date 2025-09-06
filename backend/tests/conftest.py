@@ -55,10 +55,8 @@ async def real_db():
     await engine.configure_database((User, Idea))
 
     async with engine.session() as session:
-        for user in users.values():
-            await session.save(user)
-        for idea in ideas.values():
-            await session.save(idea)
+        await session.save_all(list(users.values()))
+        await session.save_all(list(ideas.values()))
 
         yield session
 
