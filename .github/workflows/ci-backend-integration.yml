@@ -1,0 +1,34 @@
+name: Test backend (integration)
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
+
+jobs:
+  test-backend-integration:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Copy .env file
+        run: cp sample.env .env
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          working-directory: ./backend
+      - name: Install dependencies
+        run: uv sync --locked --all-extras --dev --directory ./backend
+
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.12.0
+        with:
+            mongodb-version: '6.0'
+
+      - name: Run tests
+        run: uv run --directory ./backend pytest -m integration
