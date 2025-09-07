@@ -67,6 +67,18 @@ const IdeasList = ({
     }
   }, [data, count]);
 
+  useEffect(() => {
+    window.onpopstate = () => {
+      const newPage = Page.fromOneBased(parseInt(paramPageOneBased));
+      setActivePage(newPage);
+      fetchPage(newPage);
+    };
+
+    return () => {
+      window.onpopstate = () => {};
+    };
+  }, [fetchPage, paramPageOneBased]);
+
   const pagination = useMemo(
     () => (
       <Pagination
