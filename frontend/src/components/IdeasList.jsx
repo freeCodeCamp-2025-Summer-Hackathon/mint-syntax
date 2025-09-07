@@ -3,7 +3,7 @@ import { IdeaListItem } from './IdeaListItem';
 import { useApi } from '../hooks/useApi';
 import { Page, Pagination } from './Pagination';
 import Spinny from './Spinny';
-import { Link } from 'react-router';
+import { Link, useLocation } from 'react-router';
 
 const IdeasList = ({
   base = '/ideas/',
@@ -12,7 +12,7 @@ const IdeasList = ({
   addNewButton = true,
   count,
   sort = null,
-  page = Page.fromZeroBased(0),
+  page: initialPage = Page.fromZeroBased(0),
   paginate = false,
   showExploreButton = false,
 }) => {
@@ -20,9 +20,11 @@ const IdeasList = ({
   const [headerText, setHeaderText] = useState(null);
   const [totalPages, setTotalPages] = useState(0);
   const [entries, setEntries] = useState([]);
+  const [page, setPage] = useState(initialPage);
   const { isLoading, error, data, fetchFromApi } = useApi({
     loadingInitially: true,
   });
+  const location = useLocation();
 
   const getApiUrl = useCallback(
     pageToFetch => {
@@ -39,12 +41,21 @@ const IdeasList = ({
     [base]
   );
 
+  const getPageFromLocation = () => {
+    const match = location.pathname.match(/page\/(\d+)/);
+    const pageOneBased = match ? parseInt(match[1], 10) : 1;
+    return Page.fromOneBased(pageOneBased);
+  };
+
+  const fetchPage = async paginationPage => {
+    setPage(paginationPage);
+    await fetchFromApi(getApiUrl(paginationPage));
+  };
+
   useEffect(() => {
     const skip = page.number > 0 ? `&skip=${page.number * count}` : '';
     const sorting = sort ? `&sort=${sort}` : '';
-
     const fetchUrl = `${base}?limit=${count}${sorting}${skip}`;
-
     fetchFromApi(fetchUrl);
   }, [fetchFromApi, base, count, sort, page]);
 
@@ -68,16 +79,16 @@ const IdeasList = ({
   }, [data, count]);
 
   useEffect(() => {
-    window.onpopstate = () => {
-      const newPage = Page.fromOneBased(parseInt(paramPageOneBased));
-      setActivePage(newPage);
+    const handlePopState = () => {
+      const newPage = getPageFromLocation();
       fetchPage(newPage);
     };
-
+    window.addEventListener('popstate', handlePopState);
     return () => {
-      window.onpopstate = () => {};
+      window.removeEventListener('popstate', handlePopState);
     };
-  }, [fetchPage, paramPageOneBased]);
+    // Include location in deps to update when URL changes
+  }, [location, fetchFromApi, getApiUrl]);
 
   const pagination = useMemo(
     () => (
@@ -86,13 +97,11 @@ const IdeasList = ({
           numberOfPages: totalPages,
           getPageUrl,
           initialPage: page,
-          fetchPage: async paginationPage => {
-            await fetchFromApi(getApiUrl(paginationPage));
-          },
+          fetchPage,
         }}
       />
     ),
-    [totalPages, fetchFromApi, getApiUrl, getPageUrl, page]
+    [totalPages, fetchPage, getPageUrl, page]
   );
 
   return (
@@ -129,7 +138,6 @@ const IdeasList = ({
         {paginate &&
           showPages &&
           (entries.length > 0 || page.displayNumber > 1) && <>{pagination}</>}
-
         {showExploreButton && (
           <div style={{ textAlign: 'center', marginTop: 'var(--spacing-md)' }}>
             <Link to='/ideas' className='animated-button golden'>
