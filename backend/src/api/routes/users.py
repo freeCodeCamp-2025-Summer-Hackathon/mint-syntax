@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Form, HTTPException, Response
 from odmantic.exceptions import DuplicateKeyError
 
-from src.api.dependencies import AdminUser, PaginationParams, UserFromPatchId
+from src.api.dependencies import AdminUser, PaginationParams, UserFromPathId
 from src.api.ideas import get_user_ideas
 from src.auth import (
     create_tokens,
@@ -25,7 +25,7 @@ from src.models import (
 )
 
 router = APIRouter(prefix="/users")
-UserFromPatch = Annotated[User, UserFromPatchId]
+UserFromPath = Annotated[User, UserFromPathId]
 
 
 async def add_user(db: Db, data: Annotated[AdminUserCreate | UserRegister, Form()]):
@@ -82,12 +82,12 @@ async def list_users(db: Db, pagination: PaginationParams):
 
 
 @router.get("/{id}", response_model=UserMe, dependencies=[AdminUser])
-async def get_user(user: UserFromPatch):
+async def get_user(user: UserFromPath):
     return user
 
 
 @router.get("/{id}/ideas/", response_model=AdminUserIdeas, dependencies=[AdminUser])
-async def get_ideas(db: Db, user: UserFromPatch, pagination: PaginationParams):
+async def get_ideas(db: Db, user: UserFromPath, pagination: PaginationParams):
     ideas = await get_user_ideas(db, user, **pagination.model_dump())
 
     return AdminUserIdeas(
@@ -98,7 +98,7 @@ async def get_ideas(db: Db, user: UserFromPatch, pagination: PaginationParams):
 
 
 @router.patch("/{id}", response_model=UserMe, dependencies=[AdminUser])
-async def update_user(db: Db, user: UserFromPatch, update_data: AdminUserEditPatch):
+async def update_user(db: Db, user: UserFromPath, update_data: AdminUserEditPatch):
     if update_data.new_password is not None:
         update_data.hashed_password = get_password_hash(update_data.new_password)
     user.model_update(update_data, exclude={"old_password, new_password"})
