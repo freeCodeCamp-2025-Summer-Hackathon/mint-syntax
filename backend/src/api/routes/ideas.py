@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException
 
 from src.api.dependencies import (
     AdminUser,
-    IdeaFromPatchId,
+    IdeaFromPathId,
     LoggedInUser,
     PaginationParams,
 )
@@ -23,7 +23,7 @@ from src.models import (
 )
 
 router = APIRouter(prefix="/ideas")
-IdeaFromPatch = Annotated[Idea, IdeaFromPatchId]
+IdeaFromPath = Annotated[Idea, IdeaFromPathId]
 
 
 @router.post("/", response_model=IdeaPublic)
@@ -46,7 +46,7 @@ async def count(db: Db) -> int:
 
 
 @router.get("/{id}", response_model=IdeaPublic)
-async def get_idea_by_id(idea: IdeaFromPatch):
+async def get_idea_by_id(idea: IdeaFromPath):
     return idea
 
 
@@ -54,7 +54,7 @@ async def get_idea_by_id(idea: IdeaFromPatch):
 async def update_idea(
     db: Db,
     current_user: Annotated[User, LoggedInUser],
-    idea: IdeaFromPatch,
+    idea: IdeaFromPath,
     update_data: IdeaEditPatch,
 ):
     if not current_user.is_admin and current_user.id != idea.creator_id:
@@ -65,7 +65,7 @@ async def update_idea(
 
 
 @router.delete("/{id}", dependencies=[AdminUser])
-async def delete_idea_by_id(db: Db, idea: IdeaFromPatch) -> Message:
+async def delete_idea_by_id(db: Db, idea: IdeaFromPath) -> Message:
     await db.delete(idea)
     return Message(message="Idea deleted successfully")
 
@@ -74,7 +74,7 @@ async def delete_idea_by_id(db: Db, idea: IdeaFromPatch) -> Message:
 async def upvote_idea(
     db: Db,
     current_user: Annotated[User, LoggedInUser],
-    idea: IdeaFromPatch,
+    idea: IdeaFromPath,
     upvote_data: IdeaUpvote,
 ):
     return await vote(db, current_user, idea, upvote_data)
@@ -84,7 +84,7 @@ async def upvote_idea(
 async def downvote_idea(
     db: Db,
     current_user: Annotated[User, LoggedInUser],
-    idea: IdeaFromPatch,
+    idea: IdeaFromPath,
     downvote_data: IdeaDownvote,
 ):
     return await vote(db, current_user, idea, downvote_data)
