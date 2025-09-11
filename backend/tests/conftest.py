@@ -1,15 +1,19 @@
 import operator
 from collections.abc import Callable
+from datetime import timedelta
 from unittest import mock
 
+import jwt
 import pytest
 from motor.motor_asyncio import AsyncIOMotorClient
 from odmantic import AIOEngine, query
 
+from src.auth import JWT_ALGORITHM, config
 from src.config import get_settings
 from src.models import Idea, User
 
 from .data_sample import data, ideas, users
+from .util import now_plus_delta
 
 
 @pytest.fixture(scope="session")
@@ -64,3 +68,29 @@ async def real_db():
             await session.delete(user)
         for idea in ideas.values():
             await session.delete(idea)
+
+
+@pytest.fixture
+def jwt_secret_key():
+    return "test-secret-key"
+
+
+@pytest.fixture()
+def sample_user_token(jwt_secret_key, request):
+    user_id = str(request.param)
+    if not user_id:
+        return None
+    return jwt.encode(
+        {"sub": user_id, "exp": now_plus_delta(timedelta(minutes=5))},
+        jwt_secret_key,
+        algorithm=JWT_ALGORITHM,
+    )
+
+
+@pytest.fixture
+def patch_jwt_secret_key(monkeypatch, jwt_secret_key):
+    def patch(secret_key=jwt_secret_key):
+        monkeypatch.setattr(config, "secret_key", secret_key)
+        return secret_key
+
+    return patch

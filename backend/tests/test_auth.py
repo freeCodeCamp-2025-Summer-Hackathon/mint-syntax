@@ -1,4 +1,4 @@
-from datetime import UTC, datetime, timedelta
+from datetime import timedelta
 from types import NoneType
 from unittest import mock
 
@@ -12,7 +12,6 @@ from src.auth import (
     JWT_ALGORITHM,
     REFRESH_TOKEN_DELTA,
     authenticate_user,
-    config,
     create_access_token,
     create_tokens,
     decode_token,
@@ -33,6 +32,7 @@ from .data_sample import (
     user_disabled_with_outdated_hash,
     users,
 )
+from .util import now_plus_delta
 
 bcrypt_password_hash = "$2b$12$vogVV6RUAZPAb6NVZDNGn.PD2wpIXqAHTtsORL3M13xKEp6dPxv3O"
 bcrypt_different_password_hash = (
@@ -49,15 +49,6 @@ argon2_different_password_hash = (
 )
 
 
-def now_plus_delta(delta: timedelta = timedelta()):
-    return datetime.now(UTC) + delta
-
-
-@pytest.fixture
-def jwt_secret_key():
-    return "test-secret-key"
-
-
 @pytest.fixture
 def jwt_fixtures():
     return {
@@ -68,25 +59,6 @@ def jwt_fixtures():
             "headers": {"WWW-Authenticate": "Bearer"},
         },
     }
-
-
-@pytest.fixture()
-def sample_user_token(jwt_secret_key, request):
-    user_id = str(request.param)
-    return jwt.encode(
-        {"sub": user_id, "exp": now_plus_delta(timedelta(minutes=5))},
-        jwt_secret_key,
-        algorithm=JWT_ALGORITHM,
-    )
-
-
-@pytest.fixture
-def patch_secret_key(monkeypatch, jwt_secret_key):
-    def patch(secret_key=jwt_secret_key):
-        monkeypatch.setattr(config, "secret_key", secret_key)
-        return secret_key
-
-    return patch
 
 
 @pytest.fixture
@@ -300,11 +272,11 @@ async def test_authenticate_user_updates_outdated_bcrypt_hash_when_password_is_c
 
 
 def test_create_access_token_creates_different_jwt_with_different_config_secret_key(
-    patch_secret_key, jwt_fixtures
+    patch_jwt_secret_key, jwt_fixtures
 ):
-    patch_secret_key()
+    patch_jwt_secret_key()
     token1 = create_access_token(jwt_fixtures["sample"])
-    patch_secret_key("different-test-secret-key")
+    patch_jwt_secret_key("different-test-secret-key")
     token2 = create_access_token(jwt_fixtures["sample"])
 
     assert token1 != token2
@@ -317,8 +289,8 @@ def test_create_access_token_creates_different_jwt_with_different_config_secret_
         {"data1": 1, "data2": 2},
     ],
 )
-def test_create_access_token_encoded_token_has_correct_data(patch_secret_key, data):
-    secret_key = patch_secret_key()
+def test_create_access_token_encoded_token_has_correct_data(patch_jwt_secret_key, data):
+    secret_key = patch_jwt_secret_key()
     token = create_access_token(data)
     decoded = jwt.decode(token, secret_key, algorithms=[JWT_ALGORITHM])
 
@@ -349,9 +321,9 @@ def test_create_access_token_encoded_token_has_correct_data(patch_secret_key, da
     ],
 )
 def test_create_access_token_creates_token_expiring_at_specified_time(
-    patch_secret_key, expiration_delta
+    patch_jwt_secret_key, expiration_delta
 ):
-    secret_key = patch_secret_key()
+    secret_key = patch_jwt_secret_key()
     token = create_access_token({}, expires_delta=expiration_delta)
 
     decoded = jwt.decode(token, secret_key, algorithms=[JWT_ALGORITHM])
@@ -366,9 +338,9 @@ def test_create_access_token_creates_token_expiring_at_specified_time(
     [str(user1.id), str(user_admin.id), str(user_disabled_with_outdated_hash.id)],
 )
 def test_create_tokens_returns_two_tokens_and_refresh_token_expiration(
-    patch_secret_key, user_id
+    patch_jwt_secret_key, user_id
 ):
-    secret_key = patch_secret_key()
+    secret_key = patch_jwt_secret_key()
     access_token, refresh_token, refresh_token_expiration_delta = create_tokens(user_id)
 
     decoded_access_token = jwt.decode(
@@ -413,9 +385,9 @@ def test_set_refresh_token_cookie_calls_set_cookie_method(jwt_fixtures):
     indirect=["sample_user_token"],
 )
 def test_decode_token_returns_decoded_data_with_user_id(
-    patch_secret_key, sample_user_token, user_id
+    patch_jwt_secret_key, sample_user_token, user_id
 ):
-    patch_secret_key()
+    patch_jwt_secret_key()
     decoded = decode_token(sample_user_token)
 
     assert isinstance(decoded, TokenData)
@@ -427,9 +399,9 @@ def test_decode_token_returns_decoded_data_with_user_id(
     INVALID_TOKENS,
 )
 def test_decode_token_raises_when_token_is_invalid(
-    patch_secret_key, jwt_fixtures, invalid_token
+    patch_jwt_secret_key, jwt_fixtures, invalid_token
 ):
-    patch_secret_key()
+    patch_jwt_secret_key()
 
     with pytest.raises(HTTPException) as exception:
         decode_token(invalid_token)
@@ -441,9 +413,9 @@ def test_decode_token_raises_when_token_is_invalid(
 
 @pytest.mark.parametrize("encoded_token", INVALID_DATA_TOKENS, indirect=True)
 def test_decode_token_raises_when_token_data_is_invalid(
-    patch_secret_key, jwt_fixtures, encoded_token
+    patch_jwt_secret_key, jwt_fixtures, encoded_token
 ):
-    patch_secret_key()
+    patch_jwt_secret_key()
     with pytest.raises(HTTPException) as exception:
         decode_token(encoded_token)
 
@@ -476,9 +448,9 @@ async def test_get_current_user_raises_when_token_doesnt_contain_id_of_existing_
     indirect=["sample_user_token"],
 )
 async def test_get_current_user_returns_existing_user_for_valid_token(
-    fake_db, patch_secret_key, sample_user_token, expected
+    fake_db, patch_jwt_secret_key, sample_user_token, expected
 ):
-    patch_secret_key()
+    patch_jwt_secret_key()
     user = await get_current_user(fake_db, sample_user_token)
     assert user == expected
 
@@ -490,9 +462,9 @@ async def test_get_current_user_returns_existing_user_for_valid_token(
     indirect=["sample_user_token"],
 )
 async def test_refresh_token_returns_new_access_token_for_valid_token(
-    fake_db, patch_secret_key, jwt_secret_key, sample_user_token, user_id
+    fake_db, patch_jwt_secret_key, jwt_secret_key, sample_user_token, user_id
 ):
-    patch_secret_key()
+    patch_jwt_secret_key()
     result = await refresh_access_token(fake_db, sample_user_token)
 
     assert "access_token" in result
@@ -512,9 +484,9 @@ async def test_refresh_token_returns_new_access_token_for_valid_token(
     INVALID_TOKENS,
 )
 async def test_refresh_token_raises_when_token_is_invalid(
-    fake_db, patch_secret_key, jwt_fixtures, invalid_token
+    fake_db, patch_jwt_secret_key, jwt_fixtures, invalid_token
 ):
-    patch_secret_key()
+    patch_jwt_secret_key()
 
     with pytest.raises(HTTPException) as exception:
         await refresh_access_token(fake_db, invalid_token)
@@ -543,9 +515,9 @@ async def test_refresh_token_raises_when_token_is_invalid(
     indirect=True,
 )
 async def test_refresh_token_raises_when_token_data_is_invalid(
-    fake_db, patch_secret_key, encoded_token, jwt_fixtures
+    fake_db, patch_jwt_secret_key, encoded_token, jwt_fixtures
 ):
-    patch_secret_key()
+    patch_jwt_secret_key()
     with pytest.raises(HTTPException) as exception:
         await refresh_access_token(fake_db, encoded_token)
 

@@ -49,6 +49,17 @@ user_disabled_with_outdated_hash = User.model_validate(
         ),
     }
 )
+user_admin_disabled = User.model_validate(
+    {
+        "username": "test_disabled_admin",
+        "name": "Disabled admin",
+        "is_active": False,
+        "is_admin": True,
+        "upvotes": [],
+        "downvotes": [],
+        "hashed_password": get_password_hash("4password"),
+    }
+)
 
 idea1 = Idea.model_validate(
     {
@@ -79,6 +90,7 @@ users = {
     "user2": user_admin,
     "user3": user_disabled,
     "user4": user_disabled_with_outdated_hash,
+    "user5": user_admin_disabled,
 }
 
 data: dict = {User: users, Idea: ideas}

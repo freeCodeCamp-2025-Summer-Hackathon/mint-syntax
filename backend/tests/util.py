@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+from datetime import UTC, datetime, timedelta
 
 import faker
 from odmantic.session import AIOSession
@@ -56,3 +57,7 @@ async def setup_users(real_db: AIOSession, count: int = 1):
     finally:
         for user in users:
             await real_db.delete(user)
+
+
+def now_plus_delta(delta: timedelta = timedelta()):
+    return datetime.now(UTC) + delta
