@@ -33,6 +33,17 @@ export const Pagination = ({
     setActivePage(Page.fromOneBased(parseInt(paramPageOneBased)));
   }, [paramPageOneBased]);
 
+  useEffect(() => {
+    window.onpopstate = () => {
+      const newPage = Page.fromOneBased(parseInt(paramPageOneBased));
+      setActivePage(newPage);
+      fetchPage(newPage);
+    };
+    return () => {
+      window.onpopstate = () => {};
+    };
+  }, [fetchPage, paramPageOneBased]);
+
   const Href = ({ page = null, active = false, children }) => {
     if (page === null || active) {
       return (
