@@ -182,15 +182,16 @@ async def test_vote_calls_db_save(
 @pytest.mark.integration
 @pytest.mark.anyio
 @pytest.mark.parametrize(
-    "ideas_count",
+    "user_with_ideas",
     [0, *[random.randint(1, 15) for _ in range(9)]],
+    indirect=True,
 )
-async def test_count_ideas_individual_user(real_db: AIOSession, ideas_count):
-    async with setup_users(real_db) as users:
-        [user] = users
-        async with setup_ideas(real_db, user, ideas_count):
-            result = await count_ideas(real_db, user)
-            assert result == ideas_count
+async def test_count_ideas_individual_user(real_db: AIOSession, user_with_ideas):
+    user, _, ideas_count = user_with_ideas
+
+    result = await count_ideas(real_db, user)
+
+    assert result == ideas_count
 
 
 @pytest.mark.integration
