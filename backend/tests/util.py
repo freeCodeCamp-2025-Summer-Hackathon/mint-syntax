@@ -1,5 +1,6 @@
 from contextlib import asynccontextmanager
 from datetime import UTC, datetime, timedelta
+from typing import Literal
 
 import faker
 from odmantic.session import AIOSession
@@ -57,6 +58,38 @@ async def setup_users(real_db: AIOSession, count: int = 1):
     finally:
         for user in users:
             await real_db.delete(user)
+
+
+@asynccontextmanager
+async def setup_votes(
+    real_db: AIOSession,
+    user: User,
+    ideas: list[Idea],
+    which: Literal["downvote", "upvote"],
+):
+    user_id = user.id
+    try:
+        for idea in ideas:
+            if which == "downvote":
+                idea.downvoted_by.append(user_id)
+                user.downvotes.append(idea.id)
+            else:
+                idea.upvoted_by.append(user_id)
+                user.upvotes.append(idea.id)
+
+        await real_db.save_all(ideas)
+        await real_db.save(user)
+        yield
+    finally:
+        for idea in ideas:
+            if which == "downvote":
+                idea.downvoted_by.remove(user_id)
+                user.downvotes.remove(idea.id)
+            else:
+                idea.upvoted_by.remove(user_id)
+                user.upvotes.remove(idea.id)
+        await real_db.save_all(ideas)
+        await real_db.save(user)
 
 
 def now_plus_delta(delta: timedelta = timedelta()):

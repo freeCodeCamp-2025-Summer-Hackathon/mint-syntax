@@ -59,15 +59,18 @@ async def real_db():
     await engine.configure_database((User, Idea))
 
     async with engine.session() as session:
-        await session.save_all(list(users.values()))
-        await session.save_all(list(ideas.values()))
+        user_names = [user.name for user in users.values()]
+        idea_names = [idea.name for idea in ideas.values()]
+        try:
+            await session.remove(User, query.in_(User.name, user_names))
+            await session.remove(Idea, query.in_(Idea.name, idea_names))
 
-        yield session
-
-        for user in users.values():
-            await session.delete(user)
-        for idea in ideas.values():
-            await session.delete(idea)
+            await session.save_all(list(users.values()))
+            await session.save_all(list(ideas.values()))
+            yield session
+        finally:
+            await session.remove(User, query.in_(User.name, user_names))
+            await session.remove(Idea, query.in_(Idea.name, idea_names))
 
 
 @pytest.fixture

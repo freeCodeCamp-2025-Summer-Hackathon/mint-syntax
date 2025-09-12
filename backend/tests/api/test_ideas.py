@@ -1,14 +1,29 @@
+import operator
 import random
 from contextlib import contextmanager, suppress
 
 import pytest
 from odmantic.session import AIOSession
 
-from src.api.ideas import count_ideas, vote
+from src.api.ideas import (
+    count_ideas,
+    get_ideas,
+    get_ideas_by_upvotes,
+    get_user_ideas,
+    get_voted_ideas,
+    vote,
+)
 from src.models import Idea, IdeaDownvote, IdeaUpvote, User
 
 from ..data_sample import idea1, user1
-from ..util import setup_ideas, setup_users
+from ..util import setup_ideas, setup_votes
+
+
+def assert_in_order(items, ascending=True):
+    compare = operator.le if ascending else operator.ge
+    assert all(
+        compare(items[prev_index], item) for prev_index, item in enumerate(items[1:])
+    )
 
 
 def setup_downvote(user: User, idea: Idea):
@@ -182,15 +197,16 @@ async def test_vote_calls_db_save(
 @pytest.mark.integration
 @pytest.mark.anyio
 @pytest.mark.parametrize(
-    "ideas_count",
+    "user_with_ideas",
     [0, *[random.randint(1, 15) for _ in range(9)]],
+    indirect=True,
 )
-async def test_count_ideas_individual_user(real_db: AIOSession, ideas_count):
-    async with setup_users(real_db) as users:
-        [user] = users
-        async with setup_ideas(real_db, user, ideas_count):
-            result = await count_ideas(real_db, user)
-            assert result == ideas_count
+async def test_count_ideas_individual_user(real_db: AIOSession, user_with_ideas):
+    user, _, ideas_count = user_with_ideas
+
+    result = await count_ideas(real_db, user)
+
+    assert result == ideas_count
 
 
 @pytest.mark.integration
@@ -205,3 +221,139 @@ async def test_count_ideas_returns_correct_number_of_ideas_after_adding_ideas(
     async with setup_ideas(real_db, user1, ideas_to_add):
         result = await count_ideas(real_db)
         assert result == initial_count + ideas_to_add
+
+
+@pytest.mark.integration
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    ["vote_for", "voted_for", "idea_attr"],
+    [
+        pytest.param("downvote", "downvotes", "downvoted_by", id="downvote"),
+        pytest.param("upvote", "upvotes", "upvoted_by", id="upvote"),
+    ],
+)
+@pytest.mark.parametrize(
+    ["user_with_ideas", "votes_count"],
+    [(30, count) for count in [5, 10, 15, 20, 22]],
+    indirect=["user_with_ideas"],
+)
+async def test_get_voted_ideas_returns_correct_ideas_and_correct_count_of_them(
+    real_db: AIOSession, vote_for, voted_for, idea_attr, user_with_ideas, votes_count
+):
+    user, ideas, _ = user_with_ideas
+    shuffled = random.sample(ideas, k=len(ideas))
+    voted, not_voted = shuffled[:votes_count], shuffled[votes_count:]
+
+    async with setup_votes(real_db, user, voted, which=vote_for):
+        result = await get_voted_ideas(
+            real_db, user, skip=0, limit=votes_count, which=voted_for
+        )
+
+        assert len(result.data) == votes_count
+        assert result.count == votes_count
+
+        assert all(user.id in getattr(idea, idea_attr) for idea in result.data)
+        assert all(user.id not in getattr(idea, idea_attr) for idea in not_voted)
+
+
+@pytest.mark.integration
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    ["vote_for", "voted_for"],
+    [
+        pytest.param("downvote", "downvotes", id="downvote"),
+        pytest.param("upvote", "upvotes", id="upvote"),
+    ],
+)
+@pytest.mark.parametrize(
+    ["user_with_ideas", "votes_count"],
+    [(30, count) for count in [5, 10, 15, 20, 22]],
+    indirect=["user_with_ideas"],
+)
+async def test_get_voted_ideas_returns_ideas_sorted_by_name(
+    real_db: AIOSession, vote_for, voted_for, user_with_ideas, votes_count
+):
+    user, ideas, _ = user_with_ideas
+    shuffled = random.sample(ideas, k=len(ideas))
+    voted = shuffled[:votes_count]
+
+    async with setup_votes(real_db, user, voted, which=vote_for):
+        result = await get_voted_ideas(
+            real_db, user, skip=0, limit=votes_count, which=voted_for
+        )
+        idea_names = [idea.name for idea in result.data]
+
+        assert_in_order(idea_names)
+
+
+@pytest.mark.integration
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    "user_with_ideas",
+    [5, 10, 15, 20, 22],
+    indirect=True,
+)
+async def test_get_user_ideas_returns_user_ideas(real_db: AIOSession, user_with_ideas):
+    user, ideas, ideas_count = user_with_ideas
+
+    result = await get_user_ideas(real_db, user, skip=0, limit=ideas_count)
+    ideas_names = {idea.name for idea in ideas}
+    result_names = {idea.name for idea in result.data}
+
+    assert len(result.data) == ideas_count
+    assert ideas_names == result_names
+
+
+@pytest.mark.integration
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    "user_with_ideas",
+    [5, 10, 15, 20, 22],
+    indirect=True,
+)
+async def test_get_user_ideas_returns_ideas_sorted_by_name(
+    real_db: AIOSession, user_with_ideas
+):
+    user, _, ideas_count = user_with_ideas
+
+    result = await get_user_ideas(real_db, user, skip=0, limit=ideas_count)
+    idea_names = [idea.name for idea in result.data]
+
+    assert_in_order(idea_names)
+
+
+@pytest.mark.integration
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    ["sort", "func_to_comparator"],
+    [("trending", lambda idea: -len(idea.upvoted_by)), (None, lambda idea: idea.name)],
+)
+@pytest.mark.parametrize("ideas_with_fake_votes", [15], indirect=True)
+async def test_get_ideas_returns_sorted_ideas_by_the_sort_argument(
+    real_db: AIOSession, sort, func_to_comparator, ideas_with_fake_votes
+):
+    _ = ideas_with_fake_votes
+    result = await get_ideas(real_db, skip=0, limit=20, sort=sort)
+
+    ideas_comparable_attribute = [func_to_comparator(idea) for idea in result.data]
+    assert_in_order(ideas_comparable_attribute)
+
+
+@pytest.mark.integration
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    "ascending",
+    [True, False],
+)
+@pytest.mark.parametrize("ideas_with_fake_votes", [15], indirect=True)
+async def test_get_ideas_by_upvotes_returns_ideas_sorted_by_votes(
+    real_db: AIOSession, ascending, ideas_with_fake_votes
+):
+    _, max_votes = ideas_with_fake_votes
+    result = await get_ideas_by_upvotes(real_db, skip=0, limit=20, ascending=ascending)
+    upvotes_counts = [len(idea.upvoted_by) for idea in result]
+
+    assert_in_order(upvotes_counts, ascending=ascending)
+
+    first_votes_count = 0 if ascending else max_votes
+    assert upvotes_counts[0] == first_votes_count
