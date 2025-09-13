@@ -1,7 +1,19 @@
 from odmantic import ObjectId
 
-from src.auth import get_password_hash
 from src.models import Idea, User
+
+bcrypt_password_hash = "$2b$12$vogVV6RUAZPAb6NVZDNGn.PD2wpIXqAHTtsORL3M13xKEp6dPxv3O"
+bcrypt_different_password_hash = (
+    "$2b$12$jbIAg8E9QU5cx2F0KisxhuhhJnqAMIAWHmKxIcjDHQbOKkVYKPYk6"
+)
+argon2_password_hash = (
+    "$argon2id$v=19$m=65536,t=3,p=4"
+    "$z5nTeq/1vjcmREhpLeW8tw$00EI3g9HVH1fAt57Q648lgljMjz6CNC/NyyYW7T+Bw8"
+)
+argon2_different_password_hash = (
+    "$argon2id$v=19$m=65536,t=3,p=4"
+    "$am0Nwfi/N2ZsbY1xjhGCsA$PU4i/z2Cy1S8XPpAFBTFavf2167BnP7oVsSaMDehk+8"
+)
 
 user1 = User.model_validate(
     {
@@ -11,7 +23,7 @@ user1 = User.model_validate(
         "is_admin": False,
         "upvotes": [ObjectId() for _ in range(5)],
         "downvotes": [ObjectId() for _ in range(3)],
-        "hashed_password": get_password_hash("password"),
+        "hashed_password": argon2_password_hash,
     }
 )
 user_admin = User.model_validate(
@@ -22,7 +34,7 @@ user_admin = User.model_validate(
         "is_admin": True,
         "upvotes": [],
         "downvotes": [],
-        "hashed_password": get_password_hash("2password"),
+        "hashed_password": argon2_different_password_hash,
     }
 )
 user_disabled = User.model_validate(
@@ -33,7 +45,7 @@ user_disabled = User.model_validate(
         "is_admin": False,
         "upvotes": [],
         "downvotes": [],
-        "hashed_password": get_password_hash("3password"),
+        "hashed_password": argon2_different_password_hash,
     }
 )
 user_disabled_with_outdated_hash = User.model_validate(
@@ -57,7 +69,7 @@ user_admin_disabled = User.model_validate(
         "is_admin": True,
         "upvotes": [],
         "downvotes": [],
-        "hashed_password": get_password_hash("4password"),
+        "hashed_password": argon2_different_password_hash,
     }
 )
 
