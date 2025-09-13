@@ -26,6 +26,10 @@ from src.auth import (
 from src.models import TokenData, User
 
 from .data_sample import (
+    argon2_different_password_hash,
+    argon2_password_hash,
+    bcrypt_different_password_hash,
+    bcrypt_password_hash,
     user1,
     user_admin,
     user_disabled,
@@ -33,20 +37,6 @@ from .data_sample import (
     users,
 )
 from .util import now_plus_delta
-
-bcrypt_password_hash = "$2b$12$vogVV6RUAZPAb6NVZDNGn.PD2wpIXqAHTtsORL3M13xKEp6dPxv3O"
-bcrypt_different_password_hash = (
-    "$2b$12$jbIAg8E9QU5cx2F0KisxhuhhJnqAMIAWHmKxIcjDHQbOKkVYKPYk6"
-)
-
-argon2_password_hash = (
-    "$argon2id$v=19$m=65536,t=3,p=4"
-    "$z5nTeq/1vjcmREhpLeW8tw$00EI3g9HVH1fAt57Q648lgljMjz6CNC/NyyYW7T+Bw8"
-)
-argon2_different_password_hash = (
-    "$argon2id$v=19$m=65536,t=3,p=4"
-    "$am0Nwfi/N2ZsbY1xjhGCsA$PU4i/z2Cy1S8XPpAFBTFavf2167BnP7oVsSaMDehk+8"
-)
 
 
 @pytest.fixture
@@ -227,7 +217,7 @@ def test_verify_and_update_password(
         ),
         pytest.param(
             user_admin.username,
-            "2password",
+            "different_password",
             user_admin,
             id="returns different user when credentials are correct",
         ),

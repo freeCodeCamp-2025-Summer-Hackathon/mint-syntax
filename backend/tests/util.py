@@ -5,8 +5,9 @@ from typing import Literal
 import faker
 from odmantic.session import AIOSession
 
-from src.auth import get_password_hash
 from src.models import Idea, User
+
+from .data_sample import argon2_password_hash
 
 fake = faker.Faker()
 
@@ -21,7 +22,7 @@ def create_user():
             "is_admin": fake.boolean(),
             "upvotes": [],
             "downvotes": [],
-            "hashed_password": get_password_hash(f"{username}_password"),
+            "hashed_password": argon2_password_hash,
         }
     )
 
