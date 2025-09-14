@@ -13,13 +13,21 @@ from ..util import setup_ideas, setup_users
 
 
 @pytest.fixture
-async def async_client(real_db):
+def test_transport(real_db):
     app.dependency_overrides[get_db] = lambda: real_db
     # Pass all test requests through csrf protection
     app.dependency_overrides[verify_csrf] = lambda _req: True
 
+    yield ASGITransport(app=app)
+
+    app.dependency_overrides[get_db] = get_db
+    app.dependency_overrides[verify_csrf] = verify_csrf
+
+
+@pytest.fixture
+async def async_client(test_transport):
     async with AsyncClient(
-        transport=ASGITransport(app=app), base_url="http://test", follow_redirects=True
+        transport=test_transport, base_url="http://test", follow_redirects=True
     ) as async_client:
         yield async_client
 
