@@ -59,7 +59,6 @@ async def user_with_client(log_client_as, real_db: AIOSession, request):
         yield user, log_client_as(user)
 
 
-@pytest.mark.only
 @pytest.mark.integration
 @pytest.mark.anyio
 async def test_GET_me_returns_200_status_code_for_logged_in_active(
@@ -302,7 +301,6 @@ async def test_GET_me_upvotes_returns_upvoted_ideas_and_total_count(
         assert {str(idea_id) for idea_id in user.upvotes} == upvoted_ids
 
 
-@pytest.mark.only
 @pytest.mark.integration
 @pytest.mark.anyio
 @pytest.mark.parametrize(
