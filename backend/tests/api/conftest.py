@@ -1,6 +1,7 @@
 import random
 
 import pytest
+from fastapi import Request
 from httpx import ASGITransport, AsyncClient
 from odmantic import ObjectId
 from odmantic.session import AIOSession
@@ -14,9 +15,12 @@ from ..util import setup_ideas, setup_users
 
 @pytest.fixture
 def test_transport(real_db):
+    async def csrf_override(_request: Request):
+        """Pass through all test request."""
+        return True
+
     app.dependency_overrides[get_db] = lambda: real_db
-    # Pass all test requests through csrf protection
-    app.dependency_overrides[verify_csrf] = lambda _req: True
+    app.dependency_overrides[verify_csrf] = csrf_override
 
     yield ASGITransport(app=app)
 
