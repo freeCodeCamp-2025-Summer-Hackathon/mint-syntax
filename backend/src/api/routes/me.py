@@ -28,7 +28,10 @@ async def patch_me(
         ):
             raise HTTPException(status_code=403, detail="Invalid password")
         update_data.hashed_password = get_password_hash(update_data.new_password)
-    current_user.model_update(update_data, exclude={"new_password", "old_password"})
+    current_user.model_update(
+        {key: value for key, value in update_data.model_dump().items() if value},
+        exclude={"new_password", "old_password"},
+    )
     await db.save(current_user)
     return current_user
 
