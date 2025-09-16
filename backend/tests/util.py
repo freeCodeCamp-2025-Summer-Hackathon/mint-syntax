@@ -12,19 +12,18 @@ from .data_sample import argon2_password_hash
 fake = faker.Faker()
 
 
-def create_user():
+def create_user(**options):
     username = f"test_{fake.unique.user_name()}"
-    return User.model_validate(
-        {
-            "username": username,
-            "name": fake.name(),
-            "is_active": fake.boolean(),
-            "is_admin": fake.boolean(),
-            "upvotes": [],
-            "downvotes": [],
-            "hashed_password": argon2_password_hash,
-        }
-    )
+    defaults = {
+        "username": username,
+        "name": fake.name(),
+        "is_active": fake.boolean(),
+        "is_admin": fake.boolean(),
+        "upvotes": [],
+        "downvotes": [],
+        "hashed_password": argon2_password_hash,
+    }
+    return User.model_validate(defaults | options)
 
 
 def create_idea(creator: User):
@@ -51,8 +50,8 @@ async def setup_ideas(real_db: AIOSession, user: User, count: int):
 
 
 @asynccontextmanager
-async def setup_users(real_db: AIOSession, count: int = 1):
-    users = [create_user() for _ in range(count)]
+async def setup_users(real_db: AIOSession, count: int = 1, **user_options):
+    users = [create_user(**user_options) for _ in range(count)]
     try:
         await real_db.save_all(users)
         yield users

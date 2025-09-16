@@ -4,9 +4,11 @@ from odmantic import Field, Model, ObjectId
 from pydantic import BaseModel, StringConstraints
 
 StrippedString = Annotated[str, StringConstraints(strip_whitespace=True)]
+EmptyString = Annotated[StrippedString, StringConstraints(max_length=0)]
 NonEmptyString = Annotated[StrippedString, StringConstraints(min_length=1)]
 Max255CharsString = Annotated[StrippedString, StringConstraints(max_length=255)]
 NonEmptyMax255CharsString = Annotated[NonEmptyString, Max255CharsString]
+PasswordString = Annotated[StrippedString, StringConstraints(min_length=8)]
 
 
 class User(Model):
@@ -47,13 +49,13 @@ class UsersPublic(BaseModel):
 class UserRegister(BaseModel):
     username: NonEmptyMax255CharsString
     name: NonEmptyMax255CharsString
-    password: Annotated[StrippedString, StringConstraints(min_length=8)]
+    password: PasswordString
 
 
 class UserEditPatch(BaseModel):
-    name: Max255CharsString | None = Field(max_length=255)
-    old_password: StrippedString | None = None
-    new_password: StrippedString | None = None
+    name: Max255CharsString | None = None
+    old_password: EmptyString | PasswordString | None = None
+    new_password: EmptyString | PasswordString | None = None
     hashed_password: str | None = None
 
 

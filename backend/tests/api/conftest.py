@@ -6,6 +6,7 @@ from httpx import ASGITransport, AsyncClient
 from odmantic import ObjectId
 from odmantic.session import AIOSession
 
+from src.auth import create_access_token
 from src.csrf import verify_csrf
 from src.database import get_db
 from src.main import app
@@ -34,6 +35,18 @@ async def async_client(test_transport):
         transport=test_transport, base_url="http://test", follow_redirects=True
     ) as async_client:
         yield async_client
+
+
+@pytest.fixture
+def log_client_as(async_client, patch_jwt_secret_key):
+    patch_jwt_secret_key()
+
+    def wrapper(user):
+        access_token = create_access_token({"sub": str(user.id)})
+        async_client.headers["Authorization"] = f"Bearer {access_token}"
+        return async_client
+
+    return wrapper
 
 
 @pytest.fixture
