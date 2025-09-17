@@ -14,6 +14,7 @@ from src.dependencies import Db
 from src.models import (
     AdminUserCreate,
     AdminUserEditPatch,
+    AdminUserEditPatchInput,
     AdminUserIdeas,
     LoginData,
     Token,
@@ -98,9 +99,12 @@ async def get_ideas(db: Db, user: UserFromPath, pagination: PaginationParams):
 
 
 @router.patch("/{id}", response_model=UserMe, dependencies=[AdminUser])
-async def update_user(db: Db, user: UserFromPath, update_data: AdminUserEditPatch):
-    if update_data.new_password is not None:
-        update_data.hashed_password = get_password_hash(update_data.new_password)
-    user.model_update(update_data, exclude={"old_password, new_password"})
+async def update_user(db: Db, user: UserFromPath, input_data: AdminUserEditPatchInput):
+    update_data = AdminUserEditPatch(
+        **{key: value for key, value in input_data.model_dump().items() if value}
+    )
+    if input_data.new_password:
+        update_data.hashed_password = get_password_hash(input_data.new_password)
+    user.model_update(update_data)
     await db.save(user)
     return user

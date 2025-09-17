@@ -165,9 +165,10 @@ async def test_PATCH_me_changes_name_with_password_when_old_password_is_correct(
         {},
         {"new_password": "", "old_password": ""},
         {"new_password": "", "old_password": PASSWORD},
+        {"hashed_password": "changed"},
     ],
 )
-async def test_PATCH_me_does_not_update_empty_data(
+async def test_PATCH_me_does_not_update_empty_or_additional_data(
     real_db, user_with_client, new_name_data, new_password_data
 ):
     user, async_client = user_with_client

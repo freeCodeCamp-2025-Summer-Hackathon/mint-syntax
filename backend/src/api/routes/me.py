@@ -6,7 +6,7 @@ from src.api.dependencies import LoggedInUser, PaginationParams
 from src.api.ideas import get_user_ideas, get_voted_ideas
 from src.auth import get_password_hash, verify_password
 from src.dependencies import Db
-from src.models import IdeasPublic, User, UserEditPatch, UserMe
+from src.models import IdeasPublic, User, UserEditPatch, UserEditPatchInput, UserMe
 
 router = APIRouter(prefix="/me")
 
@@ -20,18 +20,18 @@ async def get_me(current_user: Annotated[User, LoggedInUser]):
 async def patch_me(
     db: Db,
     current_user: Annotated[User, LoggedInUser],
-    update_data: UserEditPatch,
+    update_input: UserEditPatchInput,
 ):
-    if update_data.new_password:
-        if not update_data.old_password or not verify_password(
-            update_data.old_password, current_user.hashed_password
+    update_data = UserEditPatch(
+        **{key: value for key, value in update_input.model_dump().items() if value}
+    )
+    if update_input.new_password:
+        if not update_input.old_password or not verify_password(
+            update_input.old_password, current_user.hashed_password
         ):
             raise HTTPException(status_code=403, detail="Invalid password")
-        update_data.hashed_password = get_password_hash(update_data.new_password)
-    current_user.model_update(
-        {key: value for key, value in update_data.model_dump().items() if value},
-        exclude={"new_password", "old_password"},
-    )
+        update_data.hashed_password = get_password_hash(update_input.new_password)
+    current_user.model_update(update_data)
     await db.save(current_user)
     return current_user
 
