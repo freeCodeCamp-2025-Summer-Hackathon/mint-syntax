@@ -53,26 +53,31 @@ class UserRegister(BaseModel):
 
 
 class UserEditPatchInput(BaseModel):
-    name: Max255CharsString | None = None
+    name: NonEmptyMax255CharsString | None = None
     old_password: EmptyString | PasswordString | None = None
     new_password: EmptyString | PasswordString | None = None
 
 
 class UserEditPatch(BaseModel):
-    name: Max255CharsString | None = None
+    name: NonEmptyMax255CharsString | None
     hashed_password: str | None = None
 
 
-class AdminUserEditFields(BaseModel):
+class AdminUserEditInputFields(BaseModel):
     is_active: bool | None = None
     is_admin: bool | None = None
 
 
-class AdminUserEditPatchInput(UserEditPatchInput, AdminUserEditFields):
+class AdminUserEditPatchFields(BaseModel):
+    is_active: bool | None
+    is_admin: bool | None
+
+
+class AdminUserEditPatchInput(UserEditPatchInput, AdminUserEditInputFields):
     pass
 
 
-class AdminUserEditPatch(UserEditPatch, AdminUserEditFields):
+class AdminUserEditPatch(UserEditPatch, AdminUserEditPatchFields):
     pass
 
 
