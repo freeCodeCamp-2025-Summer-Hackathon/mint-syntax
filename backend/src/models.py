@@ -4,11 +4,15 @@ from odmantic import Field, Model, ObjectId
 from pydantic import BaseModel, StringConstraints
 
 StrippedString = Annotated[str, StringConstraints(strip_whitespace=True)]
-EmptyString = Annotated[StrippedString, StringConstraints(max_length=0)]
-NonEmptyString = Annotated[StrippedString, StringConstraints(min_length=1)]
-Max255CharsString = Annotated[StrippedString, StringConstraints(max_length=255)]
-NonEmptyMax255CharsString = Annotated[NonEmptyString, Max255CharsString]
-PasswordString = Annotated[StrippedString, StringConstraints(min_length=8)]
+EmptyString = Annotated[str, StringConstraints(max_length=0, strip_whitespace=True)]
+NonEmptyString = Annotated[str, StringConstraints(min_length=1, strip_whitespace=True)]
+Max255CharsString = Annotated[
+    str, StringConstraints(max_length=255, strip_whitespace=True)
+]
+NonEmptyMax255CharsString = Annotated[
+    str, StringConstraints(max_length=255, min_length=1, strip_whitespace=True)
+]
+PasswordString = Annotated[str, StringConstraints(min_length=8, strip_whitespace=True)]
 
 
 class User(Model):
