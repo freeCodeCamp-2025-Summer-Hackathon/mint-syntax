@@ -2,6 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Form, HTTPException, Response
 from odmantic.exceptions import DuplicateKeyError
+from pydantic import TypeAdapter
 
 from src.api.dependencies import AdminUser, PaginationParams, UserFromPathId
 from src.api.ideas import get_user_ideas
@@ -77,8 +78,10 @@ async def create_user(db: Db, create_data: Annotated[AdminUserCreate, Form()]):
 async def list_users(db: Db, pagination: PaginationParams):
     users = await db.find(User, **pagination.model_dump(), sort=User.name)
     count = await db.count(User)
+    user_list_adapter = TypeAdapter(list[UserMe])
     return UsersAdmin(
-        users=[UserMe(**user.model_dump()) for user in users], count=count
+        users=user_list_adapter.validate_python(users, from_attributes=True),
+        count=count,
     )
 
 
