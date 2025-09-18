@@ -100,11 +100,9 @@ async def get_ideas(db: Db, user: UserFromPath, pagination: PaginationParams):
 
 @router.patch("/{id}", response_model=UserMe, dependencies=[AdminUser])
 async def update_user(db: Db, user: UserFromPath, input_data: AdminUserEditPatchInput):
-    update_data = AdminUserEditPatch(
-        **{key: value for key, value in input_data.model_dump().items() if value}
-    )
+    update_data = AdminUserEditPatch(**input_data.model_dump())
     if input_data.new_password:
         update_data.hashed_password = get_password_hash(input_data.new_password)
-    user.model_update(update_data)
+    user.model_update(update_data, exclude_none=True)
     await db.save(user)
     return user

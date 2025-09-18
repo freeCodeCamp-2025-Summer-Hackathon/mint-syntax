@@ -158,7 +158,6 @@ async def test_PATCH_me_changes_name_with_password_when_old_password_is_correct(
 
 @pytest.mark.integration
 @pytest.mark.anyio
-@pytest.mark.parametrize("new_name_data", [{"name": ""}, {}])
 @pytest.mark.parametrize(
     "new_password_data",
     [
@@ -168,19 +167,20 @@ async def test_PATCH_me_changes_name_with_password_when_old_password_is_correct(
         {"hashed_password": "changed"},
     ],
 )
-async def test_PATCH_me_does_not_update_empty_or_additional_data(
-    real_db, user_with_client, new_name_data, new_password_data
+async def test_PATCH_me_does_not_update_empty_optional_or_additional_data(
+    real_db, user_with_client, new_password_data
 ):
     user, async_client = user_with_client
 
-    response = await async_client.patch(ME, json=new_name_data | new_password_data)
+    response = await async_client.patch(ME, json=new_password_data)
     data = response.json()
     not_updated_user = await real_db.find_one(User, User.id == user.id)
 
-    assert user.name == data["name"]
-    assert data["name"] != new_name_data.get("name", "")
+    assert response.status_code == 200
 
-    assert not_updated_user.name != new_name_data.get("name", "")
+    assert user.name == data["name"]
+
+    assert not_updated_user.name == user.name
     assert verify_password(PASSWORD, not_updated_user.hashed_password)
 
 
@@ -221,6 +221,25 @@ async def test_PATCH_me_incorrect_new_password(user_with_client, new_password):
             "old_password": PASSWORD,
             "new_password": new_password,
         },
+    )
+
+    assert response.status_code == 422
+
+
+@pytest.mark.integration
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    "patch_data",
+    [{"name": ""}],
+)
+async def test_PATCH_me_returns_422_for_empty_non_empty_optional_or_invalid_data(
+    user_with_client, patch_data
+):
+    _, async_client = user_with_client
+
+    response = await async_client.patch(
+        ME,
+        json=patch_data,
     )
 
     assert response.status_code == 422
