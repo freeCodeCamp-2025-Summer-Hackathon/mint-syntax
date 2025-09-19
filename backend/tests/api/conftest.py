@@ -1,4 +1,5 @@
 import random
+from collections.abc import AsyncGenerator
 
 import pytest
 from fastapi import Request
@@ -47,6 +48,14 @@ def log_client_as(async_client, patch_jwt_secret_key):
         return async_client
 
     return wrapper
+
+
+@pytest.fixture
+async def admin_client(log_client_as, real_db) -> AsyncGenerator[AsyncClient]:
+    async with setup_users(real_db, 1, is_active=True, is_admin=True) as users:
+        [admin] = users
+
+        yield log_client_as(admin)
 
 
 @pytest.fixture
