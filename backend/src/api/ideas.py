@@ -4,9 +4,12 @@ from contextlib import suppress
 from typing import Any, Literal
 
 from odmantic import query
+from pydantic import TypeAdapter
 
 from src.dependencies import Db
 from src.models import Idea, IdeaDownvote, IdeaPublic, IdeasPublic, IdeaUpvote, User
+
+idea_list_adapter = TypeAdapter(list[IdeaPublic])
 
 
 async def count_ideas(db: Db, user: User | None = None) -> int:
@@ -45,7 +48,7 @@ async def get_ideas(db: Db, skip: int, limit: int, sort: str | None = None):
     else:
         ideas = await db.find(Idea, limit=limit, skip=skip, sort=Idea.name)
     return IdeasPublic(
-        data=[IdeaPublic(**idea.model_dump()) for idea in ideas],
+        data=idea_list_adapter.validate_python(ideas, from_attributes=True),
         count=await count_ideas(db),
     )
 
@@ -62,7 +65,7 @@ async def get_user_ideas(
     count = await count_ideas(db, user)
 
     return IdeasPublic(
-        data=[IdeaPublic(**idea.model_dump()) for idea in ideas], count=count
+        data=idea_list_adapter.validate_python(ideas, from_attributes=True), count=count
     )
 
 
@@ -78,7 +81,8 @@ async def get_voted_ideas(
         Idea, query.in_(Idea.id, votes), limit=limit, skip=skip, sort=Idea.name
     )
     return IdeasPublic(
-        data=[IdeaPublic(**idea.model_dump()) for idea in ideas], count=len(votes)
+        data=idea_list_adapter.validate_python(ideas, from_attributes=True),
+        count=len(votes),
     )
 
 
