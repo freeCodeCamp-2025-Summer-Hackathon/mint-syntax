@@ -1,17 +1,11 @@
 import random
 
 import pytest
-from odmantic.session import AIOSession
 
 from src.auth import verify_password
 from src.models import User
 
 from ...util import setup_ideas, setup_users, setup_votes
-
-LOGGED_IN_PARAMS = [
-    pytest.param({"is_active": True, "is_admin": False}, id="active user"),
-    pytest.param({"is_active": True, "is_admin": True}, id="active admin"),
-]
 
 PASSWORD = "password"
 NEW_NAME_DATA = [
@@ -49,14 +43,6 @@ async def ideas_to_vote(real_db):
             setup_ideas(real_db, user2, 15) as ideas2,
         ):
             yield ideas1, ideas2
-
-
-@pytest.fixture(params=LOGGED_IN_PARAMS)
-async def user_with_client(log_client_as, real_db: AIOSession, request):
-    user_options = request.param
-    async with setup_users(real_db, **user_options) as users:
-        [user] = users
-        yield user, log_client_as(user)
 
 
 @pytest.mark.integration
