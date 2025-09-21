@@ -42,7 +42,7 @@ class UsersAdmin(BaseModel):
 
 class UserPublic(BaseModel):
     id: ObjectId
-    name: str = Field(max_length=255)
+    name: str
 
 
 class UsersPublic(BaseModel):
@@ -101,8 +101,8 @@ class IdeaPublic(BaseModel):
     id: ObjectId
     name: str
     description: str
-    upvoted_by: list[ObjectId] = []
-    downvoted_by: list[ObjectId] = []
+    upvoted_by: list[ObjectId]
+    downvoted_by: list[ObjectId]
     creator_id: ObjectId
 
 
@@ -121,8 +121,8 @@ class IdeaCreate(BaseModel):
 
 
 class IdeaEditPatch(BaseModel):
-    name: NonEmptyMax255CharsString | None = Field(max_length=255)
-    description: StrippedString | None
+    name: NonEmptyMax255CharsString | None = None
+    description: NonEmptyString | None = None
 
 
 class IdeaUpvote(BaseModel):
