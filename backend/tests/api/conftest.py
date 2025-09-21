@@ -50,6 +50,20 @@ def log_client_as(async_client, patch_jwt_secret_key):
     return wrapper
 
 
+LOGGED_IN_PARAMS = [
+    pytest.param({"is_active": True, "is_admin": False}, id="active user"),
+    pytest.param({"is_active": True, "is_admin": True}, id="active admin"),
+]
+
+
+@pytest.fixture(params=LOGGED_IN_PARAMS)
+async def user_with_client(log_client_as, real_db: AIOSession, request):
+    user_options = request.param
+    async with setup_users(real_db, **user_options) as users:
+        [user] = users
+        yield user, log_client_as(user)
+
+
 @pytest.fixture
 async def admin_client(log_client_as, real_db) -> AsyncGenerator[AsyncClient]:
     async with setup_users(real_db, 1, is_active=True, is_admin=True) as users:
