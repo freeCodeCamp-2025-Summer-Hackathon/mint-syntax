@@ -91,7 +91,7 @@ INVALID_IDEA_ID_CASES = [
 @pytest.mark.integration
 @pytest.mark.anyio
 @pytest.mark.parametrize(
-    ["setup"],
+    "setup",
     UPVOTE_CASES,
 )
 @pytest.mark.parametrize(
@@ -134,7 +134,7 @@ async def test_PUT_upvote_idea_returns_upvoted_idea(
 @pytest.mark.integration
 @pytest.mark.anyio
 @pytest.mark.parametrize(
-    ["setup"],
+    "setup",
     UPVOTE_CASES,
 )
 @pytest.mark.parametrize(
@@ -172,7 +172,7 @@ async def test_PUT_upvote_idea_updates_idea_in_db(
 @pytest.mark.integration
 @pytest.mark.anyio
 @pytest.mark.parametrize(
-    ["setup"],
+    "setup",
     UPVOTE_CASES,
 )
 @pytest.mark.parametrize(
@@ -210,7 +210,7 @@ async def test_PUT_upvote_idea_updates_user_in_db(
 @pytest.mark.integration
 @pytest.mark.anyio
 @pytest.mark.parametrize(
-    ["setup"],
+    "setup",
     UPVOTE_CASES,
 )
 @pytest.mark.parametrize(
@@ -266,7 +266,7 @@ async def test_PUT_upvote_idea_returns_404_when_idea_id_does_not_exist(
 @pytest.mark.integration
 @pytest.mark.anyio
 @pytest.mark.parametrize(
-    ["setup"],
+    "setup",
     DOWNVOTE_CASES,
 )
 @pytest.mark.parametrize(
@@ -306,7 +306,7 @@ async def test_PUT_downvote_idea_returns_downvoted_idea(
 @pytest.mark.integration
 @pytest.mark.anyio
 @pytest.mark.parametrize(
-    ["setup"],
+    "setup",
     DOWNVOTE_CASES,
 )
 @pytest.mark.parametrize(
@@ -344,7 +344,7 @@ async def test_PUT_downvote_idea_updates_idea_in_db(
 @pytest.mark.integration
 @pytest.mark.anyio
 @pytest.mark.parametrize(
-    ["setup"],
+    "setup",
     DOWNVOTE_CASES,
 )
 @pytest.mark.parametrize(
@@ -385,7 +385,7 @@ async def test_PUT_downvote_idea_updates_user_in_db(
 @pytest.mark.integration
 @pytest.mark.anyio
 @pytest.mark.parametrize(
-    ["setup"],
+    "setup",
     DOWNVOTE_CASES,
 )
 @pytest.mark.parametrize(

@@ -78,7 +78,7 @@ def jwt_secret_key():
     return "test-secret-key"
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_user_token(jwt_secret_key, request):
     user_id = str(request.param)
     if not user_id:

@@ -54,7 +54,7 @@ async def test_verify_csrf_returns_True_when_safe_method_is_used(
     ],
 )
 @pytest.mark.parametrize(
-    ["headers", "raised_exception", "error"],
+    ("headers", "raised_exception", "error"),
     [
         pytest.param(
             [], MissingTokenError, "Missing Cookie", id="without cookie and token"

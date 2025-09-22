@@ -109,7 +109,7 @@ INVALID_DATA_TOKENS = [
 
 
 @pytest.mark.parametrize(
-    ["plain_password", "hashed_password", "expected"],
+    ("plain_password", "hashed_password", "expected"),
     [
         pytest.param(
             "password",
@@ -154,7 +154,7 @@ def test_verify_password(plain_password, hashed_password, expected):
 
 
 @pytest.mark.parametrize(
-    ["plain_password", "hashed_password", "expected", "expected_rehash_type"],
+    ("plain_password", "hashed_password", "expected", "expected_rehash_type"),
     [
         pytest.param(
             "password",
@@ -207,7 +207,7 @@ def test_verify_and_update_password(
 
 @pytest.mark.anyio
 @pytest.mark.parametrize(
-    ["user", "plain_password", "expected"],
+    ("user", "plain_password", "expected"),
     [
         pytest.param(
             user1.username,
@@ -290,7 +290,7 @@ def test_create_access_token_encoded_token_has_correct_data(patch_jwt_secret_key
 
 
 @pytest.mark.parametrize(
-    ["expiration_delta"],
+    "expiration_delta",
     [
         pytest.param(
             ACCESS_TOKEN_DELTA,
@@ -370,7 +370,7 @@ def test_set_refresh_token_cookie_calls_set_cookie_method(jwt_fixtures):
 
 
 @pytest.mark.parametrize(
-    ["sample_user_token", "user_id"],
+    ("sample_user_token", "user_id"),
     [(user.id, str(user.id)) for user in users.values()],
     indirect=["sample_user_token"],
 )
@@ -433,7 +433,7 @@ async def test_get_current_user_raises_when_token_doesnt_contain_id_of_existing_
 
 @pytest.mark.anyio
 @pytest.mark.parametrize(
-    ["sample_user_token", "expected"],
+    ("sample_user_token", "expected"),
     ((user.id, user) for user in users.values()),
     indirect=["sample_user_token"],
 )
@@ -447,7 +447,7 @@ async def test_get_current_user_returns_existing_user_for_valid_token(
 
 @pytest.mark.anyio
 @pytest.mark.parametrize(
-    ["sample_user_token", "user_id"],
+    ("sample_user_token", "user_id"),
     [(user.id, str(user.id)) for user in users.values()],
     indirect=["sample_user_token"],
 )
@@ -488,7 +488,7 @@ async def test_refresh_token_raises_when_token_is_invalid(
 
 @pytest.mark.anyio
 @pytest.mark.parametrize(
-    ["encoded_token"],
+    "encoded_token",
     INVALID_DATA_TOKENS
     + [
         pytest.param(
