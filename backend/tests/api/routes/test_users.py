@@ -369,7 +369,7 @@ async def test_GET_users_id_does_not_return_hashed_password(
 @pytest.mark.integration
 @pytest.mark.anyio
 @pytest.mark.parametrize(
-    ["bad_id", "status_code"],
+    ("bad_id", "status_code"),
     [
         pytest.param("notobjectid", 422, id="not valid object id"),
         pytest.param("/", 404, id="empty id"),
@@ -400,7 +400,7 @@ async def test_GET_users_id_returns_404_when_id_does_not_exist(
 @pytest.mark.integration
 @pytest.mark.anyio
 @pytest.mark.parametrize(
-    ["bad_id", "status_code"],
+    ("bad_id", "status_code"),
     [
         pytest.param("notobjectid", 422, id="not valid object id"),
         pytest.param("/", 404, id="empty id"),
@@ -510,7 +510,7 @@ async def test_GET_users_id_ideas_returns_user_ideas_in_data_ordered_by_name(
 @pytest.mark.integration
 @pytest.mark.anyio
 @pytest.mark.parametrize(
-    ["patch_data", "user"],
+    ("patch_data", "user"),
     PATCH_DATA_WITH_INITIAL_USER_OPTIONS,
     indirect=["user"],
 )
@@ -529,7 +529,7 @@ async def test_PATCH_users_id_returns_updated_user_after_patch(
 @pytest.mark.integration
 @pytest.mark.anyio
 @pytest.mark.parametrize(
-    ["patch_data", "user"],
+    ("patch_data", "user"),
     PATCH_DATA_WITH_INITIAL_USER_OPTIONS,
     indirect=["user"],
 )

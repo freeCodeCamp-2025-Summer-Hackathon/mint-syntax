@@ -158,7 +158,7 @@ VOTE_CALL_TEST_CASES = (
 
 @pytest.mark.anyio
 @pytest.mark.parametrize(
-    ["user", "idea", "user_vote", "setup"],
+    ("user", "idea", "user_vote", "setup"),
     VOTE_CASES,
 )
 async def test_vote_modifies_user_and_idea_objects(
@@ -174,7 +174,7 @@ async def test_vote_modifies_user_and_idea_objects(
 
 @pytest.mark.anyio
 @pytest.mark.parametrize(
-    ["user", "idea", "user_vote", "setup", "should_call"],
+    ("user", "idea", "user_vote", "setup", "should_call"),
     VOTE_CALL_TEST_CASES,
 )
 async def test_vote_calls_db_save(
@@ -226,14 +226,14 @@ async def test_count_ideas_returns_correct_number_of_ideas_after_adding_ideas(
 @pytest.mark.integration
 @pytest.mark.anyio
 @pytest.mark.parametrize(
-    ["vote_for", "voted_for", "idea_attr"],
+    ("vote_for", "voted_for", "idea_attr"),
     [
         pytest.param("downvote", "downvotes", "downvoted_by", id="downvote"),
         pytest.param("upvote", "upvotes", "upvoted_by", id="upvote"),
     ],
 )
 @pytest.mark.parametrize(
-    ["user_with_ideas", "votes_count"],
+    ("user_with_ideas", "votes_count"),
     [(30, count) for count in [5, 10, 15, 20, 22]],
     indirect=["user_with_ideas"],
 )
@@ -259,14 +259,14 @@ async def test_get_voted_ideas_returns_correct_ideas_and_correct_count_of_them(
 @pytest.mark.integration
 @pytest.mark.anyio
 @pytest.mark.parametrize(
-    ["vote_for", "voted_for"],
+    ("vote_for", "voted_for"),
     [
         pytest.param("downvote", "downvotes", id="downvote"),
         pytest.param("upvote", "upvotes", id="upvote"),
     ],
 )
 @pytest.mark.parametrize(
-    ["user_with_ideas", "votes_count"],
+    ("user_with_ideas", "votes_count"),
     [(30, count) for count in [5, 10, 15, 20, 22]],
     indirect=["user_with_ideas"],
 )
@@ -325,7 +325,7 @@ async def test_get_user_ideas_returns_ideas_sorted_by_name(
 @pytest.mark.integration
 @pytest.mark.anyio
 @pytest.mark.parametrize(
-    ["sort", "func_to_comparator"],
+    ("sort", "func_to_comparator"),
     [("trending", lambda idea: -len(idea.upvoted_by)), (None, lambda idea: idea.name)],
 )
 @pytest.mark.parametrize("ideas_with_fake_votes", [15], indirect=True)
