@@ -36,6 +36,13 @@
     - [Backend Server](#backend-server)
     - [Running commands from the root folder](#running-commands-from-the-root-folder)
     - [Running Seed Script](#running-seed-script)
+  - [Running Tests](#running-tests)
+    - [Frontend](#frontend-2)
+    - [Backend](#backend-2)
+      - [Unit tests](#unit-tests)
+      - [Integration tests](#integration-tests)
+      - [Running all (unit and integration) backend tests](#running-all-unit-and-integration-backend-tests)
+      - [Running individual tests](#running-individual-tests)
 
 ---
 
@@ -174,4 +181,46 @@ It's possible to run commands without actually navigating to the folder, by runn
 To seed the database with initial data, run the following command from the `/backend` directory
 ```bash
 /backend$ uv run -m src.scripts.seed_data
+```
+
+### Running Tests
+
+#### Frontend
+
+```bash
+/frontend$ npm run test:browser
+```
+
+#### Backend
+
+pytest gives multiple options for running all or part of the tests. [How to invoke pytest](https://docs.pytest.org/en/stable/how-to/usage.html#specifying-which-tests-to-run).
+
+##### Unit tests
+Unit tests are using mocked db with very limited capabilities.
+
+```bash
+/backend$ uv run pytest -m "not integration"
+```
+
+##### Integration tests
+To run integration tests, real MongoDB instance is required, with `MONGODB_TEST_URI` set in the `.env` file. Using the same db as for the development should be okay. While tests are expected to setup required data and clean-up afterwards, there's always possiblity of things not going right.
+
+```bash
+/backend$ uv run pytest -m integration
+```
+
+##### Running all (unit and integration) backend tests
+Requires the same setup as integration tests.
+
+```bash
+/backend$ uv run pytest
+```
+
+##### Running individual tests
+
+1. Mark test(s) to run with additional marker, ie. `@pytest.mark.only`.
+2. Run only tests with the marker.
+
+```bash
+/backend$ uv run pytest -m only
 ```
