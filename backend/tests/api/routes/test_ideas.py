@@ -11,6 +11,8 @@ from ...util import setup_ideas, setup_users
 DOWNVOTE = "downvote"
 UPVOTE = "upvote"
 
+IDEAS_COUNT = "/ideas/count"
+
 
 def url_to_vote(vote: IdeaDownvote | IdeaUpvote):
     which = DOWNVOTE if isinstance(vote, IdeaDownvote) else UPVOTE
@@ -436,3 +438,26 @@ async def test_PUT_downvote_idea_returns_404_when_idea_id_does_not_exist(
     )
 
     assert response.status_code == 404
+
+
+@pytest.mark.integration
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    "additional_ideas",
+    [0, 5, 15, 40],
+)
+async def test_GET_count_returns_total_number_of_ideas(
+    real_db: AIOSession, user_with_client, additional_ideas
+):
+    initial_ideas = await real_db.count(Idea)
+
+    async with setup_users(real_db, 1) as users:
+        [user] = users
+        async with setup_ideas(real_db, user, additional_ideas):
+            _, async_client = user_with_client
+
+            response = await async_client.get(IDEAS_COUNT)
+            data = response.json()
+
+            assert response.status_code == 200
+            assert data == initial_ideas + additional_ideas
