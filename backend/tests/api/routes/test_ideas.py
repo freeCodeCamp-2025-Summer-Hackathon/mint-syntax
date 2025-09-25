@@ -461,3 +461,61 @@ async def test_GET_count_returns_total_number_of_ideas(
 
             assert response.status_code == 200
             assert data == initial_ideas + additional_ideas
+
+
+@pytest.mark.only
+@pytest.mark.integration
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    "idea_with_votes",
+    [0, 10, 15],
+    indirect=True,
+)
+async def test_GET_ideas_id_returns_idea_data(user_with_client, idea_with_votes):
+    _, async_client = user_with_client
+    response = await async_client.get(f"/ideas/{idea_with_votes.id}")
+    data = response.json()
+
+    assert response.status_code == 200
+    assert data["name"] == idea_with_votes.name
+    assert data["description"] == idea_with_votes.description
+    assert data["creator_id"] == str(idea_with_votes.creator_id)
+    assert set(data["upvoted_by"]) == {
+        str(user_id) for user_id in idea_with_votes.upvoted_by
+    }
+    assert set(data["downvoted_by"]) == {
+        str(user_id) for user_id in idea_with_votes.downvoted_by
+    }
+
+
+@pytest.mark.only
+@pytest.mark.integration
+@pytest.mark.anyio
+async def test_GET_ideas_id_returns_404_if_idea_does_not_exist(
+    real_db: AIOSession, user_with_client
+):
+    async with setup_users(real_db, 1) as users:
+        [user] = users
+        async with setup_ideas(real_db, user, 1) as ideas:
+            [idea] = ideas
+
+    removed_idea_id = idea.id
+    _, async_client = user_with_client
+    response = await async_client.get(f"/ideas/{removed_idea_id}")
+    data = response.json()
+
+    assert response.status_code == 404
+    assert "not found".casefold() in data["detail"].casefold()
+
+
+@pytest.mark.only
+@pytest.mark.integration
+@pytest.mark.anyio
+@pytest.mark.parametrize("invalid_id", ["random", "not-object-id"])
+async def test_GET_ideas_id_returns_422_if_idea_id_is_invalid(
+    user_with_client, invalid_id
+):
+    _, async_client = user_with_client
+    response = await async_client.get(f"/ideas/{invalid_id}")
+
+    assert response.status_code == 422
