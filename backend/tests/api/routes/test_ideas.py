@@ -20,7 +20,7 @@ def url_to_vote(vote: IdeaDownvote | IdeaUpvote):
 
 
 @pytest.fixture
-async def user(real_db, request):
+async def user_fixture(real_db, request):
     user_options = request.param if hasattr(request, "param") else {}
     async with setup_users(real_db, **user_options) as users:
         [user] = users
@@ -28,9 +28,9 @@ async def user(real_db, request):
 
 
 @pytest.fixture
-async def idea_with_votes(real_db, user, request):
+async def idea_with_votes(real_db, user_fixture, request):
     max_upvotes = request.param
-    async with setup_ideas(real_db, user, 1) as ideas:
+    async with setup_ideas(real_db, user_fixture, 1) as ideas:
         [idea] = ideas
         async with setup_users(real_db, 10) as users:
             upvotes_count = random.randint(0, max_upvotes)
