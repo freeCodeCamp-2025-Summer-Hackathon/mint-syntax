@@ -463,7 +463,6 @@ async def test_GET_count_returns_total_number_of_ideas(
             assert data == initial_ideas + additional_ideas
 
 
-@pytest.mark.only
 @pytest.mark.integration
 @pytest.mark.anyio
 @pytest.mark.parametrize(
@@ -488,7 +487,6 @@ async def test_GET_ideas_id_returns_idea_data(user_with_client, idea_with_votes)
     }
 
 
-@pytest.mark.only
 @pytest.mark.integration
 @pytest.mark.anyio
 async def test_GET_ideas_id_returns_404_if_idea_does_not_exist(
@@ -508,7 +506,6 @@ async def test_GET_ideas_id_returns_404_if_idea_does_not_exist(
     assert "not found".casefold() in data["detail"].casefold()
 
 
-@pytest.mark.only
 @pytest.mark.integration
 @pytest.mark.anyio
 @pytest.mark.parametrize("invalid_id", ["random", "not-object-id"])
