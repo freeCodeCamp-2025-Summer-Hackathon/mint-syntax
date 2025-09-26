@@ -39,3 +39,4 @@ warn_unreachable = true
 markers = [
     "integration: marks integration test requiring ie. real database, can be run with `pytest -m integration`",
 ]
+xfail_strict = true
