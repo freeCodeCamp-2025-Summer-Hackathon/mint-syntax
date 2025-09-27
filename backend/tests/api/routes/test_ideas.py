@@ -11,6 +11,7 @@ from ...util import (
     add_votes,
     create_idea,
     create_user,
+    setup_idea_with_votes,
     setup_ideas,
     setup_users,
 )
@@ -114,6 +115,17 @@ INVALID_IDEA_ID_CASES = [
     "not-objectid",
     "",
     pytest.param(ObjectId(), marks=pytest.mark.xfail(reason="not decided behavior")),
+]
+
+IDEA_PATCH_DATA = {
+    "name": "Test changed name",
+    "description": "Very changed description.",
+}
+
+IDEA_PATCH_CASES = [
+    IDEA_PATCH_DATA,
+    {"name": IDEA_PATCH_DATA["name"]},
+    {"description": IDEA_PATCH_DATA["description"]},
 ]
 
 
@@ -620,3 +632,180 @@ async def test_DELETE_ideas_id_returns_422_when_idea_id_is_invalid(
     response = await admin_client.delete(f"/ideas/{invalid_id}")
 
     assert response.status_code == 422
+
+
+@pytest.mark.integration
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    "patch_data",
+    IDEA_PATCH_CASES,
+)
+@pytest.mark.parametrize(
+    "idea_with_votes",
+    [10],
+    indirect=True,
+)
+async def test_PATCH_ideas_id_returns_idea_public_after_patch_for_admin(
+    admin_client: AsyncClient, idea_with_votes: Idea, patch_data
+):
+    response = await admin_client.patch(f"/ideas/{idea_with_votes.id}", json=patch_data)
+    data = response.json()
+
+    assert response.status_code == 200
+
+    assert data["name"] == patch_data.get("name", idea_with_votes.name)
+    assert data["description"] == patch_data.get(
+        "description", idea_with_votes.description
+    )
+
+    assert set(data["upvoted_by"]) == {
+        str(user_id) for user_id in idea_with_votes.upvoted_by
+    }
+    assert set(data["downvoted_by"]) == {
+        str(user_id) for user_id in idea_with_votes.downvoted_by
+    }
+    assert data["creator_id"] == str(idea_with_votes.creator_id)
+
+
+@pytest.mark.integration
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    "patch_data",
+    IDEA_PATCH_CASES,
+)
+async def test_PATCH_ideas_id_retures_idea_public_after_patch_for_idea_creator(
+    real_db: AIOSession, user_with_client: tuple[User, AsyncClient], patch_data
+):
+    user, async_client = user_with_client
+    async with setup_idea_with_votes(real_db, user) as idea:
+        response = await async_client.patch(f"/ideas/{idea.id}", json=patch_data)
+        data = response.json()
+
+        assert response.status_code == 200
+
+        assert data["name"] == patch_data.get("name", idea.name)
+        assert data["description"] == patch_data.get("description", idea.description)
+
+        assert set(data["upvoted_by"]) == {str(user_id) for user_id in idea.upvoted_by}
+        assert set(data["downvoted_by"]) == {
+            str(user_id) for user_id in idea.downvoted_by
+        }
+        assert data["creator_id"] == str(idea.creator_id)
+
+
+@pytest.mark.integration
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    "patch_data",
+    IDEA_PATCH_CASES,
+)
+@pytest.mark.parametrize(
+    "idea_with_votes",
+    [10],
+    indirect=True,
+)
+async def test_PATCH_ideas_id_updates_idea_in_db_for_admin(
+    real_db: AIOSession, admin_client: AsyncClient, idea_with_votes, patch_data
+):
+    response = await admin_client.patch(f"/ideas/{idea_with_votes.id}", json=patch_data)
+
+    assert response.status_code == 200
+
+    updated_idea = await real_db.find_one(Idea, Idea.id == idea_with_votes.id)
+
+    assert updated_idea is not None
+
+    assert updated_idea.name == patch_data.get("name", idea_with_votes.name)
+    assert updated_idea.description == patch_data.get(
+        "description", idea_with_votes.description
+    )
+
+    assert set(updated_idea.upvoted_by) == set(idea_with_votes.upvoted_by)
+    assert set(updated_idea.downvoted_by) == set(idea_with_votes.downvoted_by)
+    assert updated_idea.creator_id == idea_with_votes.creator_id
+
+
+@pytest.mark.integration
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    "patch_data",
+    IDEA_PATCH_CASES,
+)
+async def test_PATCH_ideas_id_updates_idea_in_db_for_idea_creator(
+    real_db: AIOSession, user_with_client: tuple[User, AsyncClient], patch_data
+):
+    user, async_client = user_with_client
+    async with setup_idea_with_votes(real_db, user) as idea:
+        response = await async_client.patch(f"/ideas/{idea.id}", json=patch_data)
+
+        assert response.status_code == 200
+
+        updated_idea = await real_db.find_one(Idea, Idea.id == idea.id)
+
+        assert updated_idea is not None
+
+        assert updated_idea.name == patch_data.get("name", idea.name)
+        assert updated_idea.description == patch_data.get(
+            "description", idea.description
+        )
+
+        assert set(updated_idea.upvoted_by) == set(idea.upvoted_by)
+        assert set(updated_idea.downvoted_by) == set(idea.downvoted_by)
+        assert updated_idea.creator_id == idea.creator_id
+
+
+@pytest.mark.integration
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    "invalid_patch_data",
+    [{"name": ""}, {"name": "too_long" * (255 // len("too_long") + 1)}],
+)
+async def test_PATCH_ideas_id_returns_422_when_required_data_is_invalid_or_empty(
+    real_db: AIOSession, user_with_client: tuple[User, AsyncClient], invalid_patch_data
+):
+    user, async_client = user_with_client
+    async with setup_idea_with_votes(real_db, user) as idea:
+        response = await async_client.patch(
+            f"/ideas/{idea.id}", json=invalid_patch_data
+        )
+
+        assert response.status_code == 422
+
+
+@pytest.mark.integration
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    "invalid_idea_id",
+    ["not-objectid"],
+)
+@pytest.mark.parametrize(
+    "patch_data",
+    IDEA_PATCH_CASES,
+)
+async def test_PATCH_ideas_id_returns_422_when_idea_id_is_invalid(
+    admin_client, invalid_idea_id, patch_data
+):
+    response = await admin_client.patch(f"/ideas/{invalid_idea_id}", json=patch_data)
+
+    assert response.status_code == 422
+
+
+@pytest.mark.integration
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    "patch_data",
+    IDEA_PATCH_CASES,
+)
+@pytest.mark.parametrize("idea_with_votes", [5, 10], indirect=True)
+@pytest.mark.parametrize(
+    "user_with_client",
+    [{"is_admin": False, "is_active": True}],
+    indirect=True,
+)
+async def test_PATCH_ideas_id_returns_403_if_not_admin_and_not_idea_creator(
+    user_with_client: tuple[User, AsyncClient], idea_with_votes: Idea, patch_data
+):
+    _, async_client = user_with_client
+    response = await async_client.patch(f"/ideas/{idea_with_votes.id}", json=patch_data)
+
+    assert response.status_code == 403
