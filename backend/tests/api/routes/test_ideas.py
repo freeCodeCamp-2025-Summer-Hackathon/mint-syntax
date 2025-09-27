@@ -1,4 +1,3 @@
-import random
 from contextlib import asynccontextmanager
 
 import pytest
@@ -8,7 +7,13 @@ from odmantic.session import AIOSession
 
 from src.models import Idea, IdeaDownvote, IdeaUpvote, User
 
-from ...util import create_idea, create_user, setup_ideas, setup_users
+from ...util import (
+    add_votes,
+    create_idea,
+    create_user,
+    setup_ideas,
+    setup_users,
+)
 
 DOWNVOTE = "downvote"
 UPVOTE = "upvote"
@@ -32,15 +37,6 @@ async def clean_new_ideas(real_db: AIOSession):
         await real_db.remove(Idea, query.in_(Idea.id, {idea.id for idea in new_ideas}))
 
 
-def setup_votes(upvoters: list[User], downvoters: list[User], idea: Idea):
-    for upvoter in upvoters:
-        idea.upvoted_by.append(upvoter.id)
-        upvoter.upvotes.append(idea.id)
-    for downvoter in downvoters:
-        idea.downvoted_by.append(downvoter.id)
-        downvoter.downvotes.append(idea.id)
-
-
 @pytest.fixture
 async def user_fixture(real_db, request):
     user_options = request.param if hasattr(request, "param") else {}
@@ -55,10 +51,8 @@ async def idea_with_votes(real_db, user_fixture, request):
     async with setup_ideas(real_db, user_fixture, 1) as ideas:
         [idea] = ideas
         async with setup_users(real_db, 10) as users:
-            upvotes_count = random.randint(0, max_upvotes)
-            upvoters = users[:upvotes_count]
-            downvoters = users[upvotes_count:]
-            setup_votes(upvoters, downvoters, idea)
+            add_votes(users, idea, max_upvotes)
+
             await real_db.save_all(users)
             await real_db.save(idea)
             yield idea
@@ -71,10 +65,7 @@ async def idea_to_delete_with_votes(real_db, user_fixture, request):
         idea = create_idea(user_fixture)
         users = [create_user() for _ in range(10)]
 
-        upvotes_count = random.randint(0, max_upvotes)
-        upvoters = users[:upvotes_count]
-        downvoters = users[upvotes_count:]
-        setup_votes(upvoters, downvoters, idea)
+        add_votes(users, idea, max_upvotes)
 
         await real_db.save_all(users)
         await real_db.save(idea)
