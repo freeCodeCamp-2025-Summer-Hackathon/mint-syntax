@@ -1,5 +1,6 @@
 from contextlib import asynccontextmanager
 from datetime import UTC, datetime, timedelta
+from random import randint
 from typing import Literal
 
 import faker
@@ -61,6 +62,21 @@ async def setup_users(real_db: AIOSession, count: int = 1, **user_options):
 
 
 @asynccontextmanager
+async def setup_idea_with_votes(real_db: AIOSession, user: User, max_upvotes=10):
+    async with (
+        setup_ideas(real_db, user, 1) as ideas,
+        setup_users(real_db, 10) as voters,
+    ):
+        [idea] = ideas
+
+        add_votes(voters, idea, max_upvotes)
+
+        await real_db.save_all(voters)
+        await real_db.save(idea)
+        yield idea
+
+
+@asynccontextmanager
 async def setup_votes(
     real_db: AIOSession,
     user: User,
@@ -90,6 +106,18 @@ async def setup_votes(
                 user.upvotes.remove(idea.id)
         await real_db.save_all(ideas)
         await real_db.save(user)
+
+
+def add_votes(voters: list[User], idea: Idea, max_upvotes: int):
+    upvotes_count = randint(0, max_upvotes)
+    upvoters = voters[:upvotes_count]
+    downvoters = voters[upvotes_count:]
+    for upvoter in upvoters:
+        idea.upvoted_by.append(upvoter.id)
+        upvoter.upvotes.append(idea.id)
+    for downvoter in downvoters:
+        idea.downvoted_by.append(downvoter.id)
+        downvoter.downvotes.append(idea.id)
 
 
 def now_plus_delta(delta: timedelta = timedelta()):
