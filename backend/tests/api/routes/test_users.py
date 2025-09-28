@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+from datetime import UTC, datetime
 
 import pytest
 from httpx import AsyncClient
@@ -7,6 +8,7 @@ from odmantic.session import AIOSession
 
 from src.auth import get_current_user, verify_password
 from src.models import User
+from src.util import datetime_now
 
 from ...util import setup_users
 
@@ -68,6 +70,8 @@ USER_ME_ATTRIBUTES = (
     "is_active",
     "upvotes",
     "downvotes",
+    "created_at",
+    "modified_at",
 )
 
 
@@ -551,6 +555,29 @@ async def test_PATCH_users_id_saves_changes_in_db(
     assert updated_user.username == user.username
     assert updated_user.upvotes == user.upvotes
     assert updated_user.downvotes == user.downvotes
+
+
+@pytest.mark.integration
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    ("patch_data", "user"),
+    PATCH_DATA_WITH_INITIAL_USER_OPTIONS,
+    indirect=["user"],
+)
+async def test_PATCH_users_id_changes_modified_at(
+    admin_client: AsyncClient, real_db: AIOSession, patch_data, user
+):
+    response = await admin_client.patch(url_for_user_id(user.id), json=patch_data)
+    data = response.json()
+
+    assert response.status_code == 200
+
+    updated_user = await real_db.find_one(User, User.id == user.id)
+    now = datetime_now()
+
+    assert updated_user is not None
+    assert now > datetime.fromisoformat(data["modified_at"]) > user.modified_at
+    assert now > updated_user.modified_at.replace(tzinfo=UTC) > user.modified_at
 
 
 @pytest.mark.integration

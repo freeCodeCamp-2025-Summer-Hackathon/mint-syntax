@@ -1,9 +1,13 @@
 import random
+from datetime import UTC, datetime
 
 import pytest
+from httpx import AsyncClient
+from odmantic.session import AIOSession
 
 from src.auth import verify_password
 from src.models import User
+from src.util import datetime_now
 
 from ...util import setup_ideas, setup_users, setup_votes
 
@@ -57,6 +61,7 @@ async def test_GET_me_returns_200_status_code_for_logged_in_active(
     assert response.status_code == 200
 
 
+@pytest.mark.only
 @pytest.mark.integration
 @pytest.mark.anyio
 async def test_GET_me_returns_expected_user_info_for_logged_in_active(
@@ -67,11 +72,13 @@ async def test_GET_me_returns_expected_user_info_for_logged_in_active(
     response = await async_client.get(ME)
     data = response.json()
 
-    assert all(
-        value == data.get(key)
-        for key, value in user.model_dump().items()
-        if key not in {"hashed_password", "id"}
-    )
+    for key, value in user.model_dump().items():
+        if key in {"hashed_password", "id"}:
+            continue
+        elif key in {"created_at", "modified_at"}:
+            assert datetime.fromisoformat(data.get(key)).replace(tzinfo=UTC) == value
+        else:
+            assert data.get(key) == value
     assert data["id"] == str(user.id)
 
 
@@ -111,6 +118,27 @@ async def test_PATCH_me_updates_name_in_db(real_db, user_with_client, new_name_d
 
     assert user.name != new_name_data["name"]
     assert updated_user.name == new_name_data["name"]
+
+
+@pytest.mark.integration
+@pytest.mark.anyio
+@pytest.mark.parametrize("new_name_data", NEW_NAME_DATA)
+async def test_PATCH_me_changes_modified_at(
+    real_db: AIOSession, user_with_client: tuple[User, AsyncClient], new_name_data
+):
+    user, async_client = user_with_client
+
+    response = await async_client.patch(ME, json=new_name_data)
+    data = response.json()
+
+    assert response.status_code == 200
+
+    updated_user = await real_db.find_one(User, User.id == user.id)
+    now = datetime_now()
+
+    assert updated_user is not None
+    assert now > datetime.fromisoformat(data["modified_at"]) > user.modified_at
+    assert now > updated_user.modified_at.replace(tzinfo=UTC) > user.modified_at
 
 
 @pytest.mark.integration
