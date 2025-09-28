@@ -61,6 +61,7 @@ async def test_GET_me_returns_200_status_code_for_logged_in_active(
     assert response.status_code == 200
 
 
+@pytest.mark.only
 @pytest.mark.integration
 @pytest.mark.anyio
 async def test_GET_me_returns_expected_user_info_for_logged_in_active(
@@ -71,11 +72,13 @@ async def test_GET_me_returns_expected_user_info_for_logged_in_active(
     response = await async_client.get(ME)
     data = response.json()
 
-    assert all(
-        value == data.get(key)
-        for key, value in user.model_dump().items()
-        if key not in {"hashed_password", "id"}
-    )
+    for key, value in user.model_dump().items():
+        if key in {"hashed_password", "id"}:
+            continue
+        elif key in {"created_at", "modified_at"}:
+            assert datetime.fromisoformat(data.get(key)).replace(tzinfo=UTC) == value
+        else:
+            assert data.get(key) == value
     assert data["id"] == str(user.id)
 
 

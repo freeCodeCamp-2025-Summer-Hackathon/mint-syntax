@@ -70,6 +70,8 @@ USER_ME_ATTRIBUTES = (
     "is_active",
     "upvotes",
     "downvotes",
+    "created_at",
+    "modified_at",
 )
 
 
