@@ -1,7 +1,14 @@
+from datetime import datetime
 from typing import Annotated
 
 from odmantic import Field, Model, ObjectId
-from pydantic import BaseModel, StringConstraints
+from pydantic import (
+    BaseModel,
+    StringConstraints,
+    computed_field,
+)
+
+from src.util import datetime_now
 
 StrippedString = Annotated[str, StringConstraints(strip_whitespace=True)]
 EmptyString = Annotated[str, StringConstraints(max_length=0, strip_whitespace=True)]
@@ -16,6 +23,8 @@ PasswordString = Annotated[str, StringConstraints(min_length=8, strip_whitespace
 
 
 class User(Model):
+    created_at: datetime = Field(default_factory=datetime_now)
+    modified_at: datetime = Field(default_factory=datetime_now)
     username: str = Field(unique=True)
     name: str = Field(max_length=255)
     hashed_password: str
@@ -27,6 +36,8 @@ class User(Model):
 
 class UserMe(BaseModel):
     id: ObjectId
+    created_at: datetime
+    modified_at: datetime
     username: str
     name: str
     is_active: bool
@@ -65,6 +76,11 @@ class UserEditPatchInput(BaseModel):
 class UserEditPatch(BaseModel):
     name: NonEmptyMax255CharsString | None
     hashed_password: str | None = None
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def modified_at(self) -> datetime:
+        return datetime_now()
 
 
 class AdminUserEditInputFields(BaseModel):
