@@ -1,8 +1,9 @@
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Annotated
 
 from odmantic import Field, Model, ObjectId
 from pydantic import (
+    AfterValidator,
     BaseModel,
     StringConstraints,
     computed_field,
@@ -20,6 +21,20 @@ NonEmptyMax255CharsString = Annotated[
     str, StringConstraints(max_length=255, min_length=1, strip_whitespace=True)
 ]
 PasswordString = Annotated[str, StringConstraints(min_length=8, strip_whitespace=True)]
+
+
+def to_utc(input: datetime) -> datetime:
+    if input.tzinfo is None:
+        return input.replace(tzinfo=UTC)
+    elif input.tzinfo is not UTC:
+        return input.astimezone(UTC)
+    return input
+
+
+DateTimeUTC = Annotated[
+    datetime,
+    AfterValidator(to_utc),
+]
 
 
 class WithModifiedAtAutoUpdate(BaseModel):
