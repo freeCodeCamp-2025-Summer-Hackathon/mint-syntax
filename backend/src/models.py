@@ -22,6 +22,13 @@ NonEmptyMax255CharsString = Annotated[
 PasswordString = Annotated[str, StringConstraints(min_length=8, strip_whitespace=True)]
 
 
+class WithModifiedAtAutoUpdate(BaseModel):
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def modified_at(self) -> datetime:
+        return datetime_now()
+
+
 class User(Model):
     created_at: datetime = Field(default_factory=datetime_now)
     modified_at: datetime = Field(default_factory=datetime_now)
@@ -73,14 +80,9 @@ class UserEditPatchInput(BaseModel):
     new_password: EmptyString | PasswordString | None = None
 
 
-class UserEditPatch(BaseModel):
+class UserEditPatch(WithModifiedAtAutoUpdate):
     name: NonEmptyMax255CharsString | None
     hashed_password: str | None = None
-
-    @computed_field  # type: ignore[prop-decorator]
-    @property
-    def modified_at(self) -> datetime:
-        return datetime_now()
 
 
 class AdminUserEditInputFields(BaseModel):
@@ -136,7 +138,7 @@ class IdeaCreate(BaseModel):
     description: NonEmptyString
 
 
-class IdeaEditPatch(BaseModel):
+class IdeaEditPatch(WithModifiedAtAutoUpdate):
     name: NonEmptyMax255CharsString | None = None
     description: NonEmptyString | None = None
 
