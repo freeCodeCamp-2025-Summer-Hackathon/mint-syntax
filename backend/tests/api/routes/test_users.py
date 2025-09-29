@@ -1,5 +1,5 @@
 from contextlib import asynccontextmanager
-from datetime import UTC, datetime
+from datetime import datetime
 
 import pytest
 from httpx import AsyncClient
@@ -529,6 +529,8 @@ async def test_PATCH_users_id_returns_updated_user_after_patch(
     assert data["is_active"] == patch_data.get("is_active", user.is_active)
     assert data["is_admin"] == patch_data.get("is_admin", user.is_admin)
 
+    assert datetime.fromisoformat(data["created_at"]) == user.created_at
+
 
 @pytest.mark.integration
 @pytest.mark.anyio
@@ -556,6 +558,8 @@ async def test_PATCH_users_id_saves_changes_in_db(
     assert updated_user.upvotes == user.upvotes
     assert updated_user.downvotes == user.downvotes
 
+    assert updated_user.created_at == user.created_at
+
 
 @pytest.mark.integration
 @pytest.mark.anyio
@@ -577,7 +581,7 @@ async def test_PATCH_users_id_changes_modified_at(
 
     assert updated_user is not None
     assert now > datetime.fromisoformat(data["modified_at"]) > user.modified_at
-    assert now > updated_user.modified_at.replace(tzinfo=UTC) > user.modified_at
+    assert now > updated_user.modified_at > user.modified_at
 
 
 @pytest.mark.integration

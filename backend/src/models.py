@@ -45,8 +45,8 @@ class WithModifiedAtAutoUpdate(BaseModel):
 
 
 class User(Model):
-    created_at: datetime = Field(default_factory=datetime_now)
-    modified_at: datetime = Field(default_factory=datetime_now)
+    created_at: DateTimeUTC = Field(default_factory=datetime_now)
+    modified_at: DateTimeUTC = Field(default_factory=datetime_now)
     username: str = Field(unique=True)
     name: str = Field(max_length=255)
     hashed_password: str
@@ -58,8 +58,8 @@ class User(Model):
 
 class UserMe(BaseModel):
     id: ObjectId
-    created_at: datetime
-    modified_at: datetime
+    created_at: DateTimeUTC
+    modified_at: DateTimeUTC
     username: str
     name: str
     is_active: bool
