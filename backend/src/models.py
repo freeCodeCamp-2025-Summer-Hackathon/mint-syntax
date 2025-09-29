@@ -123,6 +123,8 @@ class AdminUserCreate(UserRegister):
 
 
 class Idea(Model):
+    created_at: DateTimeUTC = Field(default_factory=datetime_now, index=True)
+    modified_at: DateTimeUTC = Field(default_factory=datetime_now, index=True)
     name: str
     description: str
     upvoted_by: list[ObjectId] = []
@@ -132,6 +134,7 @@ class Idea(Model):
 
 class IdeaPublic(BaseModel):
     id: ObjectId
+    created_at: DateTimeUTC
     name: str
     description: str
     upvoted_by: list[ObjectId]
