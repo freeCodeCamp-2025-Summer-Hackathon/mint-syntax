@@ -62,9 +62,10 @@ async def setup_users(real_db: AIOSession, count: int = 1, **user_options):
 
 
 @asynccontextmanager
-async def setup_idea_with_votes(real_db: AIOSession, user: User, max_upvotes=10):
+async def setup_idea(real_db: AIOSession, user: User | None = None, max_upvotes=10):
     async with (
-        setup_ideas(real_db, user, 1) as ideas,
+        setup_users(real_db, 1 if user is None else 0) as users,
+        setup_ideas(real_db, user if user else users[0], 1) as ideas,
         setup_users(real_db, 10) as voters,
     ):
         [idea] = ideas

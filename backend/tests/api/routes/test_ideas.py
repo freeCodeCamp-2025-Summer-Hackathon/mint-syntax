@@ -11,9 +11,8 @@ from ...util import (
     add_votes,
     create_idea,
     create_user,
-    setup_idea_with_votes,
+    setup_idea,
     setup_ideas,
-    setup_users,
 )
 
 DOWNVOTE = "downvote"
@@ -39,31 +38,17 @@ async def clean_new_ideas(real_db: AIOSession):
 
 
 @pytest.fixture
-async def user_fixture(real_db, request):
-    user_options = request.param if hasattr(request, "param") else {}
-    async with setup_users(real_db, **user_options) as users:
-        [user] = users
-        yield user
-
-
-@pytest.fixture
-async def idea_with_votes(real_db, user_fixture, request):
+async def idea_with_votes(real_db, request):
     max_upvotes = request.param
-    async with setup_ideas(real_db, user_fixture, 1) as ideas:
-        [idea] = ideas
-        async with setup_users(real_db, 10) as users:
-            add_votes(users, idea, max_upvotes)
-
-            await real_db.save_all(users)
-            await real_db.save(idea)
-            yield idea
+    async with setup_idea(real_db, max_upvotes=max_upvotes) as idea:
+        yield idea
 
 
 @pytest.fixture(params=[0, 5, 10])
-async def idea_to_delete_with_votes(real_db, user_fixture, request):
+async def idea_to_delete_with_votes(real_db, user, request):
     max_upvotes = request.param
     async with clean_new_ideas(real_db):
-        idea = create_idea(user_fixture)
+        idea = create_idea(user)
         users = [create_user() for _ in range(10)]
 
         add_votes(users, idea, max_upvotes)
@@ -288,10 +273,8 @@ async def test_PUT_upvote_idea_returns_404_when_idea_id_does_not_exist(
     real_db: AIOSession,
     user_with_client,
 ):
-    async with setup_users(real_db, 1) as users:
-        [user] = users
-        async with setup_ideas(real_db, user, 1) as ideas:
-            [idea] = ideas
+    async with setup_idea(real_db) as idea:
+        pass
 
     non_existing_idea_id = str(idea.id)
     _, async_client = user_with_client
@@ -463,10 +446,8 @@ async def test_PUT_downvote_idea_returns_404_when_idea_id_does_not_exist(
     real_db: AIOSession,
     user_with_client,
 ):
-    async with setup_users(real_db, 1) as users:
-        [user] = users
-        async with setup_ideas(real_db, user, 1) as ideas:
-            [idea] = ideas
+    async with setup_idea(real_db) as idea:
+        pass
 
     non_existing_idea_id = str(idea.id)
     _, async_client = user_with_client
@@ -486,20 +467,18 @@ async def test_PUT_downvote_idea_returns_404_when_idea_id_does_not_exist(
     [0, 5, 15, 40],
 )
 async def test_GET_count_returns_total_number_of_ideas(
-    real_db: AIOSession, user_with_client, additional_ideas
+    real_db: AIOSession, user, user_with_client, additional_ideas
 ):
     initial_ideas = await real_db.count(Idea)
 
-    async with setup_users(real_db, 1) as users:
-        [user] = users
-        async with setup_ideas(real_db, user, additional_ideas):
-            _, async_client = user_with_client
+    async with setup_ideas(real_db, user, additional_ideas):
+        _, async_client = user_with_client
 
-            response = await async_client.get(IDEAS_COUNT)
-            data = response.json()
+        response = await async_client.get(IDEAS_COUNT)
+        data = response.json()
 
-            assert response.status_code == 200
-            assert data == initial_ideas + additional_ideas
+        assert response.status_code == 200
+        assert data == initial_ideas + additional_ideas
 
 
 @pytest.mark.integration
@@ -531,10 +510,8 @@ async def test_GET_ideas_id_returns_idea_data(user_with_client, idea_with_votes)
 async def test_GET_ideas_id_returns_404_if_idea_does_not_exist(
     real_db: AIOSession, user_with_client
 ):
-    async with setup_users(real_db, 1) as users:
-        [user] = users
-        async with setup_ideas(real_db, user, 1) as ideas:
-            [idea] = ideas
+    async with setup_idea(real_db) as idea:
+        pass
 
     removed_idea_id = idea.id
     _, async_client = user_with_client
@@ -609,10 +586,9 @@ async def test_DELETE_ideas_id_deletes_votes_from_users(
 async def test_DELETE_ideas_id_returns_404_when_idea_does_not_exist(
     real_db: AIOSession, admin_client: AsyncClient
 ):
-    async with setup_users(real_db, 1) as users:
-        [user] = users
-        async with setup_ideas(real_db, user, 1) as ideas:
-            [idea] = ideas
+    async with setup_idea(real_db) as idea:
+        pass
+
     non_existing_idea_id = idea.id
 
     response = await admin_client.delete(f"/ideas/{non_existing_idea_id}")
@@ -677,7 +653,7 @@ async def test_PATCH_ideas_id_retures_idea_public_after_patch_for_idea_creator(
     real_db: AIOSession, user_with_client: tuple[User, AsyncClient], patch_data
 ):
     user, async_client = user_with_client
-    async with setup_idea_with_votes(real_db, user) as idea:
+    async with setup_idea(real_db, user) as idea:
         response = await async_client.patch(f"/ideas/{idea.id}", json=patch_data)
         data = response.json()
 
@@ -735,7 +711,7 @@ async def test_PATCH_ideas_id_updates_idea_in_db_for_idea_creator(
     real_db: AIOSession, user_with_client: tuple[User, AsyncClient], patch_data
 ):
     user, async_client = user_with_client
-    async with setup_idea_with_votes(real_db, user) as idea:
+    async with setup_idea(real_db, user) as idea:
         response = await async_client.patch(f"/ideas/{idea.id}", json=patch_data)
 
         assert response.status_code == 200
@@ -764,7 +740,7 @@ async def test_PATCH_ideas_id_returns_422_when_required_data_is_invalid_or_empty
     real_db: AIOSession, user_with_client: tuple[User, AsyncClient], invalid_patch_data
 ):
     user, async_client = user_with_client
-    async with setup_idea_with_votes(real_db, user) as idea:
+    async with setup_idea(real_db, user) as idea:
         response = await async_client.patch(
             f"/ideas/{idea.id}", json=invalid_patch_data
         )

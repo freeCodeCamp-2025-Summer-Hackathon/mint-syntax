@@ -79,12 +79,18 @@ def built_request(async_client, request):
 
 
 @pytest.fixture
-async def user_with_ideas(real_db: AIOSession, request):
-    ideas_count = request.param
-    async with setup_users(real_db) as users:
+async def user(real_db, request):
+    user_options = request.param if hasattr(request, "param") else {}
+    async with setup_users(real_db, **user_options) as users:
         [user] = users
-        async with setup_ideas(real_db, user, ideas_count) as ideas:
-            yield user, ideas, ideas_count
+        yield user
+
+
+@pytest.fixture
+async def user_with_ideas(real_db: AIOSession, user, request):
+    ideas_count = request.param
+    async with setup_ideas(real_db, user, ideas_count) as ideas:
+        yield user, ideas, ideas_count
 
 
 @pytest.fixture

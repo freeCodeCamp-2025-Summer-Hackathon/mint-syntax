@@ -9,7 +9,7 @@ from src.auth import verify_password
 from src.models import User
 from src.util import datetime_now
 
-from ...util import setup_ideas, setup_users, setup_votes
+from ...util import setup_idea, setup_ideas, setup_users, setup_votes
 
 PASSWORD = "password"
 NEW_NAME_DATA = [
@@ -302,8 +302,7 @@ async def test_GET_me_ideas_returns_ideas_with_required_fields(
 ):
     user, async_client = user_with_client
 
-    async with setup_ideas(real_db, user, 1) as ideas:
-        [idea] = ideas
+    async with setup_idea(real_db, user) as idea:
         response = await async_client.get(ME_IDEAS)
         [returned_idea] = response.json()["data"]
 
