@@ -22,13 +22,7 @@ async def get_ideas_by_upvotes(db: Db, skip: int, limit: int, ascending=False):
     collection = db.engine.get_collection(Idea)
     aggregates: Sequence[Mapping[str, Any]] = [
         {
-            "$project": {
-                "_id": 1,
-                "name": 1,
-                "description": 1,
-                "upvoted_by": 1,
-                "downvoted_by": 1,
-                "creator_id": 1,
+            "$addFields": {
                 "upvotes": {"$size": "$upvoted_by"},
             }
         },

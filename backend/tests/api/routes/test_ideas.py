@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+from datetime import datetime
 
 import pytest
 from httpx import AsyncClient
@@ -6,6 +7,7 @@ from odmantic import ObjectId, query
 from odmantic.session import AIOSession
 
 from src.models import Idea, IdeaDownvote, IdeaUpvote, User
+from src.util import datetime_now
 
 from ...util import (
     add_votes,
@@ -171,6 +173,8 @@ async def test_PUT_upvote_idea_returns_upvoted_idea(
         str(user_id) for user_id in idea_with_votes.upvoted_by
     } | {user_id}
 
+    assert datetime.fromisoformat(data["created_at"]) == idea_with_votes.created_at
+
 
 @pytest.mark.integration
 @pytest.mark.anyio
@@ -208,6 +212,38 @@ async def test_PUT_upvote_idea_updates_idea_in_db(
     assert updated_idea.name == idea_with_votes.name
     assert updated_idea.description == idea_with_votes.description
     assert updated_idea.creator_id == idea_with_votes.creator_id
+
+
+@pytest.mark.integration
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    "setup",
+    UPVOTE_CASES,
+)
+@pytest.mark.parametrize(
+    "idea_with_votes",
+    [5],
+    indirect=True,
+)
+async def test_PUT_upvote_idea_does_not_update_modified_at(
+    real_db: AIOSession, idea_with_votes, user_with_client, setup
+):
+    user, async_client = user_with_client
+    if setup is not None:
+        await setup(real_db, idea_with_votes, user)
+    vote = IdeaUpvote(idea_id=idea_with_votes.id)
+
+    response = await async_client.put(
+        url_to_vote(vote), json={"idea_id": str(idea_with_votes.id)}
+    )
+
+    assert response.status_code == 200
+
+    voted_idea = await real_db.find_one(Idea, Idea.id == idea_with_votes.id)
+
+    assert voted_idea is not None
+    assert voted_idea.created_at == idea_with_votes.created_at
+    assert voted_idea.modified_at == idea_with_votes.modified_at
 
 
 @pytest.mark.integration
@@ -343,6 +379,8 @@ async def test_PUT_downvote_idea_returns_downvoted_idea(
         str(user_id) for user_id in idea_with_votes.upvoted_by
     } - {user_id}
 
+    assert datetime.fromisoformat(data["created_at"]) == idea_with_votes.created_at
+
 
 @pytest.mark.integration
 @pytest.mark.anyio
@@ -380,6 +418,38 @@ async def test_PUT_downvote_idea_updates_idea_in_db(
     assert updated_idea.name == idea_with_votes.name
     assert updated_idea.description == idea_with_votes.description
     assert updated_idea.creator_id == idea_with_votes.creator_id
+
+
+@pytest.mark.integration
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    "setup",
+    DOWNVOTE_CASES,
+)
+@pytest.mark.parametrize(
+    "idea_with_votes",
+    [5],
+    indirect=True,
+)
+async def test_PUT_downvote_idea_does_not_update_modified_at(
+    real_db: AIOSession, idea_with_votes, user_with_client, setup
+):
+    user, async_client = user_with_client
+    if setup is not None:
+        await setup(real_db, idea_with_votes, user)
+    vote = IdeaDownvote(idea_id=idea_with_votes.id)
+
+    response = await async_client.put(
+        url_to_vote(vote), json={"idea_id": str(idea_with_votes.id)}
+    )
+
+    assert response.status_code == 200
+
+    voted_idea = await real_db.find_one(Idea, Idea.id == idea_with_votes.id)
+
+    assert voted_idea is not None
+    assert voted_idea.created_at == idea_with_votes.created_at
+    assert voted_idea.modified_at == idea_with_votes.modified_at
 
 
 @pytest.mark.integration
@@ -673,7 +743,7 @@ async def test_PATCH_ideas_id_returns_idea_public_after_patch_for_admin(
     "patch_data",
     IDEA_PATCH_CASES,
 )
-async def test_PATCH_ideas_id_retures_idea_public_after_patch_for_idea_creator(
+async def test_PATCH_ideas_id_returns_idea_public_after_patch_for_idea_creator(
     real_db: AIOSession, user_with_client: tuple[User, AsyncClient], patch_data
 ):
     user, async_client = user_with_client
@@ -691,6 +761,7 @@ async def test_PATCH_ideas_id_retures_idea_public_after_patch_for_idea_creator(
             str(user_id) for user_id in idea.downvoted_by
         }
         assert data["creator_id"] == str(idea.creator_id)
+        assert datetime.fromisoformat(data["created_at"]) == idea.created_at
 
 
 @pytest.mark.integration
@@ -724,6 +795,9 @@ async def test_PATCH_ideas_id_updates_idea_in_db_for_admin(
     assert set(updated_idea.downvoted_by) == set(idea_with_votes.downvoted_by)
     assert updated_idea.creator_id == idea_with_votes.creator_id
 
+    assert updated_idea.created_at == idea_with_votes.created_at
+    assert datetime_now() > updated_idea.modified_at > idea_with_votes.modified_at
+
 
 @pytest.mark.integration
 @pytest.mark.anyio
@@ -752,6 +826,9 @@ async def test_PATCH_ideas_id_updates_idea_in_db_for_idea_creator(
         assert set(updated_idea.upvoted_by) == set(idea.upvoted_by)
         assert set(updated_idea.downvoted_by) == set(idea.downvoted_by)
         assert updated_idea.creator_id == idea.creator_id
+
+        assert updated_idea.created_at == idea.created_at
+        assert datetime_now() > updated_idea.modified_at > idea.modified_at
 
 
 @pytest.mark.integration
