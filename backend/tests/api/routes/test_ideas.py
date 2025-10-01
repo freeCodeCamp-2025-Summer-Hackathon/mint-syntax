@@ -1,3 +1,4 @@
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from datetime import datetime
 
@@ -40,14 +41,14 @@ async def clean_new_ideas(real_db: AIOSession):
 
 
 @pytest.fixture
-async def idea_with_votes(real_db, request):
+async def idea_with_votes(real_db: AIOSession, request) -> AsyncGenerator[Idea]:
     max_upvotes = request.param
     async with setup_idea(real_db, max_upvotes=max_upvotes) as idea:
         yield idea
 
 
 @pytest.fixture(params=[0, 5, 10])
-async def idea_to_delete_with_votes(real_db, user, request):
+async def idea_to_delete_with_votes(real_db: AIOSession, user: User, request):
     max_upvotes = request.param
     async with clean_new_ideas(real_db):
         idea = create_idea(user)
@@ -62,13 +63,13 @@ async def idea_to_delete_with_votes(real_db, user, request):
         await real_db.remove(User, query.in_(User.id, {user.id for user in users}))
 
 
-async def setup_upvote(real_db: AIOSession, idea, user):
+async def setup_upvote(real_db: AIOSession, idea: Idea, user: User):
     idea.upvoted_by.append(user.id)
     user.upvotes.append(idea.id)
     await real_db.save_all((idea, user))
 
 
-async def setup_downvote(real_db: AIOSession, idea, user):
+async def setup_downvote(real_db: AIOSession, idea: Idea, user: User):
     idea.downvoted_by.append(user.id)
     user.downvotes.append(idea.id)
     await real_db.save_all((idea, user))
@@ -129,8 +130,8 @@ IDEA_PATCH_CASES = [
 )
 async def test_PUT_upvote_idea_returns_upvoted_idea(
     real_db: AIOSession,
-    idea_with_votes,
-    user_with_client,
+    idea_with_votes: Idea,
+    user_with_client: tuple[User, AsyncClient],
     setup,
 ):
     user, async_client = user_with_client
@@ -173,7 +174,10 @@ async def test_PUT_upvote_idea_returns_upvoted_idea(
     indirect=True,
 )
 async def test_PUT_upvote_idea_updates_idea_in_db(
-    real_db: AIOSession, idea_with_votes, user_with_client, setup
+    real_db: AIOSession,
+    idea_with_votes: Idea,
+    user_with_client: tuple[User, AsyncClient],
+    setup,
 ):
     user, async_client = user_with_client
     if setup is not None:
@@ -211,7 +215,10 @@ async def test_PUT_upvote_idea_updates_idea_in_db(
     indirect=True,
 )
 async def test_PUT_upvote_idea_does_not_update_modified_at(
-    real_db: AIOSession, idea_with_votes, user_with_client, setup
+    real_db: AIOSession,
+    idea_with_votes: Idea,
+    user_with_client: tuple[User, AsyncClient],
+    setup,
 ):
     user, async_client = user_with_client
     if setup is not None:
@@ -243,7 +250,10 @@ async def test_PUT_upvote_idea_does_not_update_modified_at(
     indirect=True,
 )
 async def test_PUT_upvote_idea_updates_user_in_db(
-    real_db: AIOSession, idea_with_votes, user_with_client, setup
+    real_db: AIOSession,
+    idea_with_votes: Idea,
+    user_with_client: tuple[User, AsyncClient],
+    setup,
 ):
     user, async_client = user_with_client
     if setup is not None:
@@ -286,8 +296,8 @@ async def test_PUT_upvote_idea_updates_user_in_db(
 )
 async def test_PUT_upvote_idea_returns_422_when_invalid_data(
     real_db: AIOSession,
-    idea_with_votes,
-    user_with_client,
+    idea_with_votes: Idea,
+    user_with_client: tuple[User, AsyncClient],
     setup,
     invalid_idea_id,
 ):
@@ -307,7 +317,7 @@ async def test_PUT_upvote_idea_returns_422_when_invalid_data(
 @pytest.mark.anyio
 async def test_PUT_upvote_idea_returns_404_when_idea_id_does_not_exist(
     real_db: AIOSession,
-    user_with_client,
+    user_with_client: tuple[User, AsyncClient],
 ):
     async with setup_idea(real_db) as idea:
         pass
@@ -335,7 +345,10 @@ async def test_PUT_upvote_idea_returns_404_when_idea_id_does_not_exist(
     indirect=True,
 )
 async def test_PUT_downvote_idea_returns_downvoted_idea(
-    real_db: AIOSession, idea_with_votes, user_with_client, setup
+    real_db: AIOSession,
+    idea_with_votes: Idea,
+    user_with_client: tuple[User, AsyncClient],
+    setup,
 ):
     user, async_client = user_with_client
     user_id = str(user.id)
@@ -377,7 +390,10 @@ async def test_PUT_downvote_idea_returns_downvoted_idea(
     indirect=True,
 )
 async def test_PUT_downvote_idea_updates_idea_in_db(
-    real_db: AIOSession, idea_with_votes, user_with_client, setup
+    real_db: AIOSession,
+    idea_with_votes: Idea,
+    user_with_client: tuple[User, AsyncClient],
+    setup,
 ):
     user, async_client = user_with_client
     if setup is not None:
@@ -415,7 +431,10 @@ async def test_PUT_downvote_idea_updates_idea_in_db(
     indirect=True,
 )
 async def test_PUT_downvote_idea_does_not_update_modified_at(
-    real_db: AIOSession, idea_with_votes, user_with_client, setup
+    real_db: AIOSession,
+    idea_with_votes: Idea,
+    user_with_client: tuple[User, AsyncClient],
+    setup,
 ):
     user, async_client = user_with_client
     if setup is not None:
@@ -448,8 +467,8 @@ async def test_PUT_downvote_idea_does_not_update_modified_at(
 )
 async def test_PUT_downvote_idea_updates_user_in_db(
     real_db: AIOSession,
-    idea_with_votes,
-    user_with_client,
+    idea_with_votes: Idea,
+    user_with_client: tuple[User, AsyncClient],
     setup,
 ):
     user, async_client = user_with_client
@@ -493,8 +512,8 @@ async def test_PUT_downvote_idea_updates_user_in_db(
 )
 async def test_PUT_downvote_idea_returns_422_when_invalid_data(
     real_db: AIOSession,
-    idea_with_votes,
-    user_with_client,
+    idea_with_votes: Idea,
+    user_with_client: tuple[User, AsyncClient],
     setup,
     invalid_idea_id,
 ):
@@ -514,7 +533,7 @@ async def test_PUT_downvote_idea_returns_422_when_invalid_data(
 @pytest.mark.anyio
 async def test_PUT_downvote_idea_returns_404_when_idea_id_does_not_exist(
     real_db: AIOSession,
-    user_with_client,
+    user_with_client: tuple[User, AsyncClient],
 ):
     async with setup_idea(real_db) as idea:
         pass
@@ -537,7 +556,10 @@ async def test_PUT_downvote_idea_returns_404_when_idea_id_does_not_exist(
     [0, 5, 15, 40],
 )
 async def test_GET_count_returns_total_number_of_ideas(
-    real_db: AIOSession, user, user_with_client, additional_ideas
+    real_db: AIOSession,
+    user: User,
+    user_with_client: tuple[User, AsyncClient],
+    additional_ideas,
 ):
     initial_ideas = await real_db.count(Idea)
 
@@ -558,7 +580,9 @@ async def test_GET_count_returns_total_number_of_ideas(
     [0, 10, 15],
     indirect=True,
 )
-async def test_GET_ideas_id_returns_idea_data(user_with_client, idea_with_votes):
+async def test_GET_ideas_id_returns_idea_data(
+    user_with_client: tuple[User, AsyncClient], idea_with_votes: Idea
+):
     _, async_client = user_with_client
     response = await async_client.get(f"/ideas/{idea_with_votes.id}")
     data = response.json()
@@ -578,7 +602,7 @@ async def test_GET_ideas_id_returns_idea_data(user_with_client, idea_with_votes)
 @pytest.mark.integration
 @pytest.mark.anyio
 async def test_GET_ideas_id_returns_404_if_idea_does_not_exist(
-    real_db: AIOSession, user_with_client
+    real_db: AIOSession, user_with_client: tuple[User, AsyncClient]
 ):
     async with setup_idea(real_db) as idea:
         pass
@@ -596,7 +620,7 @@ async def test_GET_ideas_id_returns_404_if_idea_does_not_exist(
 @pytest.mark.anyio
 @pytest.mark.parametrize("invalid_id", ["random", "not-object-id"])
 async def test_GET_ideas_id_returns_422_if_idea_id_is_invalid(
-    user_with_client, invalid_id
+    user_with_client: tuple[User, AsyncClient], invalid_id
 ):
     _, async_client = user_with_client
     response = await async_client.get(f"/ideas/{invalid_id}")
@@ -752,7 +776,7 @@ async def test_PATCH_ideas_id_returns_idea_public_after_patch_for_idea_creator(
     indirect=True,
 )
 async def test_PATCH_ideas_id_updates_idea_in_db_for_admin(
-    real_db: AIOSession, admin_client: AsyncClient, idea_with_votes, patch_data
+    real_db: AIOSession, admin_client: AsyncClient, idea_with_votes: Idea, patch_data
 ):
     response = await admin_client.patch(f"/ideas/{idea_with_votes.id}", json=patch_data)
 
@@ -836,7 +860,7 @@ async def test_PATCH_ideas_id_returns_422_when_required_data_is_invalid_or_empty
     IDEA_PATCH_CASES,
 )
 async def test_PATCH_ideas_id_returns_422_when_idea_id_is_invalid(
-    admin_client, invalid_idea_id, patch_data
+    admin_client: AsyncClient, invalid_idea_id, patch_data
 ):
     response = await admin_client.patch(f"/ideas/{invalid_idea_id}", json=patch_data)
 

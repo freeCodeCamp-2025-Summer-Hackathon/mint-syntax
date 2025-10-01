@@ -6,7 +6,7 @@ from httpx import AsyncClient
 from odmantic.session import AIOSession
 
 from src.auth import verify_password
-from src.models import User
+from src.models import Idea, User
 from src.util import datetime_now
 
 from ...util import setup_idea, setup_ideas, setup_users, setup_votes
@@ -27,7 +27,7 @@ ME_UPVOTES = "/me/upvotes/"
 ME_DOWNVOTES = "/me/downvotes/"
 
 
-def assert_idea_matches_returned(idea, returned_idea):
+def assert_idea_matches_returned(idea: Idea, returned_idea):
     assert str(idea.id) == returned_idea["id"]
     assert idea.name == returned_idea["name"]
     assert idea.description == returned_idea["description"]
@@ -39,7 +39,7 @@ def assert_idea_matches_returned(idea, returned_idea):
 
 
 @pytest.fixture
-async def ideas_to_vote(real_db):
+async def ideas_to_vote(real_db: AIOSession):
     async with setup_users(real_db, 2) as users:
         user1, user2 = users
         async with (
@@ -52,7 +52,7 @@ async def ideas_to_vote(real_db):
 @pytest.mark.integration
 @pytest.mark.anyio
 async def test_GET_me_returns_200_status_code_for_logged_in_active(
-    user_with_client,
+    user_with_client: tuple[User, AsyncClient],
 ):
     _, async_client = user_with_client
 
@@ -65,7 +65,7 @@ async def test_GET_me_returns_200_status_code_for_logged_in_active(
 @pytest.mark.integration
 @pytest.mark.anyio
 async def test_GET_me_returns_expected_user_info_for_logged_in_active(
-    user_with_client,
+    user_with_client: tuple[User, AsyncClient],
 ):
     user, async_client = user_with_client
 
@@ -85,7 +85,7 @@ async def test_GET_me_returns_expected_user_info_for_logged_in_active(
 @pytest.mark.integration
 @pytest.mark.anyio
 async def test_GET_me_does_not_return_hashed_password_in_response(
-    user_with_client,
+    user_with_client: tuple[User, AsyncClient],
 ):
     _, async_client = user_with_client
 
@@ -97,7 +97,9 @@ async def test_GET_me_does_not_return_hashed_password_in_response(
 @pytest.mark.integration
 @pytest.mark.anyio
 @pytest.mark.parametrize("new_name_data", NEW_NAME_DATA)
-async def test_PATCH_me_returns_json_with_updated_name(user_with_client, new_name_data):
+async def test_PATCH_me_returns_json_with_updated_name(
+    user_with_client: tuple[User, AsyncClient], new_name_data
+):
     user, async_client = user_with_client
 
     response = await async_client.patch(ME, json=new_name_data)
@@ -110,12 +112,15 @@ async def test_PATCH_me_returns_json_with_updated_name(user_with_client, new_nam
 @pytest.mark.integration
 @pytest.mark.anyio
 @pytest.mark.parametrize("new_name_data", NEW_NAME_DATA)
-async def test_PATCH_me_updates_name_in_db(real_db, user_with_client, new_name_data):
+async def test_PATCH_me_updates_name_in_db(
+    real_db: AIOSession, user_with_client: tuple[User, AsyncClient], new_name_data
+):
     user, async_client = user_with_client
 
     await async_client.patch(ME, json=new_name_data)
     updated_user = await real_db.find_one(User, User.id == user.id)
 
+    assert updated_user is not None
     assert user.name != new_name_data["name"]
     assert updated_user.name == new_name_data["name"]
 
@@ -148,8 +153,8 @@ async def test_PATCH_me_changes_modified_at(
     NEW_NAME_DATA,
 )
 async def test_PATCH_me_changes_name_with_password_when_old_password_is_correct(
-    real_db,
-    user_with_client,
+    real_db: AIOSession,
+    user_with_client: tuple[User, AsyncClient],
     new_name_data,
 ):
     user, async_client = user_with_client
@@ -161,6 +166,7 @@ async def test_PATCH_me_changes_name_with_password_when_old_password_is_correct(
     await async_client.patch(ME, json=new_name_data | new_password_data)
     updated_user = await real_db.find_one(User, User.id == user.id)
 
+    assert updated_user is not None
     assert user.name != new_name_data["name"]
     assert updated_user.name == new_name_data["name"]
 
@@ -182,7 +188,7 @@ async def test_PATCH_me_changes_name_with_password_when_old_password_is_correct(
     ],
 )
 async def test_PATCH_me_does_not_update_empty_optional_or_additional_data(
-    real_db, user_with_client, new_password_data
+    real_db: AIOSession, user_with_client: tuple[User, AsyncClient], new_password_data
 ):
     user, async_client = user_with_client
 
@@ -194,6 +200,7 @@ async def test_PATCH_me_does_not_update_empty_optional_or_additional_data(
 
     assert user.name == data["name"]
 
+    assert not_updated_user is not None
     assert not_updated_user.name == user.name
     assert verify_password(PASSWORD, not_updated_user.hashed_password)
 
@@ -208,7 +215,7 @@ async def test_PATCH_me_does_not_update_empty_optional_or_additional_data(
     ],
 )
 async def test_PATCH_me_returns_403_for_incorrect_old_password_if_new_is_provided(
-    user_with_client, old_password
+    user_with_client: tuple[User, AsyncClient], old_password
 ):
     _, async_client = user_with_client
 
@@ -226,7 +233,9 @@ async def test_PATCH_me_returns_403_for_incorrect_old_password_if_new_is_provide
     "new_password",
     ["short"],
 )
-async def test_PATCH_me_incorrect_new_password(user_with_client, new_password):
+async def test_PATCH_me_incorrect_new_password(
+    user_with_client: tuple[User, AsyncClient], new_password
+):
     _, async_client = user_with_client
 
     response = await async_client.patch(
@@ -247,7 +256,7 @@ async def test_PATCH_me_incorrect_new_password(user_with_client, new_password):
     [{"name": ""}],
 )
 async def test_PATCH_me_returns_422_for_empty_non_empty_optional_or_invalid_data(
-    user_with_client, patch_data
+    user_with_client: tuple[User, AsyncClient], patch_data
 ):
     _, async_client = user_with_client
 
@@ -267,7 +276,7 @@ async def test_PATCH_me_returns_422_for_empty_non_empty_optional_or_invalid_data
     [{}, {"old_password": PASSWORD, "new_password": "different password"}],
 )
 async def test_PATCH_me_does_not_return_hashed_password(
-    user_with_client, new_name_data, new_password_data
+    user_with_client: tuple[User, AsyncClient], new_name_data, new_password_data
 ):
     _, async_client = user_with_client
 
@@ -283,7 +292,7 @@ async def test_PATCH_me_does_not_return_hashed_password(
     "ideas_count", [0, 15, *[random.randint(1, 15) for _ in range(5)]]
 )
 async def test_GET_me_ideas_returns_ideas_and_total_count(
-    real_db, user_with_client, ideas_count
+    real_db: AIOSession, user_with_client: tuple[User, AsyncClient], ideas_count
 ):
     user, async_client = user_with_client
 
@@ -298,7 +307,7 @@ async def test_GET_me_ideas_returns_ideas_and_total_count(
 @pytest.mark.integration
 @pytest.mark.anyio
 async def test_GET_me_ideas_returns_ideas_with_required_fields(
-    real_db, user_with_client
+    real_db: AIOSession, user_with_client: tuple[User, AsyncClient]
 ):
     user, async_client = user_with_client
 
@@ -315,7 +324,10 @@ async def test_GET_me_ideas_returns_ideas_with_required_fields(
     "votes_count", [0, 15, *[random.randint(1, 15) for _ in range(5)]]
 )
 async def test_GET_me_upvotes_returns_upvoted_ideas_and_total_count(
-    real_db, user_with_client, votes_count, ideas_to_vote
+    real_db: AIOSession,
+    user_with_client: tuple[User, AsyncClient],
+    votes_count,
+    ideas_to_vote,
 ):
     user, async_client = user_with_client
     to_upvote, to_downvote = ideas_to_vote
@@ -340,7 +352,10 @@ async def test_GET_me_upvotes_returns_upvoted_ideas_and_total_count(
     "votes_count", [0, 15, *[random.randint(1, 15) for _ in range(5)]]
 )
 async def test_GET_me_downvotes_returns_downvoted_ideas_and_total_count(
-    real_db, user_with_client, votes_count, ideas_to_vote
+    real_db: AIOSession,
+    user_with_client: tuple[User, AsyncClient],
+    votes_count,
+    ideas_to_vote,
 ):
     user, async_client = user_with_client
     to_upvote, to_downvote = ideas_to_vote
@@ -362,7 +377,7 @@ async def test_GET_me_downvotes_returns_downvoted_ideas_and_total_count(
 @pytest.mark.integration
 @pytest.mark.anyio
 async def test_GET_me_upvotes_returns_ideas_with_required_fields(
-    real_db, user_with_client
+    real_db: AIOSession, user_with_client: tuple[User, AsyncClient]
 ):
     user, async_client = user_with_client
 
@@ -378,7 +393,7 @@ async def test_GET_me_upvotes_returns_ideas_with_required_fields(
 @pytest.mark.integration
 @pytest.mark.anyio
 async def test_GET_me_downvotes_returns_ideas_with_required_fields(
-    real_db, user_with_client
+    real_db: AIOSession, user_with_client: tuple[User, AsyncClient]
 ):
     user, async_client = user_with_client
     async with setup_ideas(real_db, user, 1) as ideas:

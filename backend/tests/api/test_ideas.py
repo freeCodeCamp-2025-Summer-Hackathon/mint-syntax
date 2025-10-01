@@ -201,7 +201,9 @@ async def test_vote_calls_db_save(
     [0, *[random.randint(1, 15) for _ in range(9)]],
     indirect=True,
 )
-async def test_count_ideas_individual_user(real_db: AIOSession, user_with_ideas):
+async def test_count_ideas_individual_user(
+    real_db: AIOSession, user_with_ideas: tuple[User, list[Idea], int]
+):
     user, _, ideas_count = user_with_ideas
 
     result = await count_ideas(real_db, user)
@@ -238,7 +240,12 @@ async def test_count_ideas_returns_correct_number_of_ideas_after_adding_ideas(
     indirect=["user_with_ideas"],
 )
 async def test_get_voted_ideas_returns_correct_ideas_and_correct_count_of_them(
-    real_db: AIOSession, vote_for, voted_for, idea_attr, user_with_ideas, votes_count
+    real_db: AIOSession,
+    vote_for,
+    voted_for,
+    idea_attr,
+    user_with_ideas: tuple[User, list[Idea], int],
+    votes_count,
 ):
     user, ideas, _ = user_with_ideas
     shuffled = random.sample(ideas, k=len(ideas))
@@ -271,7 +278,11 @@ async def test_get_voted_ideas_returns_correct_ideas_and_correct_count_of_them(
     indirect=["user_with_ideas"],
 )
 async def test_get_voted_ideas_returns_ideas_sorted_by_name(
-    real_db: AIOSession, vote_for, voted_for, user_with_ideas, votes_count
+    real_db: AIOSession,
+    vote_for,
+    voted_for,
+    user_with_ideas: tuple[User, list[Idea], int],
+    votes_count,
 ):
     user, ideas, _ = user_with_ideas
     shuffled = random.sample(ideas, k=len(ideas))
@@ -293,7 +304,9 @@ async def test_get_voted_ideas_returns_ideas_sorted_by_name(
     [5, 10, 15, 20, 22],
     indirect=True,
 )
-async def test_get_user_ideas_returns_user_ideas(real_db: AIOSession, user_with_ideas):
+async def test_get_user_ideas_returns_user_ideas(
+    real_db: AIOSession, user_with_ideas: tuple[User, list[Idea], int]
+):
     user, ideas, ideas_count = user_with_ideas
 
     result = await get_user_ideas(real_db, user, skip=0, limit=ideas_count)
@@ -312,7 +325,7 @@ async def test_get_user_ideas_returns_user_ideas(real_db: AIOSession, user_with_
     indirect=True,
 )
 async def test_get_user_ideas_returns_ideas_sorted_by_name(
-    real_db: AIOSession, user_with_ideas
+    real_db: AIOSession, user_with_ideas: tuple[User, list[Idea], int]
 ):
     user, _, ideas_count = user_with_ideas
 
@@ -330,7 +343,10 @@ async def test_get_user_ideas_returns_ideas_sorted_by_name(
 )
 @pytest.mark.parametrize("ideas_with_fake_votes", [15], indirect=True)
 async def test_get_ideas_returns_sorted_ideas_by_the_sort_argument(
-    real_db: AIOSession, sort, func_to_comparator, ideas_with_fake_votes
+    real_db: AIOSession,
+    sort,
+    func_to_comparator,
+    ideas_with_fake_votes: tuple[list[Idea], int],
 ):
     _ = ideas_with_fake_votes
     result = await get_ideas(real_db, skip=0, limit=20, sort=sort)
@@ -347,7 +363,7 @@ async def test_get_ideas_returns_sorted_ideas_by_the_sort_argument(
 )
 @pytest.mark.parametrize("ideas_with_fake_votes", [15], indirect=True)
 async def test_get_ideas_by_upvotes_returns_ideas_sorted_by_votes(
-    real_db: AIOSession, ascending, ideas_with_fake_votes
+    real_db: AIOSession, ascending, ideas_with_fake_votes: tuple[list[Idea], int]
 ):
     _, max_votes = ideas_with_fake_votes
     result = await get_ideas_by_upvotes(real_db, skip=0, limit=20, ascending=ascending)

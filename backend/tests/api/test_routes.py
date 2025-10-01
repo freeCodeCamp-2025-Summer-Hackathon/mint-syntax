@@ -1,4 +1,5 @@
 import pytest
+from httpx import AsyncClient, Request
 
 from ..data_sample import idea1, user1, user_admin_disabled, user_disabled
 
@@ -29,8 +30,8 @@ from ..data_sample import idea1, user1, user_admin_disabled, user_disabled
 )
 async def test_admin_only_route_returns_error_if_not_admin_or_disabled_admin(
     patch_jwt_secret_key,
-    async_client,
-    built_request,
+    async_client: AsyncClient,
+    built_request: Request,
     sample_user_token,
     expected_detail,
     expected_status_code,
@@ -73,8 +74,8 @@ async def test_admin_only_route_returns_error_if_not_admin_or_disabled_admin(
 )
 async def test_logged_in_only_route_returns_error_if_not_logged_in_or_disabled(
     patch_jwt_secret_key,
-    async_client,
-    built_request,
+    async_client: AsyncClient,
+    built_request: Request,
     sample_user_token,
     expected_detail,
     expected_status_code,
