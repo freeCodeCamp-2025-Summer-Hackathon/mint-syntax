@@ -106,14 +106,6 @@ async def clean_added_users(real_db: AIOSession):
         await real_db.remove(User, query.in_(User.id, {user.id for user in new_users}))
 
 
-@pytest.fixture
-async def user(real_db, request):
-    user_options = request.param if hasattr(request, "param") else {}
-    async with setup_users(real_db, **user_options) as users:
-        [user] = users
-        yield user
-
-
 @pytest.mark.integration
 @pytest.mark.anyio
 async def test_POST_users_add_returns_user_after_adding(
