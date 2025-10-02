@@ -1,3 +1,4 @@
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from datetime import UTC, datetime, timedelta
 from random import randint
@@ -13,7 +14,7 @@ from .data_sample import argon2_password_hash
 fake = faker.Faker()
 
 
-def create_user(**options):
+def create_user(**options) -> User:
     username = f"test_{fake.unique.user_name()}"
     defaults = {
         "username": username,
@@ -27,7 +28,7 @@ def create_user(**options):
     return User.model_validate(defaults | options)
 
 
-def create_idea(creator: User):
+def create_idea(creator: User) -> Idea:
     return Idea.model_validate(
         {
             "name": fake.sentence(nb_words=5, variable_nb_words=True),
@@ -40,7 +41,9 @@ def create_idea(creator: User):
 
 
 @asynccontextmanager
-async def setup_ideas(real_db: AIOSession, user: User, count: int):
+async def setup_ideas(
+    real_db: AIOSession, user: User, count: int
+) -> AsyncGenerator[list[Idea]]:
     ideas = [create_idea(user) for _ in range(count)]
     try:
         await real_db.save_all(ideas)
@@ -51,7 +54,9 @@ async def setup_ideas(real_db: AIOSession, user: User, count: int):
 
 
 @asynccontextmanager
-async def setup_users(real_db: AIOSession, count: int = 1, **user_options):
+async def setup_users(
+    real_db: AIOSession, count: int = 1, **user_options
+) -> AsyncGenerator[list[User]]:
     users = [create_user(**user_options) for _ in range(count)]
     try:
         await real_db.save_all(users)
@@ -62,7 +67,9 @@ async def setup_users(real_db: AIOSession, count: int = 1, **user_options):
 
 
 @asynccontextmanager
-async def setup_idea(real_db: AIOSession, user: User | None = None, max_upvotes=10):
+async def setup_idea(
+    real_db: AIOSession, user: User | None = None, max_upvotes=10
+) -> AsyncGenerator[Idea]:
     async with (
         setup_users(real_db, 1 if user is None else 0) as users,
         setup_ideas(real_db, user if user else users[0], 1) as ideas,
@@ -121,5 +128,5 @@ def add_votes(voters: list[User], idea: Idea, max_upvotes: int):
         downvoter.downvotes.append(idea.id)
 
 
-def now_plus_delta(delta: timedelta = timedelta()):
+def now_plus_delta(delta: timedelta = timedelta()) -> datetime:
     return datetime.now(UTC) + delta

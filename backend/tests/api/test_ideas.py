@@ -21,9 +21,8 @@ from ..util import setup_ideas, setup_votes
 
 def assert_in_order(items, ascending=True):
     compare = operator.le if ascending else operator.ge
-    assert all(
-        compare(items[prev_index], item) for prev_index, item in enumerate(items[1:])
-    )
+    for prev_index, item in enumerate(items[1:]):
+        assert compare(items[prev_index], item)
 
 
 def setup_downvote(user: User, idea: Idea):
@@ -201,7 +200,9 @@ async def test_vote_calls_db_save(
     [0, *[random.randint(1, 15) for _ in range(9)]],
     indirect=True,
 )
-async def test_count_ideas_individual_user(real_db: AIOSession, user_with_ideas):
+async def test_count_ideas_individual_user(
+    real_db: AIOSession, user_with_ideas: tuple[User, list[Idea], int]
+):
     user, _, ideas_count = user_with_ideas
 
     result = await count_ideas(real_db, user)
@@ -238,7 +239,12 @@ async def test_count_ideas_returns_correct_number_of_ideas_after_adding_ideas(
     indirect=["user_with_ideas"],
 )
 async def test_get_voted_ideas_returns_correct_ideas_and_correct_count_of_them(
-    real_db: AIOSession, vote_for, voted_for, idea_attr, user_with_ideas, votes_count
+    real_db: AIOSession,
+    vote_for,
+    voted_for,
+    idea_attr,
+    user_with_ideas: tuple[User, list[Idea], int],
+    votes_count,
 ):
     user, ideas, _ = user_with_ideas
     shuffled = random.sample(ideas, k=len(ideas))
@@ -252,8 +258,10 @@ async def test_get_voted_ideas_returns_correct_ideas_and_correct_count_of_them(
         assert len(result.data) == votes_count
         assert result.count == votes_count
 
-        assert all(user.id in getattr(idea, idea_attr) for idea in result.data)
-        assert all(user.id not in getattr(idea, idea_attr) for idea in not_voted)
+        for idea in result.data:
+            assert user.id in getattr(idea, idea_attr)
+        for idea in not_voted:
+            assert user.id not in getattr(idea, idea_attr)
 
 
 @pytest.mark.integration
@@ -271,7 +279,11 @@ async def test_get_voted_ideas_returns_correct_ideas_and_correct_count_of_them(
     indirect=["user_with_ideas"],
 )
 async def test_get_voted_ideas_returns_ideas_sorted_by_name(
-    real_db: AIOSession, vote_for, voted_for, user_with_ideas, votes_count
+    real_db: AIOSession,
+    vote_for,
+    voted_for,
+    user_with_ideas: tuple[User, list[Idea], int],
+    votes_count,
 ):
     user, ideas, _ = user_with_ideas
     shuffled = random.sample(ideas, k=len(ideas))
@@ -293,7 +305,9 @@ async def test_get_voted_ideas_returns_ideas_sorted_by_name(
     [5, 10, 15, 20, 22],
     indirect=True,
 )
-async def test_get_user_ideas_returns_user_ideas(real_db: AIOSession, user_with_ideas):
+async def test_get_user_ideas_returns_user_ideas(
+    real_db: AIOSession, user_with_ideas: tuple[User, list[Idea], int]
+):
     user, ideas, ideas_count = user_with_ideas
 
     result = await get_user_ideas(real_db, user, skip=0, limit=ideas_count)
@@ -312,7 +326,7 @@ async def test_get_user_ideas_returns_user_ideas(real_db: AIOSession, user_with_
     indirect=True,
 )
 async def test_get_user_ideas_returns_ideas_sorted_by_name(
-    real_db: AIOSession, user_with_ideas
+    real_db: AIOSession, user_with_ideas: tuple[User, list[Idea], int]
 ):
     user, _, ideas_count = user_with_ideas
 
@@ -322,7 +336,6 @@ async def test_get_user_ideas_returns_ideas_sorted_by_name(
     assert_in_order(idea_names)
 
 
-@pytest.mark.double
 @pytest.mark.integration
 @pytest.mark.anyio
 @pytest.mark.parametrize(
@@ -384,7 +397,7 @@ async def test_get_ideas_returns_correct_default_order_for_sort(
 )
 @pytest.mark.parametrize("ideas_with_fake_votes", [15], indirect=True)
 async def test_get_ideas_by_upvotes_returns_ideas_sorted_by_votes(
-    real_db: AIOSession, ascending, ideas_with_fake_votes
+    real_db: AIOSession, ascending, ideas_with_fake_votes: tuple[list[Idea], int]
 ):
     _, max_votes = ideas_with_fake_votes
     result = await get_ideas_by_upvotes(real_db, skip=0, limit=20, ascending=ascending)
