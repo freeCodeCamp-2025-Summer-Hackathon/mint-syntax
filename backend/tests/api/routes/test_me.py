@@ -61,7 +61,6 @@ async def test_GET_me_returns_200_status_code_for_logged_in_active(
     assert response.status_code == 200
 
 
-@pytest.mark.only
 @pytest.mark.integration
 @pytest.mark.anyio
 async def test_GET_me_returns_expected_user_info_for_logged_in_active(
