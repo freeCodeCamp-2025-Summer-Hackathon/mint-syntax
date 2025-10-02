@@ -21,9 +21,8 @@ from ..util import setup_ideas, setup_votes
 
 def assert_in_order(items, ascending=True):
     compare = operator.le if ascending else operator.ge
-    assert all(
-        compare(items[prev_index], item) for prev_index, item in enumerate(items[1:])
-    )
+    for prev_index, item in enumerate(items[1:]):
+        assert compare(items[prev_index], item)
 
 
 def setup_downvote(user: User, idea: Idea):
@@ -259,8 +258,10 @@ async def test_get_voted_ideas_returns_correct_ideas_and_correct_count_of_them(
         assert len(result.data) == votes_count
         assert result.count == votes_count
 
-        assert all(user.id in getattr(idea, idea_attr) for idea in result.data)
-        assert all(user.id not in getattr(idea, idea_attr) for idea in not_voted)
+        for idea in result.data:
+            assert user.id in getattr(idea, idea_attr)
+        for idea in not_voted:
+            assert user.id not in getattr(idea, idea_attr)
 
 
 @pytest.mark.integration

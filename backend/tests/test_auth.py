@@ -285,8 +285,12 @@ def test_create_access_token_encoded_token_has_correct_data(patch_jwt_secret_key
     decoded = jwt.decode(token, secret_key, algorithms=[JWT_ALGORITHM])
 
     assert "exp" in decoded
-    assert all(decoded[key] == value for key, value in data.items())
-    assert all(data[key] == value for key, value in decoded.items() if key != "exp")
+    for key, value in data.items():
+        assert decoded[key] == value
+    for key, value in decoded.items():
+        if key == "exp":
+            continue
+        assert data[key] == value
 
 
 @pytest.mark.parametrize(
@@ -340,8 +344,10 @@ def test_create_tokens_returns_two_tokens_and_refresh_token_expiration(
         refresh_token, secret_key, algorithms=[JWT_ALGORITHM]
     )
 
+    keys_expected_in_token = ("exp", "sub")
     for token in (decoded_access_token, decoded_refresh_token):
-        assert all(key in token for key in ("exp", "sub"))
+        for key in keys_expected_in_token:
+            assert key in token
         assert token["sub"] == user_id
 
     assert decoded_access_token["exp"] < decoded_refresh_token["exp"]
