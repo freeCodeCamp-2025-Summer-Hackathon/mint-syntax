@@ -35,10 +35,17 @@ def test_transport(real_db: AIOSession) -> Generator[ASGITransport]:
 
 
 @pytest.fixture
-async def async_client(test_transport) -> AsyncGenerator[AsyncClient]:
-    async with AsyncClient(
-        transport=test_transport, base_url="http://test", follow_redirects=True
-    ) as async_client:
+def client_defaults(test_transport):
+    return {
+        "transport": test_transport,
+        "base_url": "http://test",
+        "follow_redirects": True,
+    }
+
+
+@pytest.fixture
+async def async_client(client_defaults) -> AsyncGenerator[AsyncClient]:
+    async with AsyncClient(**client_defaults) as async_client:
         yield async_client
 
 
