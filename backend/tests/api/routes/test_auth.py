@@ -7,30 +7,37 @@ from httpx import AsyncClient
 from src.auth import JWT_ALGORITHM
 from src.models import User
 
-from ...data_sample import user1, user_admin, user_disabled
+from ...data_sample import (
+    user1,
+    user_admin,
+    user_admin_disabled,
+    user_disabled,
+    user_disabled_with_outdated_hash,
+)
 
 AUTH = "/auth"
 PASSWORD = "password"
 
 USER_CREDENTIAL_CASES = [
     {
-        "user": user1,
-        "credentials": {"username": user1.username, "password": "password"},
-    },
-    {
-        "user": user_admin,
+        "user": user,
         "credentials": {
-            "username": user_admin.username,
+            "username": user.username,
+            "password": password,
+        },
+    }
+    for user, password in [(user1, "password"), (user_admin, "different_password")]
+]
+
+USER_DISABLED_CASES = [
+    {
+        "user": user,
+        "credentials": {
+            "username": user.username,
             "password": "different_password",
         },
-    },
-    {
-        "user": user_disabled,
-        "credentials": {
-            "username": user_disabled.username,
-            "password": "different_password",
-        },
-    },
+    }
+    for user in [user_disabled, user_admin_disabled, user_disabled_with_outdated_hash]
 ]
 
 
@@ -167,3 +174,15 @@ async def test_POST_auth_returns_422_for_missing_credentials(
     response = await async_client.post(AUTH, data=missing_credentials)
 
     assert response.status_code == 422
+
+
+@pytest.mark.xfail(reason="not implemented")
+@pytest.mark.integration
+@pytest.mark.anyio
+@pytest.mark.parametrize("disabled_user", USER_DISABLED_CASES)
+async def test_POST_auth_returns_401_for_disabled_user(
+    async_client: AsyncClient, disabled_user
+):
+    response = await async_client.post(AUTH, data=disabled_user)
+
+    assert response.status_code == 401
