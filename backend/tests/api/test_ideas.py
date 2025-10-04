@@ -339,13 +339,46 @@ async def test_get_user_ideas_returns_ideas_sorted_by_name(
 @pytest.mark.integration
 @pytest.mark.anyio
 @pytest.mark.parametrize(
-    ("sort", "func_to_comparator"),
-    [("trending", lambda idea: -len(idea.upvoted_by)), (None, lambda idea: idea.name)],
+    ("sort", "flip_expected_order", "func_to_comparator"),
+    [
+        ("trending", True, lambda idea: len(idea.upvoted_by)),
+        ("newest", True, lambda idea: idea.created_at),
+        (None, False, lambda idea: idea.name),
+    ],
 )
+@pytest.mark.parametrize("ascending", [True, False])
 @pytest.mark.parametrize("ideas_with_fake_votes", [15], indirect=True)
 async def test_get_ideas_returns_sorted_ideas_by_the_sort_argument(
     real_db: AIOSession,
     sort,
+    ascending,
+    flip_expected_order,
+    func_to_comparator,
+    ideas_with_fake_votes: tuple[list[Idea], int],
+):
+    _ = ideas_with_fake_votes
+    result = await get_ideas(real_db, skip=0, limit=20, sort=sort, ascending=ascending)
+
+    ideas_comparable_attribute = [func_to_comparator(idea) for idea in result.data]
+    expected_ascending = not ascending if flip_expected_order else ascending
+    assert_in_order(ideas_comparable_attribute, ascending=expected_ascending)
+
+
+@pytest.mark.integration
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    ("sort", "expected_ascending_order", "func_to_comparator"),
+    [
+        ("trending", False, lambda idea: len(idea.upvoted_by)),
+        ("newest", False, lambda idea: idea.created_at),
+        (None, True, lambda idea: idea.name),
+    ],
+)
+@pytest.mark.parametrize("ideas_with_fake_votes", [15], indirect=True)
+async def test_get_ideas_returns_correct_default_order_for_sort(
+    real_db: AIOSession,
+    sort,
+    expected_ascending_order,
     func_to_comparator,
     ideas_with_fake_votes: tuple[list[Idea], int],
 ):
@@ -353,7 +386,7 @@ async def test_get_ideas_returns_sorted_ideas_by_the_sort_argument(
     result = await get_ideas(real_db, skip=0, limit=20, sort=sort)
 
     ideas_comparable_attribute = [func_to_comparator(idea) for idea in result.data]
-    assert_in_order(ideas_comparable_attribute)
+    assert_in_order(ideas_comparable_attribute, ascending=expected_ascending_order)
 
 
 @pytest.mark.integration
