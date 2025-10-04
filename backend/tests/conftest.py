@@ -80,15 +80,23 @@ def jwt_secret_key() -> str:
 
 
 @pytest.fixture
-def sample_user_token(jwt_secret_key, request) -> str | None:
+def token_encoder(jwt_secret_key) -> Callable[[str], str | None]:
+    def wrapper(user_id) -> str | None:
+        if not user_id:
+            return None
+        return jwt.encode(
+            {"sub": user_id, "exp": now_plus_delta(timedelta(minutes=5))},
+            jwt_secret_key,
+            algorithm=JWT_ALGORITHM,
+        )
+
+    return wrapper
+
+
+@pytest.fixture
+def sample_user_token(token_encoder, request) -> str | None:
     user_id = str(request.param)
-    if not user_id:
-        return None
-    return jwt.encode(
-        {"sub": user_id, "exp": now_plus_delta(timedelta(minutes=5))},
-        jwt_secret_key,
-        algorithm=JWT_ALGORITHM,
-    )
+    return token_encoder(user_id)
 
 
 @pytest.fixture
