@@ -24,8 +24,7 @@ from src.auth import (
     verify_password,
 )
 from src.models import TokenData, User
-
-from .data_sample import (
+from tests.data_sample import (
     argon2_different_password_hash,
     argon2_password_hash,
     bcrypt_different_password_hash,
@@ -36,7 +35,7 @@ from .data_sample import (
     user_disabled_with_outdated_hash,
     users,
 )
-from .util import now_plus_delta
+from tests.util import now_plus_delta
 
 
 @pytest.fixture

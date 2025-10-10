@@ -13,8 +13,7 @@ from src.csrf import verify_csrf
 from src.database import get_db
 from src.main import app
 from src.models import Idea, User
-
-from ..util import setup_ideas, setup_users
+from tests.util import setup_ideas, setup_users
 
 type LogInClientFunc = Callable[[User], AsyncClient]
 

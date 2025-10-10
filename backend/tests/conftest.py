@@ -12,9 +12,8 @@ from odmantic.session import AIOSession
 from src.auth import JWT_ALGORITHM, config
 from src.config import get_settings
 from src.models import Idea, User
-
-from .data_sample import data, ideas, users
-from .util import now_plus_delta
+from tests.data_sample import data, ideas, users
+from tests.util import now_plus_delta
 
 
 @pytest.fixture(scope="session")

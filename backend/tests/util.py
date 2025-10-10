@@ -8,8 +8,7 @@ import faker
 from odmantic.session import AIOSession
 
 from src.models import Idea, User
-
-from .data_sample import argon2_password_hash
+from tests.data_sample import argon2_password_hash
 
 fake = faker.Faker()
 

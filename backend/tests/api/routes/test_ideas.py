@@ -9,8 +9,7 @@ from odmantic.session import AIOSession
 
 from src.models import Idea, IdeaDownvote, IdeaUpvote, User
 from src.util import datetime_now
-
-from ...util import (
+from tests.util import (
     add_votes,
     create_idea,
     create_user,

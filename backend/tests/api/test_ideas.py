@@ -14,9 +14,8 @@ from src.api.ideas import (
     vote,
 )
 from src.models import Idea, IdeaDownvote, IdeaUpvote, User
-
-from ..data_sample import idea1, user1
-from ..util import setup_ideas, setup_votes
+from tests.data_sample import idea1, user1
+from tests.util import setup_ideas, setup_votes
 
 
 def assert_in_order(items, ascending=True):

@@ -9,8 +9,7 @@ from odmantic.session import AIOSession
 from src.auth import get_current_user, verify_password
 from src.models import Idea, User
 from src.util import datetime_now
-
-from ...util import setup_users
+from tests.util import setup_users
 
 PREFIX = "/users"
 USERS_REGISTER = f"{PREFIX}/"
