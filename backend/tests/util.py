@@ -1,3 +1,4 @@
+import operator
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from datetime import UTC, datetime, timedelta
@@ -11,6 +12,12 @@ from src.models import Idea, User
 from tests.data_sample import argon2_password_hash
 
 fake = faker.Faker()
+
+
+def assert_in_order(items, ascending=True):
+    compare = operator.le if ascending else operator.ge
+    for prev_index, item in enumerate(items[1:]):
+        assert compare(items[prev_index], item)
 
 
 def create_user(**options) -> User:

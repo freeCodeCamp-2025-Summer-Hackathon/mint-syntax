@@ -9,7 +9,7 @@ from odmantic.session import AIOSession
 from src.auth import get_current_user, verify_password
 from src.models import Idea, User
 from src.util import datetime_now
-from tests.util import setup_users
+from tests.util import assert_in_order, setup_users
 
 PREFIX = "/users"
 USERS_REGISTER = f"{PREFIX}/"
@@ -80,11 +80,6 @@ def url_for_user_id(user_id):
 
 def url_for_user_id_ideas(user_id):
     return f"{url_for_user_id(user_id)}/ideas/"
-
-
-def assert_in_order_by_name(items):
-    for prev_index, item in enumerate(items[1:]):
-        assert items[prev_index]["name"] <= item["name"]
 
 
 @asynccontextmanager
@@ -303,9 +298,9 @@ async def test_GET_users_returns_users_with_user_me_ordere_by_name(
     async with setup_users(real_db, additional_users):
         response = await admin_client.get(USERS)
         data = response.json()
-        users = data["users"]
+        user_names = [user["name"] for user in data["users"]]
 
-        assert_in_order_by_name(users)
+        assert_in_order(user_names)
 
 
 @pytest.mark.integration
@@ -497,9 +492,9 @@ async def test_GET_users_id_ideas_returns_user_ideas_in_data_ordered_by_name(
     user, _, _ = user_with_ideas
     response = await admin_client.get(url_for_user_id_ideas(user.id))
     data = response.json()
-    returned_ideas = data["data"]
+    returned_ideas_names = [idea["name"] for idea in data["data"]]
 
-    assert_in_order_by_name(returned_ideas)
+    assert_in_order(returned_ideas_names)
 
 
 @pytest.mark.integration

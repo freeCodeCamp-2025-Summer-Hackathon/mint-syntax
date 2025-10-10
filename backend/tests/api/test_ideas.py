@@ -1,4 +1,3 @@
-import operator
 import random
 from contextlib import contextmanager, suppress
 
@@ -15,13 +14,7 @@ from src.api.ideas import (
 )
 from src.models import Idea, IdeaDownvote, IdeaUpvote, User
 from tests.data_sample import idea1, user1
-from tests.util import setup_ideas, setup_votes
-
-
-def assert_in_order(items, ascending=True):
-    compare = operator.le if ascending else operator.ge
-    for prev_index, item in enumerate(items[1:]):
-        assert compare(items[prev_index], item)
+from tests.util import assert_in_order, setup_ideas, setup_votes
 
 
 def setup_downvote(user: User, idea: Idea):
