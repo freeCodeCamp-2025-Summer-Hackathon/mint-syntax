@@ -1,7 +1,7 @@
 import pytest
 from httpx import AsyncClient, Request
 
-from ..data_sample import idea1, user1, user_admin_disabled, user_disabled
+from tests.data_sample import idea1, user1, user_admin_disabled, user_disabled
 
 
 @pytest.mark.integration

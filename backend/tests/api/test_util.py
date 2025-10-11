@@ -4,8 +4,7 @@ from odmantic import ObjectId
 
 from src.api.util import find_one_or_404
 from src.models import Idea, User
-
-from ..data_sample import ideas, users
+from tests.data_sample import ideas, users
 
 
 @pytest.mark.anyio

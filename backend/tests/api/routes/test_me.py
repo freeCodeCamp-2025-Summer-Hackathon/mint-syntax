@@ -8,8 +8,7 @@ from odmantic.session import AIOSession
 from src.auth import verify_password
 from src.models import Idea, User
 from src.util import datetime_now
-
-from ...util import setup_idea, setup_ideas, setup_users, setup_votes
+from tests.util import setup_idea, setup_ideas, setup_users, setup_votes
 
 PASSWORD = "password"
 NEW_NAME_DATA = [

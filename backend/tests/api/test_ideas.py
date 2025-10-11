@@ -13,9 +13,8 @@ from src.api.ideas import (
     vote,
 )
 from src.models import Idea, IdeaDownvote, IdeaUpvote, User
-
-from ..data_sample import idea1, user1
-from ..util import assert_in_order, setup_ideas, setup_votes
+from tests.data_sample import idea1, user1
+from tests.util import assert_in_order, setup_ideas, setup_votes
 
 
 def setup_downvote(user: User, idea: Idea):

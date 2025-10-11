@@ -7,15 +7,14 @@ from httpx import AsyncClient
 
 from src.auth import JWT_ALGORITHM
 from src.models import User
-
-from ...data_sample import (
+from tests.data_sample import (
     user1,
     user_admin,
     user_admin_disabled,
     user_disabled,
     user_disabled_with_outdated_hash,
 )
-from ...test_auth import INVALID_TOKENS
+from tests.test_auth import INVALID_TOKENS
 
 AUTH = "/auth"
 REFRESH = "/refresh"
