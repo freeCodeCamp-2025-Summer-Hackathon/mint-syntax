@@ -1,5 +1,6 @@
 import random
 
+import faker
 import pytest
 from odmantic import ObjectId
 from odmantic.session import AIOSession
@@ -436,3 +437,35 @@ async def test_PUT_downvote_idea_returns_404_when_idea_id_does_not_exist(
     )
 
     assert response.status_code == 404
+
+
+# ========================= TEST create_idea =========================
+
+fake = faker.Faker()
+
+
+@pytest.mark.integration
+@pytest.mark.anyio
+async def test_POST_create_idea_returns_idea(
+    user_with_client,
+):
+    user, async_client = user_with_client
+
+    test_idea_create = {
+        "name": fake.sentence(nb_words=5, variable_nb_words=True),
+        "description": fake.paragraph(nb_sentences=5, variable_nb_sentences=True),
+    }
+
+    response = await async_client.post(
+        "/ideas/",
+        json=test_idea_create,
+    )
+
+    data = response.json()
+
+    assert response.status_code == 200
+    assert data["name"] == test_idea_create["name"]
+    assert data["description"] == test_idea_create["description"]
+    assert set(data["upvoted_by"]) == set()
+    assert set(data["downvoted_by"]) == set()
+    assert data["creator_id"] == str(user.id)
