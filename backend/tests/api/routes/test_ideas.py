@@ -891,6 +891,7 @@ async def test_PATCH_ideas_id_returns_403_if_not_admin_and_not_idea_creator(
 @pytest.mark.integration
 @pytest.mark.anyio
 async def test_POST_create_idea_returns_idea(
+    real_db: AIOSession,
     user_with_client,
 ):
     fake = faker.Faker()
@@ -901,16 +902,17 @@ async def test_POST_create_idea_returns_idea(
         "description": fake.paragraph(nb_sentences=5, variable_nb_sentences=True),
     }
 
-    response = await async_client.post(
-        "/ideas/",
-        json=test_idea_create,
-    )
+    async with clean_new_ideas(real_db):
+        response = await async_client.post(
+            "/ideas/",
+            json=test_idea_create,
+        )
 
-    data = response.json()
+        data = response.json()
 
-    assert response.status_code == 200
-    assert data["name"] == test_idea_create["name"]
-    assert data["description"] == test_idea_create["description"]
-    assert data["upvoted_by"] == []
-    assert data["downvoted_by"] == []
-    assert data["creator_id"] == str(user.id)
+        assert response.status_code == 200
+        assert data["name"] == test_idea_create["name"]
+        assert data["description"] == test_idea_create["description"]
+        assert data["upvoted_by"] == []
+        assert data["downvoted_by"] == []
+        assert data["creator_id"] == str(user.id)
