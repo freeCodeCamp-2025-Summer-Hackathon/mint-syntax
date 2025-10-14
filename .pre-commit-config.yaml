@@ -31,3 +31,11 @@ repos:
         files: ^frontend/.*\.(ts|tsx|js|jsx|css|html|json)$
         additional_dependencies:
         -   prettier@3.6.2
+
+-   repo: local
+    hooks:
+    -   id: pytest-reject-only-marker
+        name: Check for 'only' pytest marker
+        entry: '@pytest\.mark\.only'
+        language: pygrep
+        types: [python]

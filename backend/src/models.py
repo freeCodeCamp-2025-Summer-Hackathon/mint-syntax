@@ -1,7 +1,15 @@
+from datetime import UTC, datetime
 from typing import Annotated
 
 from odmantic import Field, Model, ObjectId
-from pydantic import BaseModel, StringConstraints
+from pydantic import (
+    AfterValidator,
+    BaseModel,
+    StringConstraints,
+    computed_field,
+)
+
+from src.util import datetime_now
 
 StrippedString = Annotated[str, StringConstraints(strip_whitespace=True)]
 EmptyString = Annotated[str, StringConstraints(max_length=0, strip_whitespace=True)]
@@ -15,7 +23,30 @@ NonEmptyMax255CharsString = Annotated[
 PasswordString = Annotated[str, StringConstraints(min_length=8, strip_whitespace=True)]
 
 
+def to_utc(input: datetime) -> datetime:
+    if input.tzinfo is None:
+        return input.replace(tzinfo=UTC)
+    elif input.tzinfo is not UTC:
+        return input.astimezone(UTC)
+    return input
+
+
+DateTimeUTC = Annotated[
+    datetime,
+    AfterValidator(to_utc),
+]
+
+
+class WithModifiedAtAutoUpdate(BaseModel):
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def modified_at(self) -> datetime:
+        return datetime_now()
+
+
 class User(Model):
+    created_at: DateTimeUTC = Field(default_factory=datetime_now)
+    modified_at: DateTimeUTC = Field(default_factory=datetime_now)
     username: str = Field(unique=True)
     name: str = Field(max_length=255)
     hashed_password: str
@@ -27,6 +58,8 @@ class User(Model):
 
 class UserMe(BaseModel):
     id: ObjectId
+    created_at: DateTimeUTC
+    modified_at: DateTimeUTC
     username: str
     name: str
     is_active: bool
@@ -42,7 +75,7 @@ class UsersAdmin(BaseModel):
 
 class UserPublic(BaseModel):
     id: ObjectId
-    name: str = Field(max_length=255)
+    name: str
 
 
 class UsersPublic(BaseModel):
@@ -62,7 +95,7 @@ class UserEditPatchInput(BaseModel):
     new_password: EmptyString | PasswordString | None = None
 
 
-class UserEditPatch(BaseModel):
+class UserEditPatch(WithModifiedAtAutoUpdate):
     name: NonEmptyMax255CharsString | None
     hashed_password: str | None = None
 
@@ -90,6 +123,8 @@ class AdminUserCreate(UserRegister):
 
 
 class Idea(Model):
+    created_at: DateTimeUTC = Field(default_factory=datetime_now, index=True)
+    modified_at: DateTimeUTC = Field(default_factory=datetime_now, index=True)
     name: str
     description: str
     upvoted_by: list[ObjectId] = []
@@ -99,10 +134,11 @@ class Idea(Model):
 
 class IdeaPublic(BaseModel):
     id: ObjectId
+    created_at: DateTimeUTC
     name: str
     description: str
-    upvoted_by: list[ObjectId] = []
-    downvoted_by: list[ObjectId] = []
+    upvoted_by: list[ObjectId]
+    downvoted_by: list[ObjectId]
     creator_id: ObjectId
 
 
@@ -120,9 +156,9 @@ class IdeaCreate(BaseModel):
     description: NonEmptyString
 
 
-class IdeaEditPatch(BaseModel):
-    name: NonEmptyMax255CharsString | None = Field(max_length=255)
-    description: StrippedString | None
+class IdeaEditPatch(WithModifiedAtAutoUpdate):
+    name: NonEmptyMax255CharsString | None = None
+    description: NonEmptyString | None = None
 
 
 class IdeaUpvote(BaseModel):

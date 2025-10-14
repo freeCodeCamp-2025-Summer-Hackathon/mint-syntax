@@ -78,8 +78,7 @@ def test_get_settings_reads_individually_set_environment_variables(
 
             variables_not_modified = (env for env in env_variables if env != cur_key)
 
-            assert all(
-                getattr(config, key) != env_variables.get(key)
-                and getattr(config, key) == getattr(initial_config, key)
-                for key in variables_not_modified
-            )
+            for key in variables_not_modified:
+                value = getattr(config, key)
+                assert value != env_variables.get(key)
+                assert value == getattr(initial_config, key)

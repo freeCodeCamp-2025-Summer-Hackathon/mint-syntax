@@ -47,6 +47,7 @@ select = [
     "C4",  # flake8-comprehensions
     "UP",  # pyupgrade
     "ARG001", # unused arguments in functions
+    "PT", # flake8-pytest-style
 ]
 ignore = []
 

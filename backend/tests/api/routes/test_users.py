@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+from datetime import datetime
 
 import pytest
 from httpx import AsyncClient
@@ -6,9 +7,9 @@ from odmantic import ObjectId, query
 from odmantic.session import AIOSession
 
 from src.auth import get_current_user, verify_password
-from src.models import User
-
-from ...util import setup_users
+from src.models import Idea, User
+from src.util import datetime_now
+from tests.util import assert_in_order, setup_users
 
 PREFIX = "/users"
 USERS_REGISTER = f"{PREFIX}/"
@@ -68,6 +69,8 @@ USER_ME_ATTRIBUTES = (
     "is_active",
     "upvotes",
     "downvotes",
+    "created_at",
+    "modified_at",
 )
 
 
@@ -77,11 +80,6 @@ def url_for_user_id(user_id):
 
 def url_for_user_id_ideas(user_id):
     return f"{url_for_user_id(user_id)}/ideas/"
-
-
-def assert_in_order_by_name(items):
-    for prev_index, item in enumerate(items[1:]):
-        assert items[prev_index]["name"] <= item["name"]
 
 
 @asynccontextmanager
@@ -100,14 +98,6 @@ async def clean_added_users(real_db: AIOSession):
     )
     if new_users:
         await real_db.remove(User, query.in_(User.id, {user.id for user in new_users}))
-
-
-@pytest.fixture
-async def user(real_db, request):
-    user_options = request.param if hasattr(request, "param") else {}
-    async with setup_users(real_db, **user_options) as users:
-        [user] = users
-        yield user
 
 
 @pytest.mark.integration
@@ -174,7 +164,7 @@ async def test_POST_users_add_returns_409_for_duplicated_username(
     INVALID_USER_DATA,
 )
 async def test_POST_users_add_returns_422_for_invalid_fields(
-    admin_client: AsyncClient, invalid_new_user_data, real_db
+    admin_client: AsyncClient, invalid_new_user_data, real_db: AIOSession
 ):
     async with clean_added_users(real_db):
         response = await admin_client.post(USERS_ADD, data=invalid_new_user_data)
@@ -270,7 +260,7 @@ async def test_POST_users_register_returns_409_for_duplicated_username(
     INVALID_USER_DATA,
 )
 async def test_POST_users_register_returns_422_for_invalid_fields(
-    admin_client: AsyncClient, invalid_new_user_data, real_db
+    admin_client: AsyncClient, invalid_new_user_data, real_db: AIOSession
 ):
     async with clean_added_users(real_db):
         response = await admin_client.post(USERS_REGISTER, data=invalid_new_user_data)
@@ -282,7 +272,7 @@ async def test_POST_users_register_returns_422_for_invalid_fields(
 @pytest.mark.anyio
 @pytest.mark.parametrize("additional_users", [0, 10, 15])
 async def test_GET_users_returns_users_with_user_me(
-    admin_client: AsyncClient, real_db, additional_users
+    admin_client: AsyncClient, real_db: AIOSession, additional_users
 ):
     response = await admin_client.get(USERS)
     initial_count = response.json()["count"]
@@ -303,14 +293,14 @@ async def test_GET_users_returns_users_with_user_me(
 @pytest.mark.anyio
 @pytest.mark.parametrize("additional_users", [0, 10, 15])
 async def test_GET_users_returns_users_with_user_me_ordere_by_name(
-    admin_client: AsyncClient, real_db, additional_users
+    admin_client: AsyncClient, real_db: AIOSession, additional_users
 ):
     async with setup_users(real_db, additional_users):
         response = await admin_client.get(USERS)
         data = response.json()
-        users = data["users"]
+        user_names = [user["name"] for user in data["users"]]
 
-        assert_in_order_by_name(users)
+        assert_in_order(user_names)
 
 
 @pytest.mark.integration
@@ -341,7 +331,7 @@ async def test_GET_users_does_not_return_hashed_password_in_user_data(
 )
 async def test_GET_users_id_returns_user_me(
     admin_client: AsyncClient,
-    user,
+    user: User,
 ):
     response = await admin_client.get(url_for_user_id(user.id))
     data = response.json()
@@ -358,7 +348,7 @@ async def test_GET_users_id_returns_user_me(
 @pytest.mark.integration
 @pytest.mark.anyio
 async def test_GET_users_id_does_not_return_hashed_password(
-    admin_client: AsyncClient, user
+    admin_client: AsyncClient, user: User
 ):
     response = await admin_client.get(url_for_user_id(user.id))
     data = response.json()
@@ -369,7 +359,7 @@ async def test_GET_users_id_does_not_return_hashed_password(
 @pytest.mark.integration
 @pytest.mark.anyio
 @pytest.mark.parametrize(
-    ["bad_id", "status_code"],
+    ("bad_id", "status_code"),
     [
         pytest.param("notobjectid", 422, id="not valid object id"),
         pytest.param("/", 404, id="empty id"),
@@ -386,7 +376,7 @@ async def test_GET_users_id_returns_4xx_when_id_is_invalid(
 @pytest.mark.integration
 @pytest.mark.anyio
 async def test_GET_users_id_returns_404_when_id_does_not_exist(
-    admin_client: AsyncClient, real_db
+    admin_client: AsyncClient, real_db: AIOSession
 ):
     async with setup_users(real_db, 1) as users:
         [user] = users
@@ -400,7 +390,7 @@ async def test_GET_users_id_returns_404_when_id_does_not_exist(
 @pytest.mark.integration
 @pytest.mark.anyio
 @pytest.mark.parametrize(
-    ["bad_id", "status_code"],
+    ("bad_id", "status_code"),
     [
         pytest.param("notobjectid", 422, id="not valid object id"),
         pytest.param("/", 404, id="empty id"),
@@ -417,7 +407,7 @@ async def test_GET_users_id_ideas_returns_4xx_when_id_is_invalid(
 @pytest.mark.integration
 @pytest.mark.anyio
 async def test_GET_users_id_ideas_returns_username_in_data(
-    admin_client: AsyncClient, user
+    admin_client: AsyncClient, user: User
 ):
     response = await admin_client.get(url_for_user_id_ideas(user.id))
     data = response.json()
@@ -434,7 +424,7 @@ async def test_GET_users_id_ideas_returns_username_in_data(
     indirect=True,
 )
 async def test_GET_users_id_ideas_returns_user_ideas_count_in_data(
-    admin_client: AsyncClient, user_with_ideas
+    admin_client: AsyncClient, user_with_ideas: tuple[User, list[Idea], int]
 ):
     user, _, ideas_count = user_with_ideas
     response = await admin_client.get(url_for_user_id_ideas(user.id))
@@ -452,7 +442,7 @@ async def test_GET_users_id_ideas_returns_user_ideas_count_in_data(
     indirect=True,
 )
 async def test_GET_users_id_ideas_returns_user_ideas_in_data(
-    admin_client: AsyncClient, user_with_ideas
+    admin_client: AsyncClient, user_with_ideas: tuple[User, list[Idea], int]
 ):
     user, ideas, _ = user_with_ideas
     response = await admin_client.get(url_for_user_id_ideas(user.id))
@@ -473,7 +463,7 @@ async def test_GET_users_id_ideas_returns_user_ideas_in_data(
     indirect=True,
 )
 async def test_GET_users_id_ideas_returns_expected_idea_data_in_user_ideas(
-    admin_client: AsyncClient, user_with_ideas
+    admin_client: AsyncClient, user_with_ideas: tuple[User, list[Idea], int]
 ):
     user, ideas, _ = user_with_ideas
     [idea] = ideas
@@ -497,25 +487,25 @@ async def test_GET_users_id_ideas_returns_expected_idea_data_in_user_ideas(
     indirect=True,
 )
 async def test_GET_users_id_ideas_returns_user_ideas_in_data_ordered_by_name(
-    admin_client: AsyncClient, user_with_ideas
+    admin_client: AsyncClient, user_with_ideas: tuple[User, list[Idea], int]
 ):
     user, _, _ = user_with_ideas
     response = await admin_client.get(url_for_user_id_ideas(user.id))
     data = response.json()
-    returned_ideas = data["data"]
+    returned_ideas_names = [idea["name"] for idea in data["data"]]
 
-    assert_in_order_by_name(returned_ideas)
+    assert_in_order(returned_ideas_names)
 
 
 @pytest.mark.integration
 @pytest.mark.anyio
 @pytest.mark.parametrize(
-    ["patch_data", "user"],
+    ("patch_data", "user"),
     PATCH_DATA_WITH_INITIAL_USER_OPTIONS,
     indirect=["user"],
 )
 async def test_PATCH_users_id_returns_updated_user_after_patch(
-    admin_client: AsyncClient, user, patch_data
+    admin_client: AsyncClient, user: User, patch_data
 ):
     response = await admin_client.patch(url_for_user_id(user.id), json=patch_data)
     data = response.json()
@@ -525,16 +515,18 @@ async def test_PATCH_users_id_returns_updated_user_after_patch(
     assert data["is_active"] == patch_data.get("is_active", user.is_active)
     assert data["is_admin"] == patch_data.get("is_admin", user.is_admin)
 
+    assert datetime.fromisoformat(data["created_at"]) == user.created_at
+
 
 @pytest.mark.integration
 @pytest.mark.anyio
 @pytest.mark.parametrize(
-    ["patch_data", "user"],
+    ("patch_data", "user"),
     PATCH_DATA_WITH_INITIAL_USER_OPTIONS,
     indirect=["user"],
 )
 async def test_PATCH_users_id_saves_changes_in_db(
-    admin_client: AsyncClient, real_db: AIOSession, patch_data, user
+    admin_client: AsyncClient, real_db: AIOSession, patch_data, user: User
 ):
     response = await admin_client.patch(url_for_user_id(user.id), json=patch_data)
 
@@ -552,6 +544,31 @@ async def test_PATCH_users_id_saves_changes_in_db(
     assert updated_user.upvotes == user.upvotes
     assert updated_user.downvotes == user.downvotes
 
+    assert updated_user.created_at == user.created_at
+
+
+@pytest.mark.integration
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    ("patch_data", "user"),
+    PATCH_DATA_WITH_INITIAL_USER_OPTIONS,
+    indirect=["user"],
+)
+async def test_PATCH_users_id_changes_modified_at(
+    admin_client: AsyncClient, real_db: AIOSession, patch_data, user: User
+):
+    response = await admin_client.patch(url_for_user_id(user.id), json=patch_data)
+    data = response.json()
+
+    assert response.status_code == 200
+
+    updated_user = await real_db.find_one(User, User.id == user.id)
+    now = datetime_now()
+
+    assert updated_user is not None
+    assert now > datetime.fromisoformat(data["modified_at"]) > user.modified_at
+    assert now > updated_user.modified_at > user.modified_at
+
 
 @pytest.mark.integration
 @pytest.mark.anyio
@@ -565,7 +582,7 @@ async def test_PATCH_users_id_saves_changes_in_db(
     ],
 )
 async def test_PATCH_users_id_returns_user_me_after_patch(
-    admin_client: AsyncClient, patch_data, user
+    admin_client: AsyncClient, patch_data, user: User
 ):
     response = await admin_client.patch(url_for_user_id(user.id), json=patch_data)
     data = response.json()
@@ -580,7 +597,7 @@ async def test_PATCH_users_id_returns_user_me_after_patch(
     "new_password", ["completely new password", "different new password"]
 )
 async def test_PATCH_users_id_updates_hashed_password_if_new_password_patched(
-    admin_client: AsyncClient, real_db, user, new_password
+    admin_client: AsyncClient, real_db: AIOSession, user: User, new_password
 ):
     response = await admin_client.patch(
         url_for_user_id(user.id),
@@ -591,6 +608,7 @@ async def test_PATCH_users_id_updates_hashed_password_if_new_password_patched(
 
     updated_user = await real_db.find_one(User, User.id == user.id)
 
+    assert updated_user is not None
     assert updated_user.hashed_password != user.hashed_password
     assert verify_password(new_password, updated_user.hashed_password)
 
@@ -606,7 +624,7 @@ async def test_PATCH_users_id_updates_hashed_password_if_new_password_patched(
     ],
 )
 async def test_PATCH_users_id_does_not_update_empty_optional_or_additional_data(
-    admin_client: AsyncClient, real_db: AIOSession, user, patch_data
+    admin_client: AsyncClient, real_db: AIOSession, user: User, patch_data
 ):
     response = await admin_client.patch(url_for_user_id(user.id), json=patch_data)
 
@@ -636,7 +654,7 @@ async def test_PATCH_users_id_does_not_update_empty_optional_or_additional_data(
     ],
 )
 async def test_PATCH_users_id_returns_422_for_missing_required_or_invalid_data(
-    admin_client: AsyncClient, invalid_fields_patch, user
+    admin_client: AsyncClient, invalid_fields_patch, user: User
 ):
     response = await admin_client.patch(
         url_for_user_id(user.id), json=invalid_fields_patch
@@ -659,7 +677,7 @@ async def test_PATCH_users_id_returns_422_for_missing_required_or_invalid_data(
     ],
 )
 async def test_PATCH_users_id_does_not_return_hashed_password_in_user_data(
-    admin_client: AsyncClient, patch_data, user
+    admin_client: AsyncClient, patch_data, user: User
 ):
     response = await admin_client.patch(url_for_user_id(user.id), json=patch_data)
     data = response.json()

@@ -1,19 +1,19 @@
 import operator
-from collections.abc import Callable
+from collections.abc import AsyncGenerator, Callable
 from datetime import timedelta
 from unittest import mock
 
 import jwt
 import pytest
 from motor.motor_asyncio import AsyncIOMotorClient
-from odmantic import AIOEngine, query
+from odmantic import AIOEngine, Model, query
+from odmantic.session import AIOSession
 
 from src.auth import JWT_ALGORITHM, config
 from src.config import get_settings
 from src.models import Idea, User
-
-from .data_sample import data, ideas, users
-from .util import now_plus_delta
+from tests.data_sample import data, ideas, users
+from tests.util import now_plus_delta
 
 
 @pytest.fixture(scope="session")
@@ -21,7 +21,7 @@ def anyio_backend():
     return "asyncio"
 
 
-async def fake_find_one(model, q: query.QueryExpression):
+async def fake_find_one(model: Model, q: query.QueryExpression) -> Model | None:
     operations: dict[str, Callable] = {
         "$eq": operator.eq,
         "$ne": operator.ne,
@@ -46,15 +46,15 @@ async def fake_find_one(model, q: query.QueryExpression):
 
 
 @pytest.fixture
-def fake_db():
+def fake_db() -> mock.AsyncMock:
     fake = mock.AsyncMock()
     fake.find_one = fake_find_one
     return fake
 
 
 @pytest.fixture(scope="session")
-async def real_db():
-    client = AsyncIOMotorClient(get_settings().mongodb_test_uri)
+async def real_db() -> AsyncGenerator[AIOSession]:
+    client: AsyncIOMotorClient = AsyncIOMotorClient(get_settings().mongodb_test_uri)
     engine = AIOEngine(client=client)
     await engine.configure_database((User, Idea))
 
@@ -74,24 +74,32 @@ async def real_db():
 
 
 @pytest.fixture
-def jwt_secret_key():
+def jwt_secret_key() -> str:
     return "test-secret-key"
 
 
-@pytest.fixture()
-def sample_user_token(jwt_secret_key, request):
-    user_id = str(request.param)
-    if not user_id:
-        return None
-    return jwt.encode(
-        {"sub": user_id, "exp": now_plus_delta(timedelta(minutes=5))},
-        jwt_secret_key,
-        algorithm=JWT_ALGORITHM,
-    )
+@pytest.fixture
+def token_encoder(jwt_secret_key) -> Callable[[str], str | None]:
+    def wrapper(user_id) -> str | None:
+        if not user_id:
+            return None
+        return jwt.encode(
+            {"sub": user_id, "exp": now_plus_delta(timedelta(minutes=5))},
+            jwt_secret_key,
+            algorithm=JWT_ALGORITHM,
+        )
+
+    return wrapper
 
 
 @pytest.fixture
-def patch_jwt_secret_key(monkeypatch, jwt_secret_key):
+def sample_user_token(token_encoder, request) -> str | None:
+    user_id = str(request.param)
+    return token_encoder(user_id)
+
+
+@pytest.fixture
+def patch_jwt_secret_key(monkeypatch, jwt_secret_key) -> Callable[[str], str]:
     def patch(secret_key=jwt_secret_key):
         monkeypatch.setattr(config, "secret_key", secret_key)
         return secret_key

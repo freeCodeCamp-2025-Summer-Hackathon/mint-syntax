@@ -22,13 +22,7 @@ async def get_ideas_by_upvotes(db: Db, skip: int, limit: int, ascending=False):
     collection = db.engine.get_collection(Idea)
     aggregates: Sequence[Mapping[str, Any]] = [
         {
-            "$project": {
-                "_id": 1,
-                "name": 1,
-                "description": 1,
-                "upvoted_by": 1,
-                "downvoted_by": 1,
-                "creator_id": 1,
+            "$addFields": {
                 "upvotes": {"$size": "$upvoted_by"},
             }
         },
@@ -40,13 +34,21 @@ async def get_ideas_by_upvotes(db: Db, skip: int, limit: int, ascending=False):
     return (Idea.model_validate_doc(result) for result in results)
 
 
-async def get_ideas(db: Db, skip: int, limit: int, sort: str | None = None):
+async def get_ideas(
+    db: Db, skip: int, limit: int, sort: str | None = None, ascending: bool = True
+):
     if sort == "trending":
-        ideas = await get_ideas_by_upvotes(db, skip=skip, limit=limit)
-    # elif sort == 'newest':
-    #     pass
+        ideas = await get_ideas_by_upvotes(
+            db, skip=skip, limit=limit, ascending=not ascending
+        )
+    elif sort == "newest":
+        sorter = query.desc if ascending else query.asc
+        ideas = await db.find(
+            Idea, limit=limit, skip=skip, sort=sorter(Idea.created_at)
+        )
     else:
-        ideas = await db.find(Idea, limit=limit, skip=skip, sort=Idea.name)
+        sorter = query.asc if ascending else query.desc
+        ideas = await db.find(Idea, limit=limit, skip=skip, sort=sorter(Idea.name))
     return IdeasPublic(
         data=idea_list_adapter.validate_python(ideas, from_attributes=True),
         count=await count_ideas(db),

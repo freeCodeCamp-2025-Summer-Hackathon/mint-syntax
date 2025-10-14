@@ -1,3 +1,5 @@
+from collections.abc import AsyncGenerator
+
 import pytest
 from fastapi.requests import Request
 from httpx import ASGITransport, AsyncClient
@@ -10,7 +12,7 @@ GET_TOKEN = "/csrf/get-token"
 
 
 @pytest.fixture
-async def async_client_with_csrf(fake_db):
+async def async_client_with_csrf(fake_db) -> AsyncGenerator[AsyncClient]:
     app.dependency_overrides[get_db] = fake_db
     async with AsyncClient(
         transport=ASGITransport(app=app), base_url="http://test"
@@ -19,7 +21,9 @@ async def async_client_with_csrf(fake_db):
 
 
 @pytest.mark.anyio
-async def test_GET_get_token_route_returns_csrf_token_in_json(async_client_with_csrf):
+async def test_GET_get_token_route_returns_csrf_token_in_json(
+    async_client_with_csrf: AsyncClient,
+):
     response = await async_client_with_csrf.get(GET_TOKEN)
 
     assert response.status_code == 200
@@ -29,7 +33,9 @@ async def test_GET_get_token_route_returns_csrf_token_in_json(async_client_with_
 
 
 @pytest.mark.anyio
-async def test_GET_get_token_sets_cookie_on_response(async_client_with_csrf):
+async def test_GET_get_token_sets_cookie_on_response(
+    async_client_with_csrf: AsyncClient,
+):
     response = await async_client_with_csrf.get(GET_TOKEN)
 
     cookies = response.cookies
@@ -39,7 +45,7 @@ async def test_GET_get_token_sets_cookie_on_response(async_client_with_csrf):
 @pytest.mark.anyio
 @pytest.mark.parametrize("method", ["DELETE", "PATCH", "POST", "PUT"])
 async def test_GET_get_token_returns_token_and_cookie_passing_verify_csrf(
-    async_client_with_csrf, method
+    async_client_with_csrf: AsyncClient, method
 ):
     response = await async_client_with_csrf.get(GET_TOKEN)
     token = response.json()["csrf_token"]

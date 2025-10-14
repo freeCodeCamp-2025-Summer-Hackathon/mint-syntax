@@ -24,8 +24,7 @@ from src.auth import (
     verify_password,
 )
 from src.models import TokenData, User
-
-from .data_sample import (
+from tests.data_sample import (
     argon2_different_password_hash,
     argon2_password_hash,
     bcrypt_different_password_hash,
@@ -36,7 +35,7 @@ from .data_sample import (
     user_disabled_with_outdated_hash,
     users,
 )
-from .util import now_plus_delta
+from tests.util import now_plus_delta
 
 
 @pytest.fixture
@@ -109,7 +108,7 @@ INVALID_DATA_TOKENS = [
 
 
 @pytest.mark.parametrize(
-    ["plain_password", "hashed_password", "expected"],
+    ("plain_password", "hashed_password", "expected"),
     [
         pytest.param(
             "password",
@@ -154,7 +153,7 @@ def test_verify_password(plain_password, hashed_password, expected):
 
 
 @pytest.mark.parametrize(
-    ["plain_password", "hashed_password", "expected", "expected_rehash_type"],
+    ("plain_password", "hashed_password", "expected", "expected_rehash_type"),
     [
         pytest.param(
             "password",
@@ -207,7 +206,7 @@ def test_verify_and_update_password(
 
 @pytest.mark.anyio
 @pytest.mark.parametrize(
-    ["user", "plain_password", "expected"],
+    ("user", "plain_password", "expected"),
     [
         pytest.param(
             user1.username,
@@ -285,12 +284,16 @@ def test_create_access_token_encoded_token_has_correct_data(patch_jwt_secret_key
     decoded = jwt.decode(token, secret_key, algorithms=[JWT_ALGORITHM])
 
     assert "exp" in decoded
-    assert all(decoded[key] == value for key, value in data.items())
-    assert all(data[key] == value for key, value in decoded.items() if key != "exp")
+    for key, value in data.items():
+        assert decoded[key] == value
+    for key, value in decoded.items():
+        if key == "exp":
+            continue
+        assert data[key] == value
 
 
 @pytest.mark.parametrize(
-    ["expiration_delta"],
+    "expiration_delta",
     [
         pytest.param(
             ACCESS_TOKEN_DELTA,
@@ -340,8 +343,10 @@ def test_create_tokens_returns_two_tokens_and_refresh_token_expiration(
         refresh_token, secret_key, algorithms=[JWT_ALGORITHM]
     )
 
+    keys_expected_in_token = ("exp", "sub")
     for token in (decoded_access_token, decoded_refresh_token):
-        assert all(key in token for key in ("exp", "sub"))
+        for key in keys_expected_in_token:
+            assert key in token
         assert token["sub"] == user_id
 
     assert decoded_access_token["exp"] < decoded_refresh_token["exp"]
@@ -370,7 +375,7 @@ def test_set_refresh_token_cookie_calls_set_cookie_method(jwt_fixtures):
 
 
 @pytest.mark.parametrize(
-    ["sample_user_token", "user_id"],
+    ("sample_user_token", "user_id"),
     [(user.id, str(user.id)) for user in users.values()],
     indirect=["sample_user_token"],
 )
@@ -433,7 +438,7 @@ async def test_get_current_user_raises_when_token_doesnt_contain_id_of_existing_
 
 @pytest.mark.anyio
 @pytest.mark.parametrize(
-    ["sample_user_token", "expected"],
+    ("sample_user_token", "expected"),
     ((user.id, user) for user in users.values()),
     indirect=["sample_user_token"],
 )
@@ -447,7 +452,7 @@ async def test_get_current_user_returns_existing_user_for_valid_token(
 
 @pytest.mark.anyio
 @pytest.mark.parametrize(
-    ["sample_user_token", "user_id"],
+    ("sample_user_token", "user_id"),
     [(user.id, str(user.id)) for user in users.values()],
     indirect=["sample_user_token"],
 )
@@ -488,7 +493,7 @@ async def test_refresh_token_raises_when_token_is_invalid(
 
 @pytest.mark.anyio
 @pytest.mark.parametrize(
-    ["encoded_token"],
+    "encoded_token",
     INVALID_DATA_TOKENS
     + [
         pytest.param(
