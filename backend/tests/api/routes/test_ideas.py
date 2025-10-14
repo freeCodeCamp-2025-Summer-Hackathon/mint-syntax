@@ -888,6 +888,8 @@ async def test_PATCH_ideas_id_returns_403_if_not_admin_and_not_idea_creator(
     assert response.status_code == 403
 
 
+@pytest.mark.integration
+@pytest.mark.anyio
 async def test_POST_create_idea_returns_idea(
     user_with_client,
 ):
