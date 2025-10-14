@@ -910,6 +910,6 @@ async def test_POST_create_idea_returns_idea(
     assert response.status_code == 200
     assert data["name"] == test_idea_create["name"]
     assert data["description"] == test_idea_create["description"]
-    assert set(data["upvoted_by"]) == set()
-    assert set(data["downvoted_by"]) == set()
+    assert data["upvoted_by"] == []
+    assert data["downvoted_by"] == []
     assert data["creator_id"] == str(user.id)
