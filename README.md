@@ -179,8 +179,15 @@ It's possible to run commands without actually navigating to the folder, by runn
 ```
 #### Running Seed Script
 To seed the database with initial data, run the following command from the `/backend` directory
+
 ```bash
 /backend$ uv run -m src.scripts.seed_data
+```
+
+Optional `-p` argument will drop existing collections, and configure them again, before seeding.
+
+```bash
+/backend$ uv run -m src.scripts.seed_data -p
 ```
 
 ### Running Tests
