@@ -916,3 +916,4 @@ async def test_POST_create_idea_returns_idea(
         assert data["upvoted_by"] == []
         assert data["downvoted_by"] == []
         assert data["creator_id"] == str(user.id)
+
