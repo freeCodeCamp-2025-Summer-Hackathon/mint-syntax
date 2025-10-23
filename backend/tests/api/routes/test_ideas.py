@@ -986,6 +986,6 @@ async def test_POST_create_idea_returns_422_when_invalid_data(
     user, async_client = user_with_client
 
     async with clean_new_ideas(real_db):
-        response = await async_client.post("/ideas/", json=invalid_ideas)
+        response = await async_client.post("/ideas/", json=invalid_idea)
 
         assert response.status_code == 422
