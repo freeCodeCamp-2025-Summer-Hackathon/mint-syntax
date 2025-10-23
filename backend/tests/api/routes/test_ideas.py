@@ -982,7 +982,7 @@ assert db_idea is not None
 async def test_POST_create_idea_returns_422_when_invalid_data(
     real_db: AIOSession,
     user_with_client,
-    invalid_ideas,
+    invalid_idea,
 ):
     _, async_client = user_with_client
 
