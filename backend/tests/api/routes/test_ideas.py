@@ -984,7 +984,7 @@ async def test_POST_create_idea_returns_422_when_invalid_data(
     user_with_client,
     invalid_ideas,
 ):
-    user, async_client = user_with_client
+    _, async_client = user_with_client
 
     async with clean_new_ideas(real_db):
         response = await async_client.post("/ideas/", json=invalid_idea)
