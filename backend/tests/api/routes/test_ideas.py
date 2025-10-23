@@ -975,7 +975,7 @@ async def test_POST_create_idea_creates_idea_in_db(
 @pytest.mark.integration
 @pytest.mark.anyio
 @pytest.mark.parametrize(
-    "invalid_ideas",
+    "invalid_idea",
     INVALID_IDEAS,
 )
 async def test_POST_create_idea_returns_422_when_invalid_data(
