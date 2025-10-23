@@ -104,19 +104,43 @@ INVALID_IDEAS = [
         {
             "name": "",
             "description": "",
-        }
+        },
+        id="empty name and description",
     ),
     pytest.param(
         {
             "name": "Test Name",
             "description": "",
-        }
+        },
+        id="test name with empty description",
     ),
     pytest.param(
         {
             "name": "",
             "description": "Test Description",
-        }
+        },
+        id="empty name with test description",
+    ),
+    pytest.param(
+        {
+            "name": None,
+            "description": None,
+        },
+        id="missing name and description",
+    ),
+    pytest.param(
+        {
+            "name": "Test Name",
+            "description": None,
+        },
+        id="test name with missing description",
+    ),
+    pytest.param(
+        {
+            "name": None,
+            "description": "Test Description",
+        },
+        id="missing name with test description",
     ),
 ]
 
@@ -965,7 +989,7 @@ async def test_POST_create_idea_creates_idea_in_db(
 
         db_idea = await real_db.find_one(Idea, Idea.id == ObjectId(data["id"]))
 
-assert db_idea is not None
+        assert db_idea is not None
         assert db_idea.name == test_idea_create["name"]
         assert db_idea.description == test_idea_create["description"]
         assert db_idea.upvoted_by == []
