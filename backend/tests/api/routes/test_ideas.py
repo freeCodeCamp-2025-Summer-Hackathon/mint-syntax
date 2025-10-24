@@ -122,22 +122,17 @@ INVALID_IDEAS = [
         id="empty name with test description",
     ),
     pytest.param(
-        {
-            "name": None,
-            "description": None,
-        },
+        {},
         id="missing name and description",
     ),
     pytest.param(
         {
             "name": "Test Name",
-            "description": None,
         },
         id="test name with missing description",
     ),
     pytest.param(
         {
-            "name": None,
             "description": "Test Description",
         },
         id="missing name with test description",
