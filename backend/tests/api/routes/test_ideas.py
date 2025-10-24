@@ -99,6 +99,46 @@ DOWNVOTE_CASES = [
     ),
 ]
 
+INVALID_IDEAS = [
+    pytest.param(
+        {
+            "name": "",
+            "description": "",
+        },
+        id="empty name and description",
+    ),
+    pytest.param(
+        {
+            "name": "Test Name",
+            "description": "",
+        },
+        id="test name with empty description",
+    ),
+    pytest.param(
+        {
+            "name": "",
+            "description": "Test Description",
+        },
+        id="empty name with test description",
+    ),
+    pytest.param(
+        {},
+        id="missing name and description",
+    ),
+    pytest.param(
+        {
+            "name": "Test Name",
+        },
+        id="test name with missing description",
+    ),
+    pytest.param(
+        {
+            "description": "Test Description",
+        },
+        id="missing name with test description",
+    ),
+]
+
 INVALID_IDEA_ID_CASES = [
     "not-objectid",
     "",
@@ -916,3 +956,56 @@ async def test_POST_create_idea_returns_idea(
         assert data["upvoted_by"] == []
         assert data["downvoted_by"] == []
         assert data["creator_id"] == str(user.id)
+
+
+@pytest.mark.integration
+@pytest.mark.anyio
+async def test_POST_create_idea_creates_idea_in_db(
+    real_db: AIOSession,
+    user_with_client,
+):
+    fake = faker.Faker()
+    user, async_client = user_with_client
+
+    test_idea_create = {
+        "name": fake.sentence(nb_words=5, variable_nb_words=True),
+        "description": fake.paragraph(nb_sentences=5, variable_nb_sentences=True),
+    }
+
+    async with clean_new_ideas(real_db):
+        response = await async_client.post(
+            "/ideas/",
+            json=test_idea_create,
+        )
+
+        data = response.json()
+
+        assert response.status_code == 200
+
+        db_idea = await real_db.find_one(Idea, Idea.id == ObjectId(data["id"]))
+
+        assert db_idea is not None
+        assert db_idea.name == test_idea_create["name"]
+        assert db_idea.description == test_idea_create["description"]
+        assert db_idea.upvoted_by == []
+        assert db_idea.downvoted_by == []
+        assert db_idea.creator_id == user.id
+
+
+@pytest.mark.integration
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    "invalid_idea",
+    INVALID_IDEAS,
+)
+async def test_POST_create_idea_returns_422_when_invalid_data(
+    real_db: AIOSession,
+    user_with_client,
+    invalid_idea,
+):
+    _, async_client = user_with_client
+
+    async with clean_new_ideas(real_db):
+        response = await async_client.post("/ideas/", json=invalid_idea)
+
+        assert response.status_code == 422
